@@ -1,7 +1,7 @@
-pattsd
-======
+libpatts
+========
 
-PATTS Ain't Time Tracking Software - Daemon
+PATTS Ain't Time Tracking Software - Backend Library
 
 Installation
 ------------
