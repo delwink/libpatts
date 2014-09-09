@@ -23,8 +23,6 @@
 *.i*86
 *.x86_64
 *.hex
-pattsd
-patts-qt
 
 # automake
 autom4te.cache
