@@ -1,2 +1,3 @@
-bin_PROGRAMS = pattsd
-pattsd_SOURCES = main.c
+lib_LTLIBRARIES = libpatts.la
+libpatts_la_SOURCES = 
+include_HEADERS = 
