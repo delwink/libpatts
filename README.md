@@ -13,6 +13,6 @@ To install: `# make install`
 Licensing
 ---------
 
-pattsd is [free software](http://gnu.org/philosophy/free-sw.html), released 
-under the terms of version 3 of the GNU General Public License. See
+libpatts is [free software](http://gnu.org/philosophy/free-sw.html), released 
+under the terms of version 3 of the GNU Affero General Public License. See
 [COPYING](COPYING) for more details.
