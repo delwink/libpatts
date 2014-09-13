@@ -43,4 +43,6 @@ config.status.lineno
 config.guess
 config.sub
 config.h.in
+config.h.in~
 mingw32-config.cache
+ltmain.sh
