@@ -25,8 +25,13 @@
 *.hex
 
 # automake
+build-aux/
 autom4te.cache
 .deps
+.libs
+m4/l*
+libtool
+src/.dirstamp
 Makefile
 Makefile.in
 aclocal.m4
@@ -42,7 +47,12 @@ config.status
 config.status.lineno
 config.guess
 config.sub
+config.h
 config.h.in
 config.h.in~
 mingw32-config.cache
 ltmain.sh
+
+# packaging
+pkg/
+*.tar.gz
