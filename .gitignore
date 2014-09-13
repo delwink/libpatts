@@ -42,4 +42,5 @@ config.status
 config.status.lineno
 config.guess
 config.sub
+config.h.in
 mingw32-config.cache
