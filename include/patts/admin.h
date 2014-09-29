@@ -16,7 +16,7 @@
 #ifndef DELWINK_PATTS_ADMIN_H
 #define DELWINK_PATTS_ADMIN_H
 
-int patts_admin_create_user(char *fullName, unsigned int mysqlUser);
+int patts_admin_create_user(char *fullName, char *mysqlUser);
 int patts_admin_create_task(char *displayName);
 int patts_admin_create_client(char *fullName);
 
