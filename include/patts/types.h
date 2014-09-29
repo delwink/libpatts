@@ -20,7 +20,9 @@
 
 typedef struct {
     MYSQL_TYPE_LONG id,
-    MYSQL_TYPE_BLOB fullName,
+    MYSQL_TYPE_TINY state,
+    MYSQL_TYPE_BLOB firstName,
+    MYSQL_TYPE_BLOB lastName,
     MYSQL_TYPE_BLOB mysqlUser
 } patts_User;
 
@@ -33,7 +35,8 @@ typedef struct {
 typedef struct {
     MYSQL_TYPE_LONG id,
     MYSQL_TYPE_TINY state,
-    MYSQL_TYPE_BLOB fullName
+    MYSQL_TYPE_BLOB firstName,
+    MYSQL_TYPE_BLOB lastName
 } patts_Client;
 
 typedef struct {
