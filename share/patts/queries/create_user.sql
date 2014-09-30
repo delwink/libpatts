@@ -1,12 +1,8 @@
 
 function create_user($username, $password, $firstname, $lastname)
 	{
-	Create user '$username'@'%' identified by '$password';
-
-	grant insert, select, update on pattsdb.* to '$username'@'%';
-
-	insert into pattsdb.User(State,MySQLUser,FirstName,LastName) values(1,'$username','$firstname','$lastname');
-
-	flush privileges;
-
+	CREATE USER '$username'@'%' identified by '$password';
+	GRANT INSERT, SELECT, UPDATE ON pattsdb.* TO '$username'@'%';
+	INSERT INTO pattsdb.User(State,IsAdmin,MySQLUser,FirstName,LastName) VALUES(1,0,'$username','$firstname','$lastname');
+	FLUSH PRIVILEGES;
 	}
