@@ -16,6 +16,9 @@
 #ifndef DELWINK_PATTS_EXPORT_H
 #define DELWINK_PATTS_EXPORT_H
 
-int patts_export(const char *path);
+#include "types.h"
+
+int patts_export(const patts_TaskItem *tasks, char *out);
+int patts_export_to_file(const patts_TaskItem *tasks, char *path);
 
 #endif
