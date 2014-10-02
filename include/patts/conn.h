@@ -16,6 +16,11 @@
 #ifndef DELWINK_PATTS_CONN_H
 #define DELWINK_PATTS_CONN_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <mysql.h>
 
 typedef struct {
@@ -28,5 +33,9 @@ typedef struct {
 int patts_conn_open(const patts_conn_Connection *con);
 int patts_conn_close(const patts_conn_Connection *con);
 int patts_conn_test();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

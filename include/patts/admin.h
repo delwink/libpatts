@@ -16,6 +16,11 @@
 #ifndef DELWINK_PATTS_ADMIN_H
 #define DELWINK_PATTS_ADMIN_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 int patts_admin_create_user(char *fullName, char *mysqlUser);
 int patts_admin_create_task(char *displayName);
 int patts_admin_create_client(char *fullName);
@@ -27,5 +32,9 @@ int patts_admin_enable_client(unsigned int id);
 int patts_admin_disable_user(unsigned int id);
 int patts_admin_disable_task(unsigned int id);
 int patts_admin_disable_client(unsigned int id);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

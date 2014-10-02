@@ -16,6 +16,11 @@
 #ifndef DELWINK_PATTS_TYPES_H
 #define DELWINK_PATTS_TYPES_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <mysql.h>
 
 typedef struct {
@@ -47,5 +52,9 @@ typedef struct {
     MYSQL_TYPE_LONG *subtasks,
     MYSQL_TYPE_LONG client
 } patts_TaskItem;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
