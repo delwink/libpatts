@@ -24,10 +24,10 @@ extern "C"
 #include <mysql.h>
 
 typedef struct {
-    MYSQL *con,
-    char *host,
-    char *user,
-    char *passwd
+    MYSQL *con;
+    char *host;
+    char *user;
+    char *passwd;
 } patts_conn_Connection;
 
 int patts_conn_open(const patts_conn_Connection *con);

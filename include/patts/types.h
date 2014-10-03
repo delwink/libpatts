@@ -24,33 +24,33 @@ extern "C"
 #include <mysql.h>
 
 typedef struct {
-    MYSQL_TYPE_LONG id,
-    MYSQL_TYPE_TINY state,
-    MYSQL_TYPE_BLOB firstName,
-    MYSQL_TYPE_BLOB lastName,
-    MYSQL_TYPE_BLOB mysqlUser
+    MYSQL_TYPE_LONG id;
+    MYSQL_TYPE_TINY state;
+    MYSQL_TYPE_BLOB firstName;
+    MYSQL_TYPE_BLOB lastName;
+    MYSQL_TYPE_BLOB mysqlUser;
 } patts_User;
 
 typedef struct {
-    MYSQL_TYPE_LONG id,
-    MYSQL_TYPE_TINY state,
-    MYSQL_TYPE_BLOB displayName
+    MYSQL_TYPE_LONG id;
+    MYSQL_TYPE_TINY state;
+    MYSQL_TYPE_BLOB displayName;
 } patts_Task;
 
 typedef struct {
-    MYSQL_TYPE_LONG id,
-    MYSQL_TYPE_TINY state,
-    MYSQL_TYPE_BLOB firstName,
-    MYSQL_TYPE_BLOB lastName
+    MYSQL_TYPE_LONG id;
+    MYSQL_TYPE_TINY state;
+    MYSQL_TYPE_BLOB firstName;
+    MYSQL_TYPE_BLOB lastName;
 } patts_Client;
 
 typedef struct {
-    MYSQL_TYPE_LONG id,
-    MYSQL_TYPE_TIMESTAMP startTime,
-    MYSQL_TYPE_TIMESTAMP endTime,
-    MYSQL_TYPE_LONG user,
-    MYSQL_TYPE_LONG *subtasks,
-    MYSQL_TYPE_LONG client
+    MYSQL_TYPE_LONG id;
+    MYSQL_TYPE_TIMESTAMP startTime;
+    MYSQL_TYPE_TIMESTAMP endTime;
+    MYSQL_TYPE_LONG user;
+    MYSQL_TYPE_LONG *subtasks;
+    MYSQL_TYPE_LONG client;
 } patts_TaskItem;
 
 #ifdef __cplusplus
