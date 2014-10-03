@@ -23,8 +23,9 @@ extern "C"
 
 #include "types.h"
 
-int patts_export(const patts_TaskItem *tasks, char *out);
-int patts_export_to_file(const patts_TaskItem *tasks, char *path);
+int patts_export(const patts_TaskItem *tasks, unsigned int numtasks, char *out);
+int patts_export_to_file(const patts_TaskItem *tasks, unsigned int numtasks, 
+                            char *path);
 
 #ifdef __cplusplus
 }
