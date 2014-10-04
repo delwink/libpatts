@@ -7,24 +7,24 @@ simple idea of logging my activities while creating PATTS.
 
 ### User
 
-id | state | firstName | lastName  | mysqlUser
--- | ----- | --------- | --------- | ---------
-0  | 1     | David     | McMackins | david
+id  | state | firstName | lastName  | mysqlUser
+--- | ----- | --------- | --------- | ---------
+0   | 1     | David     | McMackins | david
 
 ### Client
 
-id | state | firstName | lastName
--- | ----- | --------- | ---------
-0  | 1     | Mister    | Moneybags
+id  | state | firstName | lastName
+--- | ----- | --------- | ---------
+0   | 1     | Mister    | Moneybags
 
 ### Task
 
-id | state | parent | displayName
--- | ----- | ------ | -----------------
-0  | 1     | NULL   | Work
-1  | 1     | 0      | PATTS Development
-2  | 1     | 1      | Program Design
-3  | 1     | 1      | Writing Code
+id  | state | parent | displayName
+--- | ----- | ------ | -----------------
+0   | 1     | NULL   | Work
+1   | 1     | 0      | PATTS Development
+2   | 1     | 1      | Program Design
+3   | 1     | 1      | Writing Code
 
 ### TaskItem
 
@@ -35,9 +35,9 @@ This may change, but I have decided for now to use an id of -1 for any
 database transaction that should inherit the value of that field from its 
 parent.
 
-id | type | parent | onClock | user | client | startTime | endTime
--- | ---- | ------ | ------- | ---- | ------ | --------- | -------
-0  | 0    | NULL   | 1       | 0    | NULL   | 9:00      | NULL
-1  | 1    | 0      | 1       | 0    | 0      | 9:00      | NULL
-2  | 2    | 1      | 0       | 0    | -1     | 9:00      | 10:00
-3  | 3    | 1      | 1       | 0    | -1     | 10:30     | NULL
+id  | type | parent | onClock | user | client | startTime | endTime
+--- | ---- | ------ | ------- | ---- | ------ | --------- | -------
+0   | 0    | NULL   | 1       | 0    | NULL   | 9:00      | NULL
+1   | 1    | 0      | 1       | 0    | 0      | 9:00      | NULL
+2   | 2    | 1      | 0       | 0    | -1     | 9:00      | 10:00
+3   | 3    | 1      | 1       | 0    | -1     | 10:30     | NULL
