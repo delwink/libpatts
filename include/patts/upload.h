@@ -23,7 +23,8 @@ extern "C"
 
 #include "conn.h"
 
-int patts_upload(const patts_conn_Connection *con);
+int patts_upload_clockin(const patts_conn_Connection con);
+int patts_upload_clockout(const patts_conn_Connection con);
 
 #ifdef __cplusplus
 }
