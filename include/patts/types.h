@@ -34,23 +34,26 @@ typedef struct {
 typedef struct {
     MYSQL_TYPE_LONG id;
     MYSQL_TYPE_TINY state;
-    MYSQL_TYPE_BLOB displayName;
-} patts_Task;
-
-typedef struct {
-    MYSQL_TYPE_LONG id;
-    MYSQL_TYPE_TINY state;
     MYSQL_TYPE_BLOB firstName;
     MYSQL_TYPE_BLOB lastName;
 } patts_Client;
 
 typedef struct {
     MYSQL_TYPE_LONG id;
-    MYSQL_TYPE_TIMESTAMP startTime;
-    MYSQL_TYPE_TIMESTAMP endTime;
+    MYSQL_TYPE_TINY state;
+    MYSQL_TYPE_LONG parent;
+    MYSQL_TYPE_BLOB displayName;
+} patts_Task;
+
+typedef struct {
+    MYSQL_TYPE_LONG id;
+    MYSQL_TYPE_LONG type;
+    MYSQL_TYPE_LONG parent;
+    MYSQL_TYPE_BIT onClock;
     MYSQL_TYPE_LONG user;
-    MYSQL_TYPE_LONG *subtasks;
     MYSQL_TYPE_LONG client;
+    MYSQL_TYPE_DATETIME startTime;
+    MYSQL_TYPE_DATETIME endTime;
 } patts_TaskItem;
 
 #ifdef __cplusplus
