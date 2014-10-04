@@ -9,7 +9,7 @@ To Build
 
     ./autogen.sh
     ./configure
-    ./make
+    make
 
 Dependencies
 ------------
