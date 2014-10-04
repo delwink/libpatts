@@ -12,3 +12,33 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include <my_global.h>
+
+#include "conn.h"
+
+int patts_conn_open(patts_conn_Connection *con)
+{
+    con->con = mysql_init(NULL);
+
+    if (mysql_real_connect(con->con, con->host, con->user, con->passwd,
+            "pattsdb", 0, NULL, 0) == NULL) {
+        mysql_close(con->con);
+        return 1;
+    }
+
+    return 0;
+}
+
+void patts_conn_close(const patts_conn_Connection *con)
+{
+    mysql_close(con->con);
+}
+
+int patts_conn_test(patts_conn_Connection con)
+{
+    if (patts_conn_open(&con))
+        return 1;
+    patts_conn_close(&con);
+    return 0;
+}

@@ -31,8 +31,8 @@ typedef struct {
 } patts_conn_Connection;
 
 int patts_conn_open(patts_conn_Connection *con);
-int patts_conn_close(const patts_conn_Connection *con);
-int patts_conn_test(const patts_conn_Connection con);
+void patts_conn_close(const patts_conn_Connection *con);
+int patts_conn_test(patts_conn_Connection con);
 
 #ifdef __cplusplus
 }
