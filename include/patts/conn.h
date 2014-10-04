@@ -30,9 +30,9 @@ typedef struct {
     char *passwd;
 } patts_conn_Connection;
 
-int patts_conn_open(const patts_conn_Connection *con);
-int patts_conn_close(const patts_conn_Connection *con);
-int patts_conn_test();
+int patts_conn_open(const patts_conn_Connection con);
+int patts_conn_close(const patts_conn_Connection con);
+int patts_conn_test(const patts_conn_Connection con);
 
 #ifdef __cplusplus
 }
