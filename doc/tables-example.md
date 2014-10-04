@@ -26,7 +26,7 @@ id | state | parent | displayName
 2  | 1     | 1      | Program Design
 3  | 1     | 1      | Writing Code
 
-#### TaskItem
+### TaskItem
 
 There will be dates in the Time columns, but for the sake of demonstration, I
 have left them out of the example table.
