@@ -17,7 +17,7 @@ id  | state | firstName | lastName
 --- | ----- | --------- | ---------
 0   | 1     | Mister    | Moneybags
 
-### Task
+### TaskType
 
 id  | state | parent | displayName
 --- | ----- | ------ | -----------------
@@ -35,9 +35,9 @@ This may change, but I have decided for now to use an id of -1 for any
 database transaction that should inherit the value of that field from its 
 parent.
 
-id  | type | parent | onClock | user | client | startTime | endTime
---- | ---- | ------ | ------- | ---- | ------ | --------- | -------
-0   | 0    | NULL   | 1       | 0    | NULL   | 9:00      | NULL
-1   | 1    | 0      | 1       | 0    | 0      | 9:00      | NULL
-2   | 2    | 1      | 0       | 0    | -1     | 9:00      | 10:00
-3   | 3    | 1      | 1       | 0    | -1     | 10:30     | NULL
+id  | state | typeID | parentTaskItemID | onClock | userID | clientID | startTime | endTime
+--- | ----- | ------ | ---------------- | ------- | ------ | -------- | --------- | -------
+0   | 1     | 0      | NULL             | 1       | 0      | NULL     | 9:00      | NULL
+1   | 1     | 1      | 0                | 1       | 0      | 0        | 9:00      | NULL
+2   | 1     | 2      | 1                | 0       | 0      | -1       | 9:00      | 10:00
+3   | 1     | 3      | 1                | 1       | 0      | -1       | 10:30     | NULL
