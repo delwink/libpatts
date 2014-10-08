@@ -16,17 +16,26 @@
 #ifndef DELWINK_PATTS_CONN_H
 #define DELWINK_PATTS_CONN_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <mysql.h>
 
 typedef struct {
-    MYSQL *con,
-    char *host,
-    char *user,
-    char *passwd
+    MYSQL *con;
+    char *host;
+    char *user;
+    char *passwd;
 } patts_conn_Connection;
 
-int patts_conn_open(const patts_conn_Connection *con);
-int patts_conn_close(const patts_conn_Connection *con);
-int patts_conn_test();
+int patts_conn_open(patts_conn_Connection *con);
+void patts_conn_close(const patts_conn_Connection *con);
+int patts_conn_test(patts_conn_Connection con);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

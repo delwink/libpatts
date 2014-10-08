@@ -9,20 +9,29 @@ To Build
 
     ./autogen.sh
     ./configure
-    ./make
+    make
 
 Dependencies
 ------------
 
-Library        | Purpose               | Description
--------------- | --------------------- | --------------------------------------
-MariaDB Client | Database Connectivity | Data Storage (MySQL may be compatible)
+Library        | Description                                  | Purpose
+-------------- | -------------------------------------------- | ---------------------
+MariaDB Client | MariaDB client tools                         | Database Connectivity
+ICU            | International Components for Unicode library | Unicode Support
 
-Dependency Build Instructions: Debian and *buntu
-------------------------------------------------
+Dependency Build Instructions: Debian and Trisquel
+--------------------------------------------------
 
 Build requirements:
 
     # apt-get install build-essential pkg-config
     # apt-get install libtool autotools-dev autoconf automake
-    # apt-get install mariadb-client
+    # apt-get install mariadb-client libicu-dev
+
+Dependency Build Instructions: Parabola
+---------------------------------------
+
+Build requirements:
+
+    # pacman -S base-devel
+    # pacman -S mariadb-clients icu
