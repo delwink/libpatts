@@ -19,12 +19,12 @@ id  | state | firstName | lastName
 
 ### TaskType
 
-id  | state | parent | displayName
---- | ----- | ------ | -----------------
-0   | 1     | NULL   | Work
-1   | 1     | 0      | PATTS Development
-2   | 1     | 1      | Program Design
-3   | 1     | 1      | Writing Code
+id  | state | parentID | displayName
+--- | ----- | -------- | -----------------
+0   | 1     | NULL     | Work
+1   | 1     | 0        | PATTS Development
+2   | 1     | 1        | Program Design
+3   | 1     | 1        | Writing Code
 
 ### TaskItem
 
