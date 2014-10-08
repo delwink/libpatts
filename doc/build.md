@@ -16,7 +16,7 @@ Dependencies
 
 Library        | Description                                  | Purpose
 -------------- | -------------------------------------------- | ---------------------
-MariaDB Client | Data Storage (MySQL may be compatible)       | Database Connectivity
+MariaDB Client | MariaDB client tools                         | Database Connectivity
 ICU            | International Components for Unicode library | Unicode Support
 
 Dependency Build Instructions: Debian and Trisquel
