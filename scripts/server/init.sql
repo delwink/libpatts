@@ -9,6 +9,7 @@ CREATE TABLE `pattsdb`.`User`
 	`mysqlUser` VARCHAR(45) NOT NULL,
 	PRIMARY KEY (`id`)
 );
+
 CREATE TABLE `pattsdb`.`Client` 
 (
 	`id` INT SIGNED NOT NULL AUTO_INCREMENT,
@@ -17,6 +18,7 @@ CREATE TABLE `pattsdb`.`Client`
 	`lastName` VARCHAR(45) NOT NULL,
 	PRIMARY KEY (`id`)
 );
+
 CREATE TABLE `pattsdb`.`TaskType` 
 (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -25,6 +27,7 @@ CREATE TABLE `pattsdb`.`TaskType`
 	`displayName` VARCHAR(45),
 	PRIMARY KEY (`id`)
 );
+
 CREATE TABLE `pattsdb`.`TaskItem` 
 (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
