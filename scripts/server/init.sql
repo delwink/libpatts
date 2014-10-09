@@ -24,8 +24,8 @@ CREATE TABLE `pattsdb`.`TaskType`
 (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`state` BIT NOT NULL,
-	`parentID` INT UNSIGNED,
-	`displayName` VARCHAR(45),
+	`parentID` INT UNSIGNED NOT NULL,
+	`displayName` VARCHAR(45) NOT NULL,
 	PRIMARY KEY (`id`)
 );
 
