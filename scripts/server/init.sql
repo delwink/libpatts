@@ -11,15 +11,6 @@ CREATE TABLE `pattsdb`.`User`
 	PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `pattsdb`.`Client` 
-(
-	`id` INT SIGNED NOT NULL AUTO_INCREMENT,
-	`state` BIT NOT NULL,
-	`firstName` VARCHAR(45) NOT NULL,
-	`lastName` VARCHAR(45) NOT NULL,
-	PRIMARY KEY (`id`)
-);
-
 CREATE TABLE `pattsdb`.`TaskType` 
 (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -36,8 +27,16 @@ CREATE TABLE `pattsdb`.`TaskItem`
 	`typeID` INT UNSIGNED NOT NULL,
 	`onClock` BIT NOT NULL,
 	`userID` INT UNSIGNED NOT NULL,
-	`clientID` INT SIGNED NOT NULL,
 	`startTime` DATETIME NOT NULL,
-	`endTime` DATETIME NULL,
+	`stopTime` DATETIME NULL,
 	PRIMARY KEY(`id`)
 );
+
+CREATE USER 'patts'@'%' IDENTIFIED BY 'patts';
+
+GRANT ALL PRIVILEGES ON *.* TO 'patts'@'%' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;
+
+INSERT INTO pattsdb.User(state, isAdmin, firstName, lastName, mysqlUser) VALUES(1,1,'Patts','Admin','patts');
+
