@@ -27,7 +27,6 @@ CREATE TABLE `pattsdb`.`TaskItem`
 	`typeID` INT UNSIGNED NOT NULL,
 	`onClock` BIT NOT NULL,
 	`userID` INT UNSIGNED NOT NULL,
-	`clientID` INT SIGNED NOT NULL,
 	`startTime` DATETIME NOT NULL,
 	`endTime` DATETIME NULL,
 	PRIMARY KEY(`id`)
