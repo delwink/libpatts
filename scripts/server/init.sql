@@ -39,5 +39,5 @@ GRANT ALL PRIVILEGES ON *.* TO 'patts'@'%' WITH GRANT OPTION;
 
 FLUSH PRIVILEGES;
 
-INSERT INTO pattsdb.User VALUES(1,1,'Patts','Admin','patts');
+INSERT INTO pattsdb.User(state, isAdmin, firstName, lastName, mysqlUser) VALUES(1,1,'Patts','Admin','patts');
 
