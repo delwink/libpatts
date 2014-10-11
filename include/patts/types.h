@@ -20,6 +20,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define DATETIME_LEN 19
+
 #ifdef __cplusplus
 extern "C"
 {
