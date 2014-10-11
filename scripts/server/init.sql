@@ -1,6 +1,6 @@
 CREATE DATABASE IF NOT EXISTS pattsdb;
 
-CREATE TABLE `pattsdb`.`User`
+CREATE TABLE IF NOT EXISTS `pattsdb`.`User`
 (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
  	`state` BIT NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE `pattsdb`.`User`
 	PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `pattsdb`.`TaskType` 
+CREATE TABLE IF NOT EXISTS `pattsdb`.`TaskType` 
 (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`state` BIT NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE `pattsdb`.`TaskType`
 	PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `pattsdb`.`TaskItem` 
+CREATE TABLE IF NOT EXISTS `pattsdb`.`TaskItem` 
 (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`state` BIT NOT NULL,
@@ -38,5 +38,6 @@ GRANT ALL PRIVILEGES ON *.* TO 'patts'@'%' WITH GRANT OPTION;
 
 FLUSH PRIVILEGES;
 
-INSERT INTO pattsdb.User(state, isAdmin, firstName, lastName, mysqlUser) VALUES(1,1,'Patts','Admin','patts');
+INSERT INTO pattsdb.User(state, isAdmin, firstName, lastName, mysqlUser) 
+    VALUES(1,1,'PATTS','Admin','patts');
 
