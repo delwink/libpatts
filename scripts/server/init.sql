@@ -1,3 +1,5 @@
+SET character_set_client = utf8;
+
 CREATE DATABASE IF NOT EXISTS pattsdb;
 
 CREATE TABLE IF NOT EXISTS `pattsdb`.`User`
@@ -5,9 +7,9 @@ CREATE TABLE IF NOT EXISTS `pattsdb`.`User`
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
  	`state` BIT NOT NULL,
 	`isAdmin` BIT NOT NULL,
-	`firstName` VARCHAR(45) NOT NULL,
-	`lastName` VARCHAR(45) NOT NULL,
-	`mysqlUser` VARCHAR(45) NOT NULL,
+	`firstName` VARCHAR(45) CHARACTER SET utf8 NOT NULL,
+	`lastName` VARCHAR(45) CHARACTER SET utf8 NOT NULL,
+	`mysqlUser` VARCHAR(45) CHARACTER SET utf8 NOT NULL,
 	PRIMARY KEY (`id`)
 );
 
@@ -16,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `pattsdb`.`TaskType`
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`state` BIT NOT NULL,
 	`parentID` INT UNSIGNED NOT NULL,
-	`displayName` VARCHAR(45) NOT NULL,
+	`displayName` VARCHAR(45) CHARACTER SET utf8 NOT NULL,
 	PRIMARY KEY (`id`)
 );
 
