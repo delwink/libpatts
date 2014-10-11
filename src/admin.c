@@ -12,3 +12,53 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "admin.h"
+
+int patts_admin_create_user(patts_conn_Connection con,
+        char *firstName, char *lastName, char *mysqlUser)
+{
+    int rc;
+    char *query;
+    const size_t qlen = 256;
+    const char *fmt = "INSERT INTO User(state, isAdmin, firstName, lastName, "
+                        "mysqlUser) VALUES (1,0,'%s','%s','%s');";
+
+    if (strlen(firstName) > 45)
+        return 1;
+    if (strlen(lastName) > 45)
+        return 2;
+    if (strlen(mysqlUser) >= 64)
+        return 3;
+
+    query = calloc(qlen, sizeof(char));
+    if (query == NULL)
+        return -1;
+
+    rc = snprintf(query, qlen, fmt, firstName, lastName, mysqlUser);
+    if ((size_t)rc >= qlen) {
+        free(query);
+        return 101;
+    }
+
+    rc = patts_conn_open(&con);
+    if (rc) {
+        free(query);
+        return 201;
+    }
+
+    rc = mysql_query(con.con, query);
+    if (rc) {
+        free(query);
+        patts_conn_close(&con);
+        return 202;
+    }
+
+    free(query);
+    patts_conn_close(&con);
+    return 0;
+}
