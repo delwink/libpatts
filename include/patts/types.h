@@ -16,7 +16,6 @@
 #ifndef DELWINK_PATTS_TYPES_H
 #define DELWINK_PATTS_TYPES_H
 
-#include <mysql.h>
 #include <stdbool.h>
 #include <stdint.h>
 
