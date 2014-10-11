@@ -20,7 +20,7 @@
 #include "admin.h"
 
 int patts_admin_create_user(patts_conn_Connection con,
-        char *firstName, char *lastName, char *mysqlUser)
+        const char *firstName, const char *lastName, const char *mysqlUser)
 {
     int rc;
     char *query;
@@ -64,7 +64,7 @@ int patts_admin_create_user(patts_conn_Connection con,
 }
 
 int patts_admin_create_task(patts_conn_Connection con,
-        char *displayName, uint32_t parentID)
+        const char *displayName, uint32_t parentID)
 {
     int rc;
     char *query;
