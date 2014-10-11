@@ -16,22 +16,24 @@
 #ifndef DELWINK_PATTS_ADMIN_H
 #define DELWINK_PATTS_ADMIN_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
 int patts_admin_create_user(char *firstName, char *lastName, char *mysqlUser);
-int patts_admin_create_task(char *displayName, unsigned int parentID);
+int patts_admin_create_task(char *displayName, uint32_t parentID);
 
-int patts_admin_enable_user(unsigned int id);
-int patts_admin_enable_task(unsigned int id);
+int patts_admin_enable_user(uint32_t id);
+int patts_admin_enable_task(uint32_t id);
 
-int patts_admin_disable_user(unsigned int id);
-int patts_admin_disable_task(unsigned int id);
+int patts_admin_disable_user(uint32_t id);
+int patts_admin_disable_task(uint32_t id);
 
-int patts_admin_grant_admin(unsigned int id);
-int patts_admin_revoke_admin(unsigned int id);
+int patts_admin_grant_admin(uint32_t id);
+int patts_admin_revoke_admin(uint32_t id);
 
 #ifdef __cplusplus
 }
