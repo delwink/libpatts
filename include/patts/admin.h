@@ -24,8 +24,8 @@ extern "C"
 {
 #endif
 
-int patts_admin_create_user(patts_conn_Connection con,
-        const char *firstName, const char *lastName, const char *mysqlUser);
+int patts_admin_create_user(patts_conn_Connection con, const char *firstName, 
+        const char *lastName, const char *mysqlUser, const char *passwd);
 int patts_admin_create_task(patts_conn_Connection con,
         const char *displayName, uint32_t parentID);
 

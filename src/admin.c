@@ -19,13 +19,17 @@
 
 #include "admin.h"
 
-int patts_admin_create_user(patts_conn_Connection con,
-        const char *firstName, const char *lastName, const char *mysqlUser)
+int patts_admin_create_user(patts_conn_Connection con, const char *firstName, 
+        const char *lastName, const char *mysqlUser, const char *passwd)
 {
     int rc;
     char *query;
     const size_t qlen = 256;
-    const char *fmt = "INSERT INTO User(state, isAdmin, firstName, lastName, "
+    const char *q1fmt = "GRANT SELECT ON * TO '%s'@'%%' "
+                        "IDENTIFIED BY '%s';";
+    const char *q2fmt = "GRANT INSERT,UPDATE ON TaskType TO '%s'@'%%' "
+                        "IDENTIFIED BY '%s';";
+    const char *q3fmt = "INSERT INTO User(state, isAdmin, firstName, lastName, "
                         "mysqlUser) VALUES (1,0,'%s','%s','%s');";
 
     if (strlen(firstName) > 45)
@@ -34,12 +38,14 @@ int patts_admin_create_user(patts_conn_Connection con,
         return 2;
     if (strlen(mysqlUser) >= 64)
         return 3;
+    if (strlen(passwd) >= 64)
+        return 4;
 
     query = calloc(qlen, sizeof(char));
     if (query == NULL)
         return -1;
 
-    rc = snprintf(query, qlen, fmt, firstName, lastName, mysqlUser);
+    rc = snprintf(query, qlen, q1fmt, mysqlUser, passwd);
     if ((size_t)rc >= qlen) {
         free(query);
         return 101;
@@ -48,7 +54,21 @@ int patts_admin_create_user(patts_conn_Connection con,
     rc = patts_conn_open(&con);
     if (rc) {
         free(query);
+        return 200;
+    }
+
+    rc = mysql_query(con.con, query);
+    if (rc) {
+        free(query);
+        patts_conn_close(&con);
         return 201;
+    }
+
+    rc = snprintf(query, qlen, q2fmt, mysqlUser, passwd);
+    if ((size_t)rc >= qlen) {
+        free(query);
+        patts_conn_close(&con);
+        return 102;
     }
 
     rc = mysql_query(con.con, query);
@@ -56,6 +76,20 @@ int patts_admin_create_user(patts_conn_Connection con,
         free(query);
         patts_conn_close(&con);
         return 202;
+    }
+
+    rc = snprintf(query, qlen, q3fmt, firstName, lastName, mysqlUser);
+    if ((size_t)rc >= qlen) {
+        free(query);
+        patts_conn_close(&con);
+        return 103;
+    }
+
+    rc = snprintf(con.con, query);
+    if (rc) {
+        free(query);
+        patts_conn_close(&con);
+        return 203;
     }
 
     free(query);
