@@ -21,17 +21,17 @@ extern "C"
 {
 #endif
 
-int patts_admin_create_user(char *fullName, char *mysqlUser);
-int patts_admin_create_task(char *displayName);
-int patts_admin_create_client(char *fullName);
+int patts_admin_create_user(char *firstName, char *lastName, char *mysqlUser);
+int patts_admin_create_task(char *displayName, unsigned int parentID);
 
 int patts_admin_enable_user(unsigned int id);
 int patts_admin_enable_task(unsigned int id);
-int patts_admin_enable_client(unsigned int id);
 
 int patts_admin_disable_user(unsigned int id);
 int patts_admin_disable_task(unsigned int id);
-int patts_admin_disable_client(unsigned int id);
+
+int patts_admin_grant_admin(unsigned int id);
+int patts_admin_revoke_admin(unsigned int id);
 
 #ifdef __cplusplus
 }
