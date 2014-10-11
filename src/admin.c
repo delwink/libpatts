@@ -62,3 +62,43 @@ int patts_admin_create_user(patts_conn_Connection con,
     patts_conn_close(&con);
     return 0;
 }
+
+int patts_admin_create_task(patts_conn_Connection con,
+        char *displayName, uint32_t parentID)
+{
+    int rc;
+    char *query;
+    const size_t qlen = 256;
+    const char *fmt = "INSERT INTO TaskType(state, parentID, displayName) "
+                        "VALUES(1,%d,'%s');";
+
+    if (strlen(displayName) > 45)
+        return 1;
+
+    query = calloc(qlen, sizeof(char));
+    if (query == NULL)
+        return -1;
+
+    rc = snprintf(query, qlen, fmt, parentID, displayName);
+    if ((size_t)rc >= qlen) {
+        free(query);
+        return 101;
+    }
+
+    rc = patts_conn_open(&con);
+    if (rc) {
+        free(query);
+        return 201;
+    }
+
+    rc = mysql_query(con.con, query);
+    if (rc) {
+        free(query);
+        patts_conn_close(&con);
+        return 202;
+    }
+
+    free(query);
+    patts_conn_close(&con);
+    return 0;
+}
