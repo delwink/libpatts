@@ -85,7 +85,7 @@ int patts_admin_create_user(patts_conn_Connection con, const char *firstName,
         return 103;
     }
 
-    rc = snprintf(con.con, query);
+    rc = mysql_query(con.con, query);
     if (rc) {
         free(query);
         patts_conn_close(&con);
