@@ -24,19 +24,19 @@ extern "C"
 {
 #endif
 
-int patts_admin_create_user(patts_conn_Connection *con,
+int patts_admin_create_user(patts_conn_Connection con,
         char *firstName, char *lastName, char *mysqlUser);
-int patts_admin_create_task(patts_conn_Connection *con,
+int patts_admin_create_task(patts_conn_Connection con,
         char *displayName, uint32_t parentID);
 
-int patts_admin_enable_user(patts_conn_Connection *con, uint32_t id);
-int patts_admin_enable_task(patts_conn_Connection *con, uint32_t id);
+int patts_admin_enable_user(patts_conn_Connection con, uint32_t id);
+int patts_admin_enable_task(patts_conn_Connection con, uint32_t id);
 
-int patts_admin_disable_user(patts_conn_Connection *con, uint32_t id);
-int patts_admin_disable_task(patts_conn_Connection *con, uint32_t id);
+int patts_admin_disable_user(patts_conn_Connection con, uint32_t id);
+int patts_admin_disable_task(patts_conn_Connection con, uint32_t id);
 
-int patts_admin_grant_admin(patts_conn_Connection *con, uint32_t id);
-int patts_admin_revoke_admin(patts_conn_Connection *con, uint32_t id);
+int patts_admin_grant_admin(patts_conn_Connection con, uint32_t id);
+int patts_admin_revoke_admin(patts_conn_Connection con, uint32_t id);
 
 #ifdef __cplusplus
 }
