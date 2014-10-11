@@ -22,7 +22,7 @@ int patts_conn_open(patts_conn_Connection *con)
     con->con = mysql_init(NULL);
 
     if (mysql_real_connect(con->con, con->host, con->user, con->passwd,
-            "pattsdb", 0, NULL, 0) == NULL) {
+            "pattsdb", 0, NULL, CLIENT_MULTI_STATEMENTS) == NULL) {
         mysql_close(con->con);
         return 1;
     }
