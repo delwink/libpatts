@@ -14,7 +14,7 @@
  */
 
 #ifndef DELWINK_PATTS_GET_H
-#define DELWINK_PATTH_GET_H
+#define DELWINK_PATTS_GET_H
 
 #ifdef __cplusplus
 extern "C"
