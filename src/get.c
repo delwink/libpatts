@@ -31,6 +31,22 @@ int patts_list_user_init(patts_UserList *list, size_t maxlen)
     return 0;
 }
 
+int patts_list_user_cat(patts_UserList *dest, const patts_UserList *src)
+{
+    const size_t newlen = dest->len + src->len;
+    const size_t oldlen = dest->len;
+
+    if (newlen > dest->maxlen)
+        return 1;
+
+    for (size_t i = oldlen; i < newlen; ++i) {
+        dest->users[i] = src->users[i-oldlen];
+    }
+
+    dest->len = newlen;
+    return 0;
+}
+
 void patts_list_user_close(patts_UserList *list)
 {
     free(list->users);
@@ -48,6 +64,23 @@ int patts_list_type_init(patts_TaskTypeList *list, size_t maxlen)
     return 0;
 }
 
+int patts_list_type_cat(patts_TaskTypeList *dest,
+        const patts_TaskTypeList *src)
+{
+    const size_t newlen = dest->len + src->len;
+    const size_t oldlen = dest->len;
+
+    if (newlen > dest->maxlen)
+        return 1;
+
+    for (size_t i = oldlen; i < newlen; ++i) {
+        dest->types[i] = src->types[i-oldlen];
+    }
+
+    dest->len = newlen;
+    return 0;
+}
+
 void patts_list_type_close(patts_TaskTypeList *list)
 {
     free(list->types);
@@ -62,6 +95,23 @@ int patts_list_item_init(patts_TaskItemList *list, size_t maxlen)
         return -1;
     list->len = 0;
     list->maxlen = maxlen;
+    return 0;
+}
+
+int patts_list_item_cat(patts_TaskItemList *dest,
+        const patts_TaskItemList *src)
+{
+    const size_t newlen = dest->len + src->len;
+    const size_t oldlen = dest->len;
+
+    if (newlen > dest->maxlen)
+        return 1;
+
+    for (size_t i = oldlen; i < newlen; ++i) {
+        dest->items[i] = src->items[i-oldlen];
+    }
+
+    dest->len = newlen;
     return 0;
 }
 
