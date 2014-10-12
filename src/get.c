@@ -122,3 +122,68 @@ int patts_get_users(patts_conn_Connection con, patts_UserList *list)
     mysql_free_result(selection);
     return 0;
 }
+
+int patts_get_user_byid(patts_conn_Connection con, patts_User *user,
+        uint32_t id)
+{
+    int rc;
+    char *query;
+    const size_t qlen = 64;
+    const char *fmt = "SELECT * FROM User WHERE id=%d";
+
+    query = calloc(qlen, sizeof(char));
+    if (query == NULL)
+        return -1;
+
+    rc = snprintf(query, qlen, fmt, id);
+    if ((size_t)rc >= qlen) {
+        free(query);
+        return 101;
+    }
+
+    rc = patts_conn_open(&con);
+    if (rc) {
+        free(query);
+        return 200;
+    }
+
+    rc = mysql_query(con.con, query);
+    if (rc) {
+        free(query);
+        patts_conn_close(&con);
+        return 201;
+    }
+
+    free(query);
+
+    MYSQL_RES *selection = mysql_store_result(con.con);
+    if (selection == NULL) {
+        patts_conn_close(&con);
+        return -1;
+    }
+
+    size_t nfields = mysql_num_fields(selection);
+    if (nfields == 0) { /* no such user id */
+        patts_conn_close(&con);
+        mysql_free_result(selection);
+        return 1;
+    }
+    if (nfields > 1) { /* duplicate users; panic */
+        patts_conn_close(&con);
+        mysql_free_result(selection);
+        return 2;
+    }
+
+    MYSQL_ROW row = mysql_fetch_row(selection);
+
+    user->id = (uint32_t) atoi((char *)row[0]);
+    user->state = (bool) atoi((char *)row[1]);
+    user->isAdmin = (bool) atoi((char *)row[2]);
+    user->firstName = (char *)row[3];
+    user->lastName = (char *)row[4];
+    user->mysqlUser = (char *)row[5];
+
+    patts_conn_close(&con);
+    mysql_free_result(selection);
+    return 0;
+}
