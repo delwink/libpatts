@@ -30,6 +30,9 @@ typedef struct {
     size_t maxlen;
 } patts_UserList;
 int patts_list_user_init(patts_UserList *list, size_t maxlen);
+int patts_list_user_cat(patts_UserList *dest, const patts_UserList *src);
+int patts_list_user_ncat(patts_UserList *dest, const patts_userList *src,
+        size_t n);
 void patts_list_user_close(patts_UserList *list);
 
 typedef struct {
@@ -38,6 +41,10 @@ typedef struct {
     size_t maxlen;
 } patts_TaskTypeList;
 int patts_list_type_init(patts_TaskTypeList *list, size_t maxlen);
+int patts_list_type_cat(patts_TaskTypeList *dest, 
+        const patts_TaskTypeList *src);
+int patts_list_type_ncat(patts_TaskTypeList *dest,
+        const patts_TaskTypeList *src, size_t n);
 void patts_list_type_close(patts_TaskTypeList *list);
 
 typedef struct {
@@ -46,6 +53,10 @@ typedef struct {
     size_t maxlen;
 } patts_TaskItemList;
 int patts_list_item_init(patts_TaskItemList *list, size_t maxlen);
+int patts_list_item_cat(patts_TaskItemList *dest,
+        const patts_TaskItemList *src);
+int patts_list_item_ncat(patts_TaskItemList *dest,
+        const patts_TaskItemList *src, size_t n);
 void patts_list_item_close(patts_TaskItemList *list);
 
 int patts_get_users(patts_conn_Connection con, patts_UserList *list);
