@@ -123,14 +123,14 @@ int patts_admin_create_task(patts_conn_Connection con,
     rc = patts_conn_open(&con);
     if (rc) {
         free(query);
-        return 201;
+        return 200;
     }
 
     rc = mysql_query(con.con, query);
     if (rc) {
         free(query);
         patts_conn_close(&con);
-        return 202;
+        return 201;
     }
 
     free(query);
