@@ -25,10 +25,10 @@ extern "C"
 
 struct dbconn {
     MYSQL *con;
-    char *host;
-    char *user;
-    char *passwd;
-    char *database;
+    const char *host;
+    const char *user;
+    const char *passwd;
+    const char *database;
 };
 
 struct dbconn patts_new_connection(const char *host, const char *user,

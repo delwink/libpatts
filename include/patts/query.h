@@ -32,26 +32,28 @@ struct drow;
 struct drow {
     char **values;
 
-    struct drow *next;
     struct drow *prev;
+    struct drow *next;
 };
 
-int patts_new_drow(struct drow *row);
+struct drow *patts_new_drow(size_t fieldc);
 void patts_free_drow(struct drow *row);
-int patts_drow_set(struct drow *row, char **values);
+void patts_drow_set(struct drow *row, char **values, size_t fieldc);
 
 struct dlist {
     size_t fieldc;
-    char **fieldnames;
+    const char **fieldnames;
 
     struct drow *first;
     struct drow *last;
 };
 
-int patts_new_dlist(struct dlist *list);
+struct dlist *patts_new_dlist(size_t fieldc, const char **fieldnames);
+size_t patts_dlist_size(const struct dlist *list);
 void patts_free_dlist(struct dlist *list);
-int patts_dlist_add(struct dlist *list, struct drow *row);
-void patts_dlist_remove(struct dlist *list, size_t index);
+void patts_dlist_add(struct dlist *list, struct drow *row);
+void patts_dlist_remove(struct dlist *list, struct drow *row);
+struct drow *patts_dlist_at(struct dlist *list, size_t index);
 
 int patts_insert(struct dbconn con, const char *table, struct dlist *list);
 int patts_update(struct dbconn con, const char *table, struct dlist *list);

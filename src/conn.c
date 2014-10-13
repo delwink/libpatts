@@ -41,7 +41,7 @@ int patts_connect(struct dbconn *con)
     return 0;
 }
 
-void patts_close_connection(struct dbconn *con)
+void patts_close_connection(const struct dbconn *con)
 {
     mysql_close(con->con);
 }
