@@ -13,30 +13,28 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DELWINK_PATTS_ADMIN_H
-#define DELWINK_PATTS_ADMIN_H
+#ifndef DELWINK_PATTS_H
+#define DELWINK_PATTS_H
 
-#include <stdint.h>
-#include "conn.h"
+#include "query.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-int patts_admin_create_user(patts_conn_Connection con, const char *firstName, 
-        const char *lastName, const char *mysqlUser, const char *passwd);
-int patts_admin_create_task(patts_conn_Connection con,
-        const char *displayName, uint32_t parentID);
+int patts_create_user(struct dbconn con, const struct dlist *info,
+        const char *passwd);
+int patts_create_task(struct dbconn con, const struct dlist *info);
 
-int patts_admin_enable_user(patts_conn_Connection con, uint32_t id);
-int patts_admin_enable_task(patts_conn_Connection con, uint32_t id);
+int patts_enable_user(struct dbconn con, const char *id);
+int patts_enable_task(struct dbconn con, const char *id);
 
-int patts_admin_disable_user(patts_conn_Connection con, uint32_t id);
-int patts_admin_disable_task(patts_conn_Connection con, uint32_t id);
+int patts_disable_user(struct dbconn con, const char *id);
+int patts_disable_task(struct dbconn con, const char *id);
 
-int patts_admin_grant_admin(patts_conn_Connection con, uint32_t id);
-int patts_admin_revoke_admin(patts_conn_Connection con, uint32_t id);
+int patts_grant_admin(struct dbconn con, const char *id);
+int patts_revoke_admin(struct dbconn con, const char *id);
 
 #ifdef __cplusplus
 }

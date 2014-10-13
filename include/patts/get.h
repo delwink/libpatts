@@ -21,53 +21,20 @@ extern "C"
 {
 #endif
 
-#include "types.h"
-#include "conn.h"
+#include "query.h"
 
-typedef struct {
-    patts_User *users;
-    size_t len;
-    size_t maxlen;
-} patts_UserList;
-int patts_list_user_init(patts_UserList *list, size_t maxlen);
-int patts_list_user_cat(patts_UserList *dest, const patts_UserList *src);
-void patts_list_user_close(patts_UserList *list);
+int patts_get_users(struct dbconn con, struct dlist *out);
+int patts_get_user_byid(struct dbconn con, struct dlist *out, const char *id);
 
-typedef struct {
-    patts_TaskType *types;
-    size_t len;
-    size_t maxlen;
-} patts_TaskTypeList;
-int patts_list_type_init(patts_TaskTypeList *list, size_t maxlen);
-int patts_list_type_cat(patts_TaskTypeList *dest, 
-        const patts_TaskTypeList *src);
-void patts_list_type_close(patts_TaskTypeList *list);
+int patts_get_types(struct dbconn con, struct dlist *out);
+int patts_get_type_byid(struct dbconn con, struct dlist *out, const char *id);
 
-typedef struct {
-    patts_TaskItem *items;
-    size_t len;
-    size_t maxlen;
-} patts_TaskItemList;
-int patts_list_item_init(patts_TaskItemList *list, size_t maxlen);
-int patts_list_item_cat(patts_TaskItemList *dest,
-        const patts_TaskItemList *src);
-void patts_list_item_close(patts_TaskItemList *list);
-
-int patts_get_users(patts_conn_Connection con, patts_UserList *list);
-int patts_get_user_byid(patts_conn_Connection con, patts_User *user,
-        uint32_t id);
-
-int patts_get_types(patts_conn_Connection con, patts_TaskTypeList *list);
-int patts_get_type_byid(patts_conn_Connection con, patts_TaskType *type,
-        uint32_t id);
-
-int patts_get_items(patts_conn_Connection con, patts_TaskItemList *list);
-int patts_get_item_byid(patts_conn_Connection con, patts_TaskItem *item,
-        uint32_t id);
-int patts_get_items_byuser(patts_conn_Connection con,
-        patts_TaskItemList *list, uint32_t userID);
-int patts_get_items_byuser_onclock(patts_conn_Connection con,
-        patts_TaskItemList *list, uint32_t userID);
+int patts_get_items(struct dbconn con, struct dlist *out);
+int patts_get_item_byid(struct dbconn con, struct dlist *out, const char *id);
+int patts_get_items_byuser(struct dbconn con, struct dlist *out,
+        const char *userID);
+int patts_get_items_byuser_onclock(struct dbconn con, struct dlist *out,
+        const char *userID);
 
 #ifdef __cplusplus
 }

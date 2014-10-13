@@ -16,23 +16,28 @@
 #ifndef DELWINK_PATTS_CONN_H
 #define DELWINK_PATTS_CONN_H
 
+#include <mysql.h>
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include <mysql.h>
-
-typedef struct {
+struct dbconn {
     MYSQL *con;
     char *host;
     char *user;
     char *passwd;
-} patts_conn_Connection;
+    char *database;
+};
 
-int patts_conn_open(patts_conn_Connection *con);
-void patts_conn_close(const patts_conn_Connection *con);
-int patts_conn_test(patts_conn_Connection con);
+struct dbconn patts_new_connection(const char *host, const char *user,
+        const char *passwd, const char *database);
+
+int patts_connect(struct dbconn *con);
+void patts_close_connection(const struct dbconn *con);
+int patts_test_connect(const char *host, const char *user, const char *passwd,
+        const char *database);
 
 #ifdef __cplusplus
 }

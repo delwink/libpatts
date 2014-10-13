@@ -17,28 +17,42 @@
 
 #include "conn.h"
 
-int patts_conn_open(patts_conn_Connection *con)
+struct dbconn patts_new_connection(const char *host, const char *user,
+        const char *passwd, const char *database)
+{
+    struct dbconn out = {
+        .host = host,
+        .user = user,
+        .passwd = passwd,
+        .database = database
+    };
+    return out;
+}
+
+int patts_connect(struct dbconn *con)
 {
     con->con = mysql_init(NULL);
 
     if (mysql_real_connect(con->con, con->host, con->user, con->passwd,
-            "pattsdb", 0, NULL, CLIENT_MULTI_STATEMENTS) == NULL) {
-        mysql_close(con->con);
+            con->database, 0, NULL, CLIENT_MULTI_STATEMENTS) == NULL) {
         return 1;
     }
 
     return 0;
 }
 
-void patts_conn_close(const patts_conn_Connection *con)
+void patts_close_connection(struct dbconn *con)
 {
     mysql_close(con->con);
 }
 
-int patts_conn_test(patts_conn_Connection con)
+int patts_test_connect(const char *host, const char *user, const char *passwd,
+        const char *database)
 {
-    if (patts_conn_open(&con))
-        return 1;
-    patts_conn_close(&con);
-    return 0;
+    int rc;
+    struct dbconn con = patts_new_connection(host, user, passwd, database);
+
+    rc = patts_connect(&con);
+    patts_close_connection(&con);
+    return rc;
 }
