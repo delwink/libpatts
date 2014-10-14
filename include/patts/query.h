@@ -30,6 +30,7 @@ extern "C"
 struct drow;
 
 struct drow {
+    size_t fieldc;
     char **values;
 
     struct drow *prev;
@@ -38,7 +39,7 @@ struct drow {
 
 struct drow *patts_new_drow(size_t fieldc);
 void patts_free_drow(struct drow *row);
-void patts_drow_set(struct drow *row, char **values, size_t fieldc);
+void patts_drow_set(struct drow *row, char **values);
 
 struct dlist {
     size_t fieldc;

@@ -40,9 +40,9 @@ void patts_free_drow(struct drow *row)
     free(row);
 }
 
-void patts_drow_set(struct drow *row, char **values, size_t fieldc)
+void patts_drow_set(struct drow *row, char **values)
 {
-    for (size_t i = 0; i < fieldc; ++i) {
+    for (size_t i = 0; i < row->fieldc; ++i) {
         row->values[i] = values[i];
     }
 }
@@ -70,6 +70,8 @@ struct dlist *patts_new_dlist(size_t fieldc, const char **fieldnames)
 
 size_t patts_dlist_size(const struct dlist *list)
 {
+    if (list == NULL)
+        return 0;
     size_t count = 0;
     struct drow *row = list->first;
 
@@ -111,7 +113,7 @@ void patts_dlist_add(struct dlist *list, struct drow *row)
 
 void patts_dlist_remove(struct dlist *list, struct drow *row)
 {
-    if (row == NULL)
+    if (list == NULL || row == NULL)
         return;
 
     if (row == list->first && row == list->last) {
@@ -135,10 +137,11 @@ void patts_dlist_remove(struct dlist *list, struct drow *row)
 
 struct drow *patts_dlist_at(struct dlist *list, size_t index)
 {
-    size_t count = 0;
+    if (list == NULL)
+        return NULL;
     struct drow *row = list->first;
     while (row != NULL) {
-        if (count == index)
+        if (index-- == 0)
             return row;
         row = row->next;
     }
