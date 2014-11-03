@@ -27,7 +27,7 @@ extern "C"
 
 int patts_get_active_task(char *out_id, size_t buflen);
 
-int patts_get_tree(const char *userID, struct dlist *out);
+int patts_get_tree(struct dlist *out);
 
 int patts_clockin(const char *typeID);
 
