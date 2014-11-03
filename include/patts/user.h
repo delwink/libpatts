@@ -18,12 +18,16 @@
 #ifndef DELWINK_PATTS_USER_H
 #define DELWINK_PATTS_USER_H
 
+#include <cquel.h>
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-int patts_get_active_task(void);
+int patts_get_active_task(char *out_id, size_t buflen);
+
+int patts_get_tree(const char *userID, struct dlist *out);
 
 int patts_clockin(const char *typeID);
 
