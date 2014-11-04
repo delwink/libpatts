@@ -25,18 +25,16 @@ extern "C"
 {
 #endif
 
-int patts_get_users(struct dbconn con, struct dlist **out);
-int patts_get_user_byid(struct dbconn con, struct dlist **out, const char *id);
+int patts_get_users(struct dlist **out);
+int patts_get_user_byid(struct dlist **out, const char *id);
 
-int patts_get_types(struct dbconn con, struct dlist **out);
-int patts_get_type_byid(struct dbconn con, struct dlist **out, const char *id);
+int patts_get_types(struct dlist **out);
+int patts_get_type_byid(struct dlist **out, const char *id);
 
-int patts_get_items(struct dbconn con, struct dlist **out);
-int patts_get_item_byid(struct dbconn con, struct dlist **out, const char *id);
-int patts_get_items_byuser(struct dbconn con, struct dlist **out,
-        const char *userID);
-int patts_get_items_byuser_onclock(struct dbconn con, struct dlist **out,
-        const char *userID);
+int patts_get_items(struct dlist **out);
+int patts_get_item_byid(struct dlist **out, const char *id);
+int patts_get_items_byuser(struct dlist **out, const char *userID);
+int patts_get_items_byuser_onclock(struct dlist **out, const char *userID);
 
 #ifdef __cplusplus
 }
