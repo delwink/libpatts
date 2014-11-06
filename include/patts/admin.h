@@ -26,7 +26,7 @@ extern "C"
 #endif
 
 int patts_create_user(struct dbconn con, const struct dlist *info,
-        const char *passwd);
+        const char *host, const char *passwd);
 int patts_create_task(struct dbconn con, const struct dlist *info);
 
 int patts_enable_user(struct dbconn con, const char *id);
