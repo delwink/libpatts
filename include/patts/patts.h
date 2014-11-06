@@ -29,6 +29,8 @@ extern "C"
 int patts_init(size_t qlen, size_t fmaxlen, const char *host, const char *user,
         const char *passwd, const char *database);
 
+size_t patts_fmaxlen(void);
+
 struct dbconn patts_get_db(void);
 
 const char *patts_get_user(void);

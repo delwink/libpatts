@@ -21,13 +21,15 @@
 #include "patts.h"
 
 struct dbconn PATTSDB;
-bool HAVE_ADMIN;
+bool HAVE_ADMIN = false;
 char userID[10];
+size_t FMAXLEN = 0;
 
 int patts_init(size_t qlen, size_t fmaxlen, const char *host, const char *user,
         const char *passwd, const char *database)
 {
     cq_init(qlen, fmaxlen);
+    FMAXLEN = fmaxlen;
 
     PATTSDB = cq_new_connection(host, user, passwd, database);
 
@@ -72,6 +74,11 @@ int patts_init(size_t qlen, size_t fmaxlen, const char *host, const char *user,
 
     cq_free_dlist(puser);
     return 0;
+}
+
+size_t patts_fmaxlen()
+{
+    return FMAXLEN;
 }
 
 struct dbconn patts_get_db()
