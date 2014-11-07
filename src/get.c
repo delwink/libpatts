@@ -35,6 +35,7 @@ int patts_get_user_byid(struct dlist **out, const char *id)
     if (s == NULL)
         return -1;
 
+    strcat(s, u8"id=");
     strcat(s, id);
 
     int rc = cq_select_all(patts_get_db(), u8"User", out, s);
