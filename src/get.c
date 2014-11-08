@@ -43,3 +43,26 @@ int patts_get_user_byid(struct dlist **out, const char *id)
 
     return rc;
 }
+
+int patts_get_types(struct dlist **out)
+{
+    return cq_select_all(patts_get_db(), u8"TaskType", out, u8"");
+}
+
+int patts_get_type_byid(struct dlist **out, const char *id)
+{
+    if (strlen(id) >= patts_fmaxlen() - strlen(u8"id="))
+        return 1;
+
+    char *s = calloc(patts_fmaxlen(), sizeof(char));
+    if (s == NULL)
+        return -1;
+
+    strcat(s, u8"id=");
+    strcat(s, id);
+
+    int rc = cq_select_all(patts_get_db(), u8"TaskType", out, s);
+    free(s);
+
+    return rc;
+}
