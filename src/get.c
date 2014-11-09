@@ -28,7 +28,7 @@ int patts_get_users(struct dlist **out)
 
 int patts_get_user_byid(struct dlist **out, const char *id)
 {
-    if (strlen(id) >= patts_fmaxlen() - strlen(u8"id="))
+    if (id == NULL || strlen(id) >= patts_fmaxlen() - strlen(u8"id="))
         return 1;
 
     char *s = calloc(patts_fmaxlen(), sizeof(char));
@@ -51,7 +51,7 @@ int patts_get_types(struct dlist **out)
 
 int patts_get_type_byid(struct dlist **out, const char *id)
 {
-    if (strlen(id) >= patts_fmaxlen() - strlen(u8"id="))
+    if (id == NULL || strlen(id) >= patts_fmaxlen() - strlen(u8"id="))
         return 1;
 
     char *s = calloc(patts_fmaxlen(), sizeof(char));
