@@ -14,10 +14,9 @@ To Build
 Dependencies
 ------------
 
-Library        | Description                                  | Purpose
--------------- | -------------------------------------------- | ---------------------
-MariaDB Client | MariaDB client tools                         | Database Connectivity
-ICU            | International Components for Unicode library | Unicode Support
+Library | Description                                      | Purpose
+------- | ------------------------------------------------ | ---------------------------------------
+cquel   | MySQL C API wrapper with dynamic data structures | Database connectivity and UTF-8 support
 
 Dependency Build Instructions: Debian and Trisquel
 --------------------------------------------------
@@ -26,7 +25,6 @@ Build requirements:
 
     # apt-get install build-essential pkg-config
     # apt-get install libtool autotools-dev autoconf automake
-    # apt-get install mariadb-client libicu-dev
 
 Dependency Build Instructions: Parabola
 ---------------------------------------
@@ -34,4 +32,3 @@ Dependency Build Instructions: Parabola
 Build requirements:
 
     # pacman -S base-devel
-    # pacman -S mariadb-clients icu
