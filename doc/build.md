@@ -14,9 +14,9 @@ To Build
 Dependencies
 ------------
 
-Library | Description                                      | Purpose
-------- | ------------------------------------------------ | ---------------------------------------
-cquel   | MySQL C API wrapper with dynamic data structures | Database connectivity and UTF-8 support
+Library     | Description                                      | Purpose
+----------- | ------------------------------------------------ | ---------------------------------------
+cquel 0.x   | MySQL C API wrapper with dynamic data structures | Database connectivity and UTF-8 support
 
 Dependency Build Instructions: Debian and Trisquel
 --------------------------------------------------
