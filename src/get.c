@@ -92,8 +92,8 @@ int patts_get_item_byid(struct dlist **out, const char *id)
 
 int patts_get_items_byuser(struct dlist **out, const char *userID)
 {
-    if (userID == NULL ||
-            strlen(userID) >= patts_fmaxlen() - strlen(u8"userID="))
+    if (userID == NULL
+            || strlen(userID) >= patts_fmaxlen() - strlen(u8"userID="))
         return 1;
 
     char *s = calloc(patts_fmaxlen(), sizeof(char));
