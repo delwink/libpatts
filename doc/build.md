@@ -26,6 +26,8 @@ Build requirements:
     # apt-get install build-essential pkg-config
     # apt-get install libtool autotools-dev autoconf automake
 
+TODO: instructions for installing cquel
+
 Dependency Build Instructions: Parabola
 ---------------------------------------
 
