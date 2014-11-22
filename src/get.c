@@ -108,3 +108,23 @@ int patts_get_items_byuser(struct dlist **out, const char *userID)
 
     return rc;
 }
+
+int patts_get_items_byuser_onclock(struct dlist **out, const char *userID)
+{
+    if (userID == NULL
+            || (strlen(userID) >= patts_fmaxlen() 
+                + strlen(u8"onClock=1,userID=")))
+        return 1;
+
+    char *s = calloc(patts_fmaxlen(), sizeof(char));
+    if (s == NULL)
+        return -1;
+
+    strcat(s, u8"onClock=1,userID=");
+    strcat(s, userID);
+
+    int rc = cq_select_all(patts_get_db(), u8"TaskItem", out, s);
+    free(s);
+
+    return rc;
+}
