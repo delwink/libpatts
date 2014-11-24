@@ -25,18 +25,18 @@ extern "C"
 {
 #endif
 
-int patts_create_user(struct dbconn con, const struct dlist *info,
-        const char *host, const char *passwd);
-int patts_create_task(struct dbconn con, const struct dlist *info);
+int patts_create_user(const struct dlist *info, const char *host,
+        const char *passwd);
+int patts_create_task(const struct dlist *info);
 
-int patts_enable_user(struct dbconn con, const char *id);
-int patts_enable_task(struct dbconn con, const char *id);
+int patts_enable_user(const char *id);
+int patts_enable_task(const char *id);
 
-int patts_disable_user(struct dbconn con, const char *id);
-int patts_disable_task(struct dbconn con, const char *id);
+int patts_disable_user(const char *id);
+int patts_disable_task(const char *id);
 
-int patts_grant_admin(struct dbconn con, const char *id);
-int patts_revoke_admin(struct dbconn con, const char *id);
+int patts_grant_admin(const char *id);
+int patts_revoke_admin(const char *id);
 
 #ifdef __cplusplus
 }
