@@ -50,3 +50,10 @@ static int set_state(const char *table, const char *id, const char *state)
 
     return rc;
 }
+
+int patts_delete_user(const char *id)
+{
+    return set_state(u8"User", id, u8"0");
+}
+
+
