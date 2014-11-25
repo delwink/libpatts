@@ -56,4 +56,7 @@ int patts_delete_user(const char *id)
     return set_state(u8"User", id, u8"0");
 }
 
-
+int patts_delete_task(const char *id)
+{
+    return set_state(u8"TaskType", id, u8"0");
+}
