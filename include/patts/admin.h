@@ -15,8 +15,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DELWINK_PATTS_H
-#define DELWINK_PATTS_H
+#ifndef DELWINK_PATTS_ADMIN_H
+#define DELWINK_PATTS_ADMIN_H
 
 #include <cquel.h>
 
