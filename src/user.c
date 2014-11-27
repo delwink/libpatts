@@ -13,9 +13,39 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "patts.h"
 #include "user.h"
+#include "get.h"
+
+int patts_get_active_task(char *out_id, size_t buflen)
+{
+    if (out_id == NULL)
+        return 1;
+
+    struct dlist *tasks;
+    int rc = patts_get_items_byuser_onclock(&tasks, patts_get_user());
+    if (rc)
+        return 100;
+
+    size_t index;
+    rc = cq_field_to_index(tasks, u8"id", &index);
+    if (rc) {
+        cq_free_dlist(tasks);
+        return 101;
+    }
+
+    if (strlen(tasks->last->values[index]) >= buflen) {
+        cq_free_dlist(tasks);
+        return -1;
+    }
+
+    strcpy(out_id, tasks->last->values[index]);
+
+    cq_free_dlist(tasks);
+    return 0;
+}
 
 int patts_clockin(const char *typeID)
 {
