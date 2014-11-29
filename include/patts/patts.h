@@ -37,7 +37,9 @@ const char *patts_get_user(void);
 
 bool patts_have_admin(void);
 
-char *patts_get_version(void);
+const char *patts_interface(void);
+
+const char *patts_version(void);
 
 #ifdef __cplusplus
 }

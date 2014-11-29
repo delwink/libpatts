@@ -17,7 +17,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "config.h"
 #include "patts.h"
 
 struct dbconn PATTSDB;
@@ -96,7 +95,12 @@ bool patts_have_admin()
     return HAVE_ADMIN;
 }
 
-char *patts_get_version()
+const char *patts_interface()
 {
-    return VERSION;
+    return u8"0.0";
+}
+
+const char *patts_version()
+{
+    return u8"0.0";
 }
