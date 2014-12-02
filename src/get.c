@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "patts.h"
 #include "get.h"
@@ -107,10 +108,10 @@ int patts_get_last_item(size_t *out, const char *userID)
         return 101;
     }
 
-    int id = atoi(items->last->values[index]);
+    rc = sscanf(items->last->values[index], "%zu", out);
     cq_free_dlist(items);
-
-    *out = id;
+    if (rc != 1)
+        return 102;
 
     return 0;
 }
