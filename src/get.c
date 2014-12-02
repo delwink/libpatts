@@ -90,6 +90,31 @@ int patts_get_item_byid(struct dlist **out, const char *id)
     return rc;
 }
 
+int patts_get_last_item(size_t *out, const char *userID)
+{
+    if (out == NULL || userID == NULL)
+        return 1;
+
+    struct dlist *items;
+    int rc = patts_get_items_byuser(&items, userID);
+    if (rc)
+        return 100;
+
+    size_t index;
+    rc = cq_field_to_index(items, u8"id", &index);
+    if (rc) {
+        cq_free_dlist(items);
+        return 101;
+    }
+
+    int id = atoi(items->last->values[index]);
+    cq_free_dlist(items);
+
+    *out = id;
+
+    return 0;
+}
+
 int patts_get_items_byuser(struct dlist **out, const char *userID)
 {
     if (userID == NULL
