@@ -29,7 +29,7 @@ int patts_init(size_t qlen, size_t fmaxlen, const char *host, const char *user,
         const char *passwd, const char *database)
 {
     cq_init(qlen, fmaxlen);
-    CQLEN = qlen;
+    QLEN = qlen;
     FMAXLEN = fmaxlen;
 
     PATTSDB = cq_new_connection(host, user, passwd, database);
