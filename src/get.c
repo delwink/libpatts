@@ -52,17 +52,20 @@ int patts_get_types(struct dlist **out)
 
 int patts_get_type_byid(struct dlist **out, const char *id)
 {
-    if (id == NULL || strlen(id) >= patts_qlen() - strlen(u8"id="))
+    if (id == NULL)
         return 1;
 
     char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
-    strcat(s, u8"id=");
-    strcat(s, id);
+    int rc = sprintf(s, "%s%s", u8"id=", id);
+    if ((size_t)rc >= patts_qlen()) {
+        free(s);
+        return 2;
+    }
 
-    int rc = cq_select_all(patts_get_db(), u8"TaskType", out, s);
+    rc = cq_select_all(patts_get_db(), u8"TaskType", out, s);
     free(s);
 
     return rc;
@@ -78,7 +81,7 @@ int patts_get_child_types(struct dlist **out, const char *parentID)
         return -1;
 
     int rc = sprintf(s, "%s%s", u8"parentID=", parentID);
-    if (rc >= patts_qlen()) {
+    if ((size_t)rc >= patts_qlen()) {
         free(s);
         return 2;
     }
@@ -96,17 +99,20 @@ int patts_get_items(struct dlist **out)
 
 int patts_get_item_byid(struct dlist **out, const char *id)
 {
-    if (id == NULL || strlen(id) >= patts_qlen() - strlen(u8"id="))
+    if (id == NULL)
         return 1;
 
     char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
-    strcat(s, u8"id=");
-    strcat(s, id);
+    int rc = sprintf(s, "%s%s", u8"id=", id);
+    if ((size_t)rc >= patts_qlen()) {
+        free(s);
+        return 2;
+    }
 
-    int rc = cq_select_all(patts_get_db(), u8"TaskItem", out, s);
+    rc = cq_select_all(patts_get_db(), u8"TaskItem", out, s);
     free(s);
 
     return rc;
@@ -139,18 +145,20 @@ int patts_get_last_item(size_t *out, const char *userID)
 
 int patts_get_items_byuser(struct dlist **out, const char *userID)
 {
-    if (userID == NULL
-            || strlen(userID) >= patts_qlen() - strlen(u8"userID="))
+    if (userID == NULL)
         return 1;
 
     char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
-    strcat(s, u8"userID=");
-    strcat(s, userID);
+    int rc = sprintf(s, "%s%s", u8"userID=", userID);
+    if ((size_t)rc >= patts_qlen()) {
+        free(s);
+        return 2;
+    }
 
-    int rc = cq_select_all(patts_get_db(), u8"TaskItem", out, s);
+    rc = cq_select_all(patts_get_db(), u8"TaskItem", out, s);
     free(s);
 
     return rc;
@@ -158,18 +166,20 @@ int patts_get_items_byuser(struct dlist **out, const char *userID)
 
 int patts_get_items_byuser_onclock(struct dlist **out, const char *userID)
 {
-    if (userID == NULL
-            || strlen(userID) >= patts_qlen() - strlen(u8"onClock=1,userID="))
+    if (userID == NULL)
         return 1;
 
     char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
-    strcat(s, u8"onClock=1,userID=");
-    strcat(s, userID);
+    int rc = sprintf(s, "%s%s", u8"onClock=1,userID=", userID);
+    if ((size_t)rc >= patts_qlen()) {
+        free(s);
+        return 2;
+    }
 
-    int rc = cq_select_all(patts_get_db(), u8"TaskItem", out, s);
+    rc = cq_select_all(patts_get_db(), u8"TaskItem", out, s);
     free(s);
 
     return rc;
