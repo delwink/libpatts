@@ -29,10 +29,10 @@ int patts_get_users(struct dlist **out)
 
 int patts_get_user_byid(struct dlist **out, const char *id)
 {
-    if (id == NULL || strlen(id) >= patts_fmaxlen() - strlen(u8"id="))
+    if (id == NULL || strlen(id) >= patts_qlen() - strlen(u8"id="))
         return 1;
 
-    char *s = calloc(patts_fmaxlen(), sizeof(char));
+    char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
@@ -52,10 +52,10 @@ int patts_get_types(struct dlist **out)
 
 int patts_get_type_byid(struct dlist **out, const char *id)
 {
-    if (id == NULL || strlen(id) >= patts_fmaxlen() - strlen(u8"id="))
+    if (id == NULL || strlen(id) >= patts_qlen() - strlen(u8"id="))
         return 1;
 
-    char *s = calloc(patts_fmaxlen(), sizeof(char));
+    char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
@@ -96,10 +96,10 @@ int patts_get_items(struct dlist **out)
 
 int patts_get_item_byid(struct dlist **out, const char *id)
 {
-    if (id == NULL || strlen(id) >= patts_fmaxlen() - strlen(u8"id="))
+    if (id == NULL || strlen(id) >= patts_qlen() - strlen(u8"id="))
         return 1;
 
-    char *s = calloc(patts_fmaxlen(), sizeof(char));
+    char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
@@ -140,10 +140,10 @@ int patts_get_last_item(size_t *out, const char *userID)
 int patts_get_items_byuser(struct dlist **out, const char *userID)
 {
     if (userID == NULL
-            || strlen(userID) >= patts_fmaxlen() - strlen(u8"userID="))
+            || strlen(userID) >= patts_qlen() - strlen(u8"userID="))
         return 1;
 
-    char *s = calloc(patts_fmaxlen(), sizeof(char));
+    char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
@@ -159,11 +159,10 @@ int patts_get_items_byuser(struct dlist **out, const char *userID)
 int patts_get_items_byuser_onclock(struct dlist **out, const char *userID)
 {
     if (userID == NULL
-            || (strlen(userID) >= patts_fmaxlen() 
-                + strlen(u8"onClock=1,userID=")))
+            || strlen(userID) >= patts_qlen() - strlen(u8"onClock=1,userID="))
         return 1;
 
-    char *s = calloc(patts_fmaxlen(), sizeof(char));
+    char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
