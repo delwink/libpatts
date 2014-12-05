@@ -68,6 +68,27 @@ int patts_get_type_byid(struct dlist **out, const char *id)
     return rc;
 }
 
+int patts_get_child_types(struct dlist **out, const char *parentID)
+{
+    if (parentID == NULL)
+        return 1;
+
+    char *s = calloc(patts_qlen(), sizeof(char));
+    if (s == NULL)
+        return -1;
+
+    int rc = sprintf(s, "%s%s", u8"parentID=", parentID);
+    if (rc >= patts_qlen()) {
+        free(s);
+        return 2;
+    }
+
+    rc = cq_select_all(patts_get_db(), u8"TaskType", out, s);
+    free(s);
+
+    return rc;
+}
+
 int patts_get_items(struct dlist **out)
 {
     return cq_select_all(patts_get_db(), u8"TaskItem", out, u8"");
