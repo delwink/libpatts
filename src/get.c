@@ -71,16 +71,16 @@ int patts_get_type_byid(struct dlist **out, const char *id)
     return rc;
 }
 
-int patts_get_child_types(struct dlist **out, const char *parentID)
+int patts_get_child_types(struct dlist **out, const char *parent_id)
 {
-    if (parentID == NULL)
+    if (parent_id == NULL)
         return 1;
 
     char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
-    int rc = sprintf(s, "%s%s", u8"parentID=", parentID);
+    int rc = sprintf(s, "%s%s", u8"parentID=", parent_id);
     if ((size_t)rc >= patts_qlen()) {
         free(s);
         return 2;
@@ -118,13 +118,13 @@ int patts_get_item_byid(struct dlist **out, const char *id)
     return rc;
 }
 
-int patts_get_last_item(size_t *out, const char *userID)
+int patts_get_last_item(size_t *out, const char *user_id)
 {
-    if (out == NULL || userID == NULL)
+    if (out == NULL || user_id == NULL)
         return 1;
 
     struct dlist *items;
-    int rc = patts_get_items_byuser(&items, userID);
+    int rc = patts_get_items_byuser(&items, user_id);
     if (rc)
         return 100;
 
@@ -143,16 +143,16 @@ int patts_get_last_item(size_t *out, const char *userID)
     return 0;
 }
 
-int patts_get_items_byuser(struct dlist **out, const char *userID)
+int patts_get_items_byuser(struct dlist **out, const char *user_id)
 {
-    if (userID == NULL)
+    if (user_id == NULL)
         return 1;
 
     char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
-    int rc = sprintf(s, "%s%s", u8"userID=", userID);
+    int rc = sprintf(s, "%s%s", u8"userID=", user_id);
     if ((size_t)rc >= patts_qlen()) {
         free(s);
         return 2;
@@ -164,16 +164,16 @@ int patts_get_items_byuser(struct dlist **out, const char *userID)
     return rc;
 }
 
-int patts_get_items_byuser_onclock(struct dlist **out, const char *userID)
+int patts_get_items_byuser_onclock(struct dlist **out, const char *user_id)
 {
-    if (userID == NULL)
+    if (user_id == NULL)
         return 1;
 
     char *s = calloc(patts_qlen(), sizeof(char));
     if (s == NULL)
         return -1;
 
-    int rc = sprintf(s, "%s%s", u8"onClock=1,userID=", userID);
+    int rc = sprintf(s, "%s%s", u8"onClock=1,userID=", user_id);
     if ((size_t)rc >= patts_qlen()) {
         free(s);
         return 2;
@@ -210,7 +210,7 @@ int patts_get_child_items(struct dlist **out, const char *id)
     }
 
     const char *typeID = parent->first->values[0],
-            *userID = parent->first->values[1],
+            *user_id = parent->first->values[1],
             *startTime = parent->first->values[2],
             *stopTime = parent->first->values[3];
 
@@ -250,7 +250,7 @@ int patts_get_child_items(struct dlist **out, const char *id)
             u8"startTime>=", startTime, u8",",
             u8"stopTime<=", stopTime, u8",",
             u8"typeID IN (", tids, u8"),",
-            u8"userID=", userID);
+            u8"userID=", user_id);
     cq_free_dlist(parent);
     cq_free_dlist(child_types);
     free(tids);
