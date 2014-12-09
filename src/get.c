@@ -231,8 +231,7 @@ int patts_get_child_items(struct dlist **out, const char *id)
         return 100;
     }
 
-    char *tids = calloc((patts_fmaxlen() + strlen(u8",") 
-            + (strlen(u8"'") * 2)) 
+    char *tids = calloc((patts_fmaxlen() + strlen(u8"'',"))
             * cq_dlist_size(child_types), sizeof(char));
     if (tids == NULL) {
         cq_free_dlist(parent);
