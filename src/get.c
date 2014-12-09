@@ -231,7 +231,8 @@ int patts_get_child_items(struct dlist **out, const char *id)
         return 100;
     }
 
-    char *tids = calloc((patts_fmaxlen() + strlen(u8",")) 
+    char *tids = calloc((patts_fmaxlen() + strlen(u8",") 
+            + (strlen(u8"'") * 3)) 
             * cq_dlist_size(child_types), sizeof(char));
     if (tids == NULL) {
         cq_free_dlist(parent);
@@ -241,14 +242,16 @@ int patts_get_child_items(struct dlist **out, const char *id)
     }
 
     for (struct drow *row = child_types->first; row != NULL; row = row->next) {
+        strcat(tids, u8"'");
         strcat(tids, row->values[tid_index]);
+        strcat(tids, u8"'");
         if (row->next != NULL)
             strcat(tids, u8",");
     }
 
     rc = sprintf(s, "%s%s%s%s%s%s%s%s%s%s%s", 
-            u8"startTime>=", startTime, u8",",
-            u8"stopTime<=", stopTime, u8",",
+            u8"startTime>='", startTime, u8"',",
+            u8"stopTime<='", stopTime, u8"',",
             u8"typeID IN (", tids, u8"),",
             u8"userID=", user_id);
     cq_free_dlist(parent);
