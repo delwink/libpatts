@@ -54,11 +54,21 @@ int patts_clockin(const char *typeID)
 
     const size_t fieldc = 5;
 
-    const char *fields[] = {u8"state", u8"typeID", u8"onClock", u8"userID",
-            u8"startTime"};
+    char *fields[] = {
+        u8"state",
+        u8"typeID",
+        u8"onClock",
+        u8"userID",
+        u8"startTime"
+    };
 
-    const char *initial_vals[] = {u8"1", typeID, u8"1", patts_get_user(),
-            u8"NOW()"};
+    const char *initial_vals[] = {
+        u8"1",
+        typeID,
+        u8"1",
+        patts_get_user(),
+        u8"NOW()"
+    };
 
     struct dlist *newitem = cq_new_dlist(fieldc, fields, NULL);
     if (newitem == NULL)
