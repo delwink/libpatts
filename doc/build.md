@@ -25,8 +25,9 @@ Build requirements:
 
     # apt-get install build-essential pkg-config
     # apt-get install libtool autotools-dev autoconf automake
-
-TODO: instructions for installing cquel
+    $ wget http://delwink.com/dl/libcquel**X**\_**Y.Z**\_**ARCH**.deb
+    $ wget http://delwink.com/dl/libcquel-dev\_**Y.Z**\_all.deb
+    # dpkg -i libcquel**X**\_**Y.Z**\_**ARCH**.deb libcquel-dev\_**Y.Z**\_all.deb
 
 Dependency Build Instructions: Parabola
 ---------------------------------------
