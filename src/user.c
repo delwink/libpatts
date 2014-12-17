@@ -67,7 +67,7 @@ int patts_clockin(const char *typeID)
         typeID,
         u8"1",
         patts_get_user(),
-        u8"NOW()"
+        u8"\\NOW()"
     };
 
     struct dlist *newitem = cq_new_dlist(fieldc, fields, NULL);
