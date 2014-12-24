@@ -94,3 +94,67 @@ int patts_clockin(const char *typeID)
 
     return rc;
 }
+
+int patts_clockout(const char *itemID)
+{
+    int rc;
+
+    if (NULL == itemID)
+        return 1;
+
+    struct dlist *children = NULL;
+    rc = patts_get_child_items(&children, itemID);
+    if (rc)
+        return 2;
+
+    for (size_t i = 0; i < cq_dlist_size(children); ++i) {
+        size_t index;
+        rc = cq_field_to_index(children, u8"id", &index);
+        if (rc)
+            break;
+
+        rc = patts_clockout(cq_dlist_at(children, i)->values[index]);
+        if (rc)
+            break;
+    }
+
+    cq_free_dlist(children);
+    if (rc)
+        return rc;
+
+    const size_t fieldc = 2;
+
+    char *fields[] = {
+        u8"id",
+        u8"onClock"
+    };
+
+    const char *vals[] = {
+        itemID,
+        u8"0"
+    };
+
+    struct dlist *list = cq_new_dlist(fieldc, fields, u8"id");
+    if (NULL == list)
+        return -1;
+
+    struct drow *row = cq_new_drow(fieldc);
+    if (NULL == row) {
+        cq_free_dlist(list);
+        return -2;
+    }
+
+    rc = cq_drow_set(row, vals);
+    if (rc) {
+        cq_free_dlist(list);
+        cq_free_drow(row);
+        return 100;
+    }
+
+    cq_dlist_add(list, row);
+
+    rc = cq_update(patts_get_db(), u8"TaskItem", list);
+    cq_free_dlist(list);
+
+    return rc;
+}
