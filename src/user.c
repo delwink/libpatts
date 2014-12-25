@@ -47,6 +47,29 @@ int patts_get_active_task(char *out_id, size_t buflen)
     return 0;
 }
 
+int patts_get_tree(struct dlist **out)
+{
+    int rc;
+    char *query;
+    const char *fmt = "id,typeID,userID,startTime FROM TaskItem WHERE state=1,"
+            "onClock=1,userID=%s";
+
+    query = calloc(patts_qlen(), sizeof(char));
+    if (NULL == query)
+        return -1;
+
+    rc = snprintf(query, patts_qlen(), fmt, patts_get_user());
+    if (patts_qlen() <= (size_t) rc) {
+        free(query);
+        return 100;
+    }
+
+    rc = cq_select_query(patts_get_db(), out, query);
+    free(query);
+
+    return rc;
+}
+
 int patts_clockin(const char *typeID)
 {
     if (typeID == NULL)
