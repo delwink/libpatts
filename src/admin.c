@@ -60,3 +60,19 @@ int patts_delete_task(const char *id)
 {
     return set_state(u8"TaskType", id, u8"0");
 }
+
+int patts_grant_admin(const char *id)
+{
+    const char *func = u8"grantAdmin";
+    const char *args[] = { id };
+
+    return cq_proc_arr(patts_get_db(), func, args, 1);
+}
+
+int patts_revoke_admin(const char *id)
+{
+    const char *func = u8"revokeAdmin";
+    const char *args[] = { id };
+
+    return cq_proc_arr(patts_get_db(), func, args, 1);
+}
