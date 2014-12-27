@@ -27,7 +27,7 @@ extern "C"
 
 int patts_create_user(struct dlist *info, const char *host,
         const char *passwd);
-int patts_create_task(const struct dlist *info);
+int patts_create_task(struct dlist *info);
 
 int patts_delete_user(const char *id);
 int patts_delete_task(const char *id);

@@ -57,6 +57,21 @@ int patts_create_user(struct dlist *info, const char *host,
     return cq_update(patts_get_db(), u8"User", info);
 }
 
+int patts_create_task(struct dlist *info)
+{
+    int rc;
+    size_t index;
+
+    rc = cq_field_to_index(info, u8"id", &index);
+    if (!rc) { /* need to remove primary key from insertion */
+        rc = cq_dlist_remove_field_at(info, index);
+        if (rc) /* something is very very wrong */
+            return 1;
+    }
+
+    return cq_insert(patts_get_db(), u8"TaskType", info);
+}
+
 static int set_state(const char *table, const char *id, const char *state)
 {
     if (id == NULL)
