@@ -25,7 +25,7 @@ extern "C"
 {
 #endif
 
-int patts_create_user(const struct dlist *info, const char *host,
+int patts_create_user(struct dlist *info, const char *host,
         const char *passwd);
 int patts_create_task(const struct dlist *info);
 

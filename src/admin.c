@@ -15,11 +15,47 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "admin.h"
 #include "get.h"
 #include "patts.h"
+
+int patts_create_user(struct dlist *info, const char *host,
+        const char *passwd)
+{
+    int rc;
+    struct dlist *newid = NULL;
+
+    size_t index;
+    rc = cq_field_to_index(info, u8"mysqlUser", &index);
+    if (rc)
+        return 1;
+
+    const char *args[] = {
+        info->first->values[index],
+        host,
+        passwd
+    };
+
+    rc = cq_select_func_arr(patts_get_db(), u8"createUser", args, 1, &newid);
+    if (rc)
+        return 2;
+
+    rc = cq_field_to_index(info, u8"id", &index);
+    if (rc) {
+        cq_free_dlist(newid);
+        return 3;
+    }
+
+    /* set info's id column to match return value of createUser */
+    strcpy(info->first->values[index], newid->first->values[0]);
+    cq_free_dlist(newid);
+
+    return cq_update(patts_get_db(), u8"User", info);
+}
 
 static int set_state(const char *table, const char *id, const char *state)
 {
