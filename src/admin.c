@@ -104,6 +104,32 @@ static int set_state(const char *table, const char *id, const char *state)
 
 int patts_delete_user(const char *id)
 {
+    int rc;
+    char *query;
+    struct dlist *user = NULL;
+    const char *fmt = "mysqlUser FROM User WHERE id=%s";
+
+    query = calloc(patts_qlen(), sizeof(char));
+    if (NULL == query)
+        return -10;
+
+    rc = snprintf(query, patts_qlen(), fmt, id);
+    if (patts_qlen() <= (size_t) rc) {
+        free(query);
+        return 120;
+    }
+
+    rc = cq_select_query(patts_get_db(), &user, query);
+    free(query);
+    if (rc)
+        return 121;
+
+    rc = cq_revoke(patts_get_db(), u8"*", u8"*", user->first->values[0], u8"%",
+            u8"");
+    cq_free_dlist(user);
+    if (rc)
+        return 210;
+
     return set_state(u8"User", id, u8"0");
 }
 
