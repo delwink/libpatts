@@ -34,4 +34,6 @@ Dependency Build Instructions: Parabola
 
 Build requirements:
 
+    Install a cquel implementation (>= 4.1).
+
     # pacman -S base-devel
