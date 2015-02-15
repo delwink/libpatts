@@ -7,9 +7,10 @@ system.
 Requirements
 ============
 
-| Library | Purpose               |
-|---------+-----------------------|
-| libsqon | Database connectivity |
+| Library | Purpose                  |
+|---------+--------------------------|
+| libsqon | Database connectivity    |
+| Jansson | Internal JSON management |
 
 Installing the Dependencies
 ---------------------------
@@ -18,8 +19,8 @@ You will need to build libsqon manually, unless your software distribution
 packages it for you. The following should work on any GNU system.
 
     $ wget http://delwink.com/dl/libsqon-X.Y.Z.tar.gz
-    $ tar xzf libsqon-X.Y.Z.tar.gz
-    $ cd libsqon-X.Y.Z
+    $ tar xzf libsqon-delX.Y.Z.tar.gz
+    $ cd libsqon-delX.Y.Z
     $ ./autogen.sh
     $ ./configure
     $ make
@@ -31,8 +32,10 @@ properly installing it for your operating system.
 ### Debian GNU/Linux (and derivatives)
 
     # apt-get install build-essential autoconf automake libtool
+    # apt-get install libjansson-dev
 
 ### Parabola GNU/Linux-libre
 
     # pacman -S base-devel
+    # pacman -S jansson
 
