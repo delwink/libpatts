@@ -30,6 +30,7 @@ autom4te.cache
 .deps
 .libs
 m4/l*
+m4/pkg.m4
 libtool
 src/.dirstamp
 Makefile

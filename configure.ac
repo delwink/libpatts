@@ -1,6 +1,6 @@
 AC_PREREQ([2.60])
 define(_COPYRIGHT_YEAR, 2014)
-AC_INIT([libpatts],[0.0],[support@delwink.com])
+AC_INIT([libpatts],[0.0.0],[support@delwink.com])
 
 AC_CONFIG_SRCDIR([src/patts.c])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -11,6 +11,9 @@ AM_SILENT_RULES([yes])
 AM_PROG_AR
 LT_INIT
 AC_PROG_CC
+
+PKG_CHECK_MODULES([sqon], [sqon])
+
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
  Makefile
