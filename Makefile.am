@@ -13,7 +13,7 @@ libpatts_la_LDFLAGS = -version-info 0:0:0
 
 libpatts_la_CFLAGS = -Wall -Wextra -std=c11 -Iinclude/patts
 
-libpatts_la_LIBADD = $(sqon_LIBS)
+libpatts_la_LIBADD = $(sqon_LIBS) $(jansson_LIBS)
 
 AM_CFLAGS = $(DEPS_CFLAGS)
 AM_LIBS = $(DEPS_LIBS)

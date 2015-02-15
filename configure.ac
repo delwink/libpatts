@@ -13,6 +13,7 @@ LT_INIT
 AC_PROG_CC
 
 PKG_CHECK_MODULES([sqon], [sqon])
+PKG_CHECK_MODULES([jansson], [jansson])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
