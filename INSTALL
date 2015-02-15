@@ -1,4 +1,38 @@
 Building libpatts
+=================
 
-See doc/build.md for instructions on building libpatts for the relevant
-platforms.
+libpatts is designed for Unix-like systems and is built using the GNU build
+system.
+
+Requirements
+============
+
+| Library | Purpose               |
+|---------+-----------------------|
+| libsqon | Database connectivity |
+
+Installing the Dependencies
+---------------------------
+
+You will need to build libsqon manually, unless your software distribution
+packages it for you. The following should work on any GNU system.
+
+    $ wget http://delwink.com/dl/libsqon-X.Y.Z.tar.gz
+    $ tar xzf libsqon-X.Y.Z.tar.gz
+    $ cd libsqon-X.Y.Z
+    $ ./autogen.sh
+    $ ./configure
+    $ make
+    # make install
+
+Take a look at libsqon's INSTALL file for more details on building it and
+properly installing it for your operating system.
+
+### Debian GNU/Linux (and derivatives)
+
+    # apt-get install build-essential autoconf automake libtool
+
+### Parabola GNU/Linux-libre
+
+    # pacman -S base-devel
+
