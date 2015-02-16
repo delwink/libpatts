@@ -17,97 +17,86 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <jansson.h>
 #include "patts.h"
 
-struct dbconn PATTSDB;
-bool HAVE_ADMIN = false;
-char userID[10];
-size_t QLEN = 0;
-size_t FMAXLEN = 0;
+static sqon_dbsrv *PATTSDB;
+static bool HAVE_ADMIN = false;
+static char user_id[8];
 
-int patts_init(size_t qlen, size_t fmaxlen, const char *host, const char *user,
-        const char *passwd, const char *database)
+int
+patts_init (uint8_t db_type, const char *host, const char *user,
+	    const char *passwd, const char *database)
 {
-    cq_init(qlen, fmaxlen);
-    QLEN = qlen;
-    FMAXLEN = fmaxlen;
+  int rc = 0;
+  const char *fmt = "SELECT isAdmin FROM User WHERE id=%s";
+  char *query, *user_info, *isAdmin;
+  json_t *list, *user_cols;
+  size_t qlen = 1;
 
-    PATTSDB = cq_new_connection(host, user, passwd, database);
+  if (strlen (user) >= 8)
+    return PATTS_OVERFLOW;
 
-    char *condition = calloc(qlen, sizeof(char));
-    if (condition == NULL) {
-        return -2;
-    }
+  strcpy (user_id, user);
 
-    strcat(condition, u8"mysqlUser=");
-    strcat(condition, user);
+  sqon_init ();
 
-    struct dlist *puser = NULL;
-    if (cq_select_all(PATTSDB, u8"User", &puser, condition)) {
-        free(condition);
-        return 1;
-    }
-    free(condition);
+  sqon_dbsrv db = sqon_new_connection (db_type, host, user, passwd, database);
+  PATTSDB = &db;
 
-    if (cq_dlist_size(puser) != 1) {
-        cq_free_dlist(puser);
-        return 2;
-    }
+  qlen += strlen (fmt) - 2;
+  qlen += strlen (user);
 
-    size_t index;
-    if (cq_field_to_index(puser, u8"id", &index)) {
-        cq_free_dlist(puser);
-        return 3;
-    }
+  query = sqon_malloc (qlen * sizeof (char));
+  if (NULL == query)
+    return PATTS_MEMORYERROR;
 
-    strcpy(userID, puser->first->values[index]);
+  snprintf (query, qlen, fmt, user);
 
-    if (cq_field_to_index(puser, u8"isAdmin", &index)) {
-        cq_free_dlist(puser);
-        return 4;
-    }
+  rc = sqon_query (patts_get_db (), query, &user_info, NULL);
+  sqon_free (query);
 
-    if (puser->first->values[index]) {
-        HAVE_ADMIN = true;
-    } else {
-        HAVE_ADMIN = false;
-    }
+  if (rc)
+    return rc;
 
-    cq_free_dlist(puser);
-    return 0;
+  list = json_loads (user_info, 0, NULL);
+  sqon_free (user_info);
+
+  if (NULL == list)
+    return PATTS_LOADERROR;
+  if (0 == json_array_size (list))
+    return PATTS_NOSUCHUSER;
+
+  user_cols = json_array_get (list, 0);
+
+  isAdmin = json_string_value (json_object_get (user_cols, "isAdmin"));
+
+  if (!strcmp (isAdmin, "\\u0001") || !strcmp (isAdmin, "1"))
+    HAVE_ADMIN = true;
+  else if (!strcmp (isAdmin, "") || !strcmp (isAdmin, "0"))
+    HAVE_ADMIN = false;
+  else
+    rc = PATTS_UNEXPECTED;
+
+  json_decref (list);
+
+  return rc;
 }
 
-size_t patts_qlen()
+sqon_dbsrv *
+patts_get_db ()
 {
-    return QLEN;
+  return PATTSDB;
 }
 
-size_t patts_fmaxlen()
+const char *
+patts_get_user ()
 {
-    return FMAXLEN;
+  return user_id;
 }
 
-struct dbconn patts_get_db()
+bool
+patts_have_admin ()
 {
-    return PATTSDB;
-}
-
-const char *patts_get_user()
-{
-    return userID;
-}
-
-bool patts_have_admin()
-{
-    return HAVE_ADMIN;
-}
-
-const char *patts_interface()
-{
-    return u8"0.0";
-}
-
-const char *patts_version()
-{
-    return u8"0.0";
+  return HAVE_ADMIN;
 }
