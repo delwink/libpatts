@@ -1,6 +1,6 @@
 /*
  *  libpatts - Backend library for PATTS Ain't Time Tracking Software
- *  Copyright (C) 2014 Delwink, LLC
+ *  Copyright (C) 2014-2015 Delwink, LLC
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -18,22 +18,28 @@
 #ifndef DELWINK_PATTS_ADMIN_H
 #define DELWINK_PATTS_ADMIN_H
 
-#include <cquel.h>
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-int patts_create_user(struct dlist *info, const char *host,
-        const char *passwd);
-int patts_create_task(struct dlist *info);
+int
+patts_create_user (const char *id, const char *host, const char *passwd);
 
-int patts_delete_user(const char *id);
-int patts_delete_task(const char *id);
+int
+patts_create_task (const char *parentID, const char *displayName);
 
-int patts_grant_admin(const char *id);
-int patts_revoke_admin(const char *id);
+int
+patts_delete_user (const char *id);
+
+int
+patts_delete_task (const char *id);
+
+int
+patts_grant_admin (const char *id);
+
+int
+patts_revoke_admin (const char *id);
 
 #ifdef __cplusplus
 }
