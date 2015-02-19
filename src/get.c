@@ -279,7 +279,6 @@ patts_get_child_items (char **out, const char *id)
     {
       sqon_free (old_start);
       sqon_free (old_stop);
-      sqon_free (result);
       return rc;
     }
 
@@ -314,8 +313,24 @@ patts_get_child_items (char **out, const char *id)
   sqon_free (old_start);
   sqon_free (old_stop);
 
-  rc = sqon_query (patts_get_db (), query, out, "id");
+  rc = sqon_query (patts_get_db (), query, &result, "id");
   sqon_free (query);
 
+  if (rc)
+    return rc;
+
+  result_obj = json_loads (result);
+  sqon_free (result);
+
+  rc = json_object_del (result_obj, id); // remove parent from child list
+
+  if (!rc)
+    {
+      *out = json_dumps (result_obj, JSON_PRESERVE_ORDER);
+      if (NULL == *out)
+	rc = PATTS_MEMORYERROR;
+    }
+
+  json_decref (result_obj);
   return rc;
 }
