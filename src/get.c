@@ -22,6 +22,8 @@
 #include "patts.h"
 #include "get.h"
 
+#define DATETIME_LEN 20 /* Enough space to hold a DATETIME plus a NUL byte */
+
 static int
 get_all (char **out, const char *table)
 {
@@ -238,91 +240,82 @@ patts_get_items_byuser_onclock (char **out, const char *user_id)
 }
 
 int
-patts_get_child_items (struct dlist **out, const char *id)
+patts_get_child_items (char **out, const char *id)
 {
-  if (id == NULL)
-    return 1;
+  int rc;
+  const char *fmt = "SELECT startTime,stopTime FROM TaskItem WHERE id=%s"
+  char *query, *result, *old_start, *old_stop;
+  json_t *result_arr, *result_obj;
+  size_t qlen = 1;
 
-  char *s = calloc (patts_qlen (), sizeof (char));
-  if (s == NULL)
-    return -1;
+  qlen += strlen (fmt) - 2;
+  qlen += strlen (id);
 
-  int rc = sprintf (s, "%s%s%s",
-		    u8
-		    "typeID,userID,startTime,stopTime FROM TaskItem WHERE ",
-		    u8 "id=", id);
-  if ((size_t) rc >= patts_qlen ())
+  query = sqon_malloc (qlen * sizeof (char));
+  if (NULL == query)
+    return PATTS_MEMORYERROR;
+
+  old_start = sqon_malloc (DATETIME_LEN * sizeof (char));
+  if (NULL == old_start)
     {
-      free (s);
-      return 2;
+      sqon_free (query);
+      return PATTS_MEMORYERROR;
     }
 
-  struct dlist *parent;
-  rc = cq_select_query (patts_get_db (), &parent, s);
+  old_stop = sqon_malloc (DATETIME_LEN * sizeof (char));
+  if (NULL == old_stop)
+    {
+      sqon_free (query);
+      sqon_free (old_start);
+      return PATTS_MEMORYERROR;
+    }
+
+  snprintf (query, qlen, fmt, id);
+
+  rc = sqon_query (patts_get_db (), query, &result, NULL);
+  sqon_free (query);
+
   if (rc)
     {
-      free (s);
+      sqon_free (old_start);
+      sqon_free (old_stop);
+      sqon_free (result);
       return rc;
     }
 
-  const char *typeID = parent->first->values[0],
-    *user_id = parent->first->values[1],
-    *startTime = parent->first->values[2],
-    *stopTime = parent->first->values[3];
+  result_arr = json_loads (result);
+  sqon_free (result);
 
-  struct dlist *child_types;
-  rc = patts_get_child_types (&child_types, typeID);
-  if (rc)
+  result_obj = json_array_get (result_arr, 0);
+
+  strcpy (old_start,
+	  json_string_value (json_object_get (result_obj, "startTime")));
+  strcpy (old_stop,
+	  json_string_value (json_object_get (result_obj, "stopTime")));
+
+  json_decref (result_arr);
+
+  fmt = "SELECT * FROM TaskType WHERE startTime>='%s' AND stopTime<='%s' "
+    "AND userID=%s";
+
+  qlen = 1 + strlen (fmt) - 6;
+  qlen += DATETIME_LEN * 2;
+  qlen += strlen (patts_get_user ());
+
+  query = sqon_malloc (qlen * sizeof (char));
+  if (NULL == query)
     {
-      cq_free_dlist (parent);
-      free (s);
-      return rc;
+      sqon_free (old_start);
+      sqon_free (old_stop);
+      return PATTS_MEMORYERROR;
     }
 
-  size_t tid_index;
-  rc = cq_field_to_index (child_types, u8 "id", &tid_index);
-  if (rc)
-    {
-      cq_free_dlist (parent);
-      cq_free_dlist (child_types);
-      free (s);
-      return 100;
-    }
+  snprintf (query, qlen, fmt, old_start, old_stop, patts_get_user ());
+  sqon_free (old_start);
+  sqon_free (old_stop);
 
-  char *tids = calloc ((patts_fmaxlen () + strlen (u8 "'',"))
-		       * cq_dlist_size (child_types), sizeof (char));
-  if (tids == NULL)
-    {
-      cq_free_dlist (parent);
-      cq_free_dlist (child_types);
-      free (s);
-      return -3;
-    }
-
-  for (struct drow * row = child_types->first; row != NULL; row = row->next)
-    {
-      strcat (tids, u8 "'");
-      strcat (tids, row->values[tid_index]);
-      strcat (tids, u8 "'");
-      if (row->next != NULL)
-	strcat (tids, u8 ",");
-    }
-
-  rc = sprintf (s, "%s%s%s%s%s%s%s%s%s%s%s",
-		u8 "startTime>='", startTime, u8 "',",
-		u8 "stopTime<='", stopTime, u8 "',",
-		u8 "typeID IN (", tids, u8 "),", u8 "userID=", user_id);
-  cq_free_dlist (parent);
-  cq_free_dlist (child_types);
-  free (tids);
-  if ((size_t) rc >= patts_qlen ())
-    {
-      free (s);
-      return 101;
-    }
-
-  rc = cq_select_all (patts_get_db (), u8 "TaskItem", out, s);
-  free (s);
+  rc = sqon_query (patts_get_db (), query, out, "id");
+  sqon_free (query);
 
   return rc;
 }
