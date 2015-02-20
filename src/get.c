@@ -197,7 +197,7 @@ int
 patts_get_items_byuser (char **out, const char *user_id)
 {
   int rc;
-  const char *fmt = "SELECT * FROM TaskItem WHERE userID='%s'";
+  const char *fmt = "SELECT * FROM TaskItem WHERE state=1 AND userID='%s'";
   char *query;
   size_t qlen = 1;
 
@@ -220,7 +220,8 @@ int
 patts_get_items_byuser_onclock (char **out, const char *user_id)
 {
   int rc;
-  const char *fmt = "SELECT * FROM TaskItem WHERE userID='%s' AND onClock=1";
+  const char *fmt = "SELECT * FROM TaskItem "
+    "WHERE state=1 AND userID='%s' AND onClock=1";
   char *query;
   size_t qlen = 1;
 
@@ -243,7 +244,7 @@ int
 patts_get_child_items (char **out, const char *id)
 {
   int rc;
-  const char *fmt = "SELECT startTime,stopTime FROM TaskItem WHERE id=%s"
+  const char *fmt = "SELECT startTime,stopTime FROM TaskItem WHERE id=%s";
   char *query, *result, *old_start, *old_stop;
   json_t *result_arr, *result_obj;
   size_t qlen = 1;
@@ -294,8 +295,8 @@ patts_get_child_items (char **out, const char *id)
 
   json_decref (result_arr);
 
-  fmt = "SELECT * FROM TaskType WHERE startTime>='%s' AND stopTime<='%s' "
-    "AND userID='%s'";
+  fmt = "SELECT * FROM TaskType "
+    "WHERE state=1 AND startTime>='%s' AND stopTime<='%s' AND userID='%s'";
 
   qlen = 1 + strlen (fmt) - 6;
   qlen += DATETIME_LEN * 2;
