@@ -164,7 +164,7 @@ int
 patts_get_last_item (size_t *out, const char *user_id)
 {
   int rc;
-  const char *fmt = "SELECT id FROM TaskItem WHERE userID=%s "
+  const char *fmt = "SELECT id FROM TaskItem WHERE userID='%s' "
     "ORDER BY id DESC LIMIT 1";
   char *result, *query;
   size_t qlen = 1;
@@ -197,7 +197,7 @@ int
 patts_get_items_byuser (char **out, const char *user_id)
 {
   int rc;
-  const char *fmt = "SELECT * FROM TaskItem WHERE userID=%s";
+  const char *fmt = "SELECT * FROM TaskItem WHERE userID='%s'";
   char *query;
   size_t qlen = 1;
 
@@ -220,7 +220,7 @@ int
 patts_get_items_byuser_onclock (char **out, const char *user_id)
 {
   int rc;
-  const char *fmt = "SELECT * FROM TaskItem WHERE userID=%s AND onClock=1";
+  const char *fmt = "SELECT * FROM TaskItem WHERE userID='%s' AND onClock=1";
   char *query;
   size_t qlen = 1;
 
@@ -295,7 +295,7 @@ patts_get_child_items (char **out, const char *id)
   json_decref (result_arr);
 
   fmt = "SELECT * FROM TaskType WHERE startTime>='%s' AND stopTime<='%s' "
-    "AND userID=%s";
+    "AND userID='%s'";
 
   qlen = 1 + strlen (fmt) - 6;
   qlen += DATETIME_LEN * 2;
