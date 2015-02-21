@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <jansson.h>
 
 #include "patts.h"
 #include "get.h"
@@ -184,11 +185,15 @@ patts_get_last_item (size_t *out, const char *user_id)
   if (rc)
     return rc;
 
-  rc = sscanf (result, "[{\"id\": \"%u\"}]", out);
+  unsigned int temp;
+
+  rc = sscanf (result, "[{\"id\": \"%u\"}]", &temp);
   sqon_free (result);
 
   if (!rc)
     return PATTS_UNEXPECTED;
+
+  *out = temp;
 
   return 0;
 }
