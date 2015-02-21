@@ -35,9 +35,15 @@
 "You should have received a copy of the GNU Affero General Public License\n"\
 "along with this program.  If not, see <http://www.gnu.org/licenses/>."
 
+#define PATTS_LOADERROR   -60
+
 #define PATTS_MEMORYERROR SQON_MEMORYERROR-50
 
 #define PATTS_UNEXPECTED  SQON_UNSUPPORTED-50
+
+#define PATTS_OVERFLOW    SQON_OVERFLOW-50
+
+#define PATTS_NOSUCHUSER  SQON_NOPK-50
 
 #ifdef __cplusplus
 extern "C"
