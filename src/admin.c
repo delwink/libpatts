@@ -92,7 +92,7 @@ set_state (const char *id, const char *table, const char *state)
 
   snprintf (query, qlen, fmt, table, state, id);
 
-  rc = sqon_query (patts_get_db (), query);
+  rc = sqon_query (patts_get_db (), query, NULL, NULL);
   sqon_free (query);
 
   return rc;
@@ -128,7 +128,7 @@ call_procedure (const char *proc, const char *args)
 
   snprintf (query, qlen, fmt, proc, args);
 
-  rc = sqon_query (patts_get_db (), query);
+  rc = sqon_query (patts_get_db (), query, NULL, NULL);
   sqon_free (query);
 
   return rc;
