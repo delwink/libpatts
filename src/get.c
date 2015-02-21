@@ -283,7 +283,7 @@ patts_get_child_items (char **out, const char *id)
       return rc;
     }
 
-  result_arr = json_loads (result);
+  result_arr = json_loads (result, 0, NULL);
   sqon_free (result);
 
   result_obj = json_array_get (result_arr, 0);
@@ -320,7 +320,7 @@ patts_get_child_items (char **out, const char *id)
   if (rc)
     return rc;
 
-  result_obj = json_loads (result);
+  result_obj = json_loads (result, 0, NULL);
   sqon_free (result);
 
   rc = json_object_del (result_obj, id); // remove parent from child list
