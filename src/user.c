@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <jansson.h>
 
 #include "patts.h"
 #include "user.h"
@@ -150,7 +151,7 @@ patts_clockout (const char *item)
 	break;
     }
 
-  json_decref (result_arr);
+  json_decref (result_obj);
 
   if (rc)
     {
