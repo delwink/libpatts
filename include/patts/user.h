@@ -1,6 +1,6 @@
 /*
  *  libpatts - Backend library for PATTS Ain't Time Tracking Software
- *  Copyright (C) 2014 Delwink, LLC
+ *  Copyright (C) 2014-2015 Delwink, LLC
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -18,20 +18,22 @@
 #ifndef DELWINK_PATTS_USER_H
 #define DELWINK_PATTS_USER_H
 
-#include <cquel.h>
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-int patts_get_active_task(char *out_id, size_t buflen);
+int
+patts_get_active_task (char **out);
 
-int patts_get_tree(struct dlist **out);
+int
+patts_get_tree (char **out);
 
-int patts_clockin(const char *typeID);
+int
+patts_clockin (const char *type);
 
-int patts_clockout(const char *itemID);
+int
+patts_clockout (const char *item);
 
 #ifdef __cplusplus
 }
