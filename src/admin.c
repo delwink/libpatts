@@ -27,7 +27,7 @@ int
 patts_create_user (const char *id, const char *host, const char *passwd)
 {
   int rc;
-  const char *fmt = "SELECT createUser('%s','%s','%s')";
+  const char *fmt = "CALL createUser('%s','%s','%s')";
   char *query;
   size_t qlen = 1;
 

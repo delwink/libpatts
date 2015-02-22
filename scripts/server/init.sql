@@ -2,18 +2,20 @@ SET character_set_client = utf8;
 
 CREATE DATABASE IF NOT EXISTS pattsdb;
 
-CREATE TABLE IF NOT EXISTS `pattsdb`.`User`
+USE pattsdb;
+
+CREATE TABLE IF NOT EXISTS User
 (
-	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`dbUser` VARCHAR(8) CHARACTER SET utf8 NOT NULL,
  	`state` BIT NOT NULL,
 	`isAdmin` BIT NOT NULL,
 	`firstName` VARCHAR(45) CHARACTER SET utf8 NOT NULL,
+	`middleName` VARCHAR(45) CHARACTER SET utf8 NOT NULL,
 	`lastName` VARCHAR(45) CHARACTER SET utf8 NOT NULL,
-	`mysqlUser` VARCHAR(45) CHARACTER SET utf8 NOT NULL,
-	PRIMARY KEY (`id`)
+	PRIMARY KEY (`dbUser`)
 );
 
-CREATE TABLE IF NOT EXISTS `pattsdb`.`TaskType` 
+CREATE TABLE IF NOT EXISTS TaskType
 (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`state` BIT NOT NULL,
@@ -22,24 +24,69 @@ CREATE TABLE IF NOT EXISTS `pattsdb`.`TaskType`
 	PRIMARY KEY (`id`)
 );
 
-CREATE TABLE IF NOT EXISTS `pattsdb`.`TaskItem` 
+CREATE TABLE IF NOT EXISTS TaskItem
 (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`state` BIT NOT NULL,
-	`typeID` INT UNSIGNED NOT NULL,
 	`onClock` BIT NOT NULL,
-	`userID` INT UNSIGNED NOT NULL,
+	`typeID` INT UNSIGNED NOT NULL,
+	`userID` VARCHAR(8) NOT NULL,
 	`startTime` DATETIME NOT NULL,
 	`stopTime` DATETIME NULL,
 	PRIMARY KEY(`id`)
 );
 
-CREATE USER 'patts'@'%' IDENTIFIED BY 'patts';
+CREATE PROCEDURE clockIn (taskID INT UNSIGNED, username VARCHAR(8))
+BEGIN
+	INSERT INTO TaskItem(state,onClock,startTime,typeID,userID)
+	       VALUES(1,1,NOW(),taskID,username);
+END
 
-GRANT ALL PRIVILEGES ON *.* TO 'patts'@'%' WITH GRANT OPTION;
+CREATE PROCEDURE clockOut (taskID INT UNSIGNED)
+BEGIN
+	-- need to declare local variable username here equal to userID from
+	-- the TaskItem with the id of taskID
 
-FLUSH PRIVILEGES;
+	UPDATE TaskItem SET onClock=0,stopTime=NOW()
+	       WHERE id=taskID AND userID=username;
+END
 
-INSERT INTO pattsdb.User(state, isAdmin, firstName, lastName, mysqlUser) 
-    VALUES(1,1,'PATTS','Admin','patts');
+CREATE PROCEDURE createUser (
+       newUser VARCHAR(8),
+       host VARCHAR(45),
+       passwd VARCHAR(45)
+       )
+BEGIN
+	GRANT SELECT ON * TO newUser@host IDENTIFIED BY passwd;
+	INSERT INTO User(state,isAdmin,dbUser,firstName,middleName,lastName)
+	       VALUES(1,1,newUser,'','','');
+	FLUSH PRIVILEGES;
+END
 
+CREATE PROCEDURE grantAdmin (
+       id VARCHAR(8),
+       host VARCHAR(45),
+       passwd VARCHAR(45)
+       )
+BEGIN
+	GRANT EXECUTE ON PROCEDURE createUser TO id@host IDENTIFIED BY passwd;
+	GRANT EXECUTE ON PROCEDURE grantAdmin TO id@host IDENTIFIED BY passwd;
+	GRANT INSERT,UPDATE ON TaskType TO id@host IDENTIFIED BY passwd;
+	GRANT UPDATE ON User TO id@host IDENTIFIED BY passwd;
+	FLUSH PRIVILEGES;
+END
+
+CREATE PROCEDURE revokeAdmin (
+       id VARCHAR(8),
+       host VARCHAR(45)
+       )
+BEGIN
+	REVOKE EXECUTE ON PROCEDURE createUser FROM id@host;
+	REVOKE EXECUTE ON PROCEDURE grantAdmin FROM id@host;
+	REVOKE INSERT,UPDATE ON TaskType FROM id@host;
+	REVOKE UPDATE ON User FROM id@host;
+	FLUSH PRIVILEGES;
+END
+
+CALL createUser('patts', '%', 'patts');
+CALL grantAdmin('patts', '%', 'patts');

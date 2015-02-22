@@ -29,7 +29,7 @@ patts_init (uint8_t db_type, const char *host, const char *user,
 	    const char *passwd, const char *database)
 {
   int rc = 0;
-  const char *fmt = "SELECT isAdmin FROM User WHERE id=%s";
+  const char *fmt = "SELECT isAdmin FROM User WHERE dbUser='%s'";
   char *query, *user_info;
   const char *isAdmin;
   json_t *list, *user_cols;
