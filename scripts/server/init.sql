@@ -59,7 +59,7 @@ CREATE PROCEDURE createUser (
 BEGIN
 	GRANT SELECT ON * TO newUser@host IDENTIFIED BY passwd;
 	INSERT INTO User(state,isAdmin,dbUser,firstName,middleName,lastName)
-	       VALUES(1,1,newUser,'','','');
+	       VALUES(1,0,newUser,'','','');
 	FLUSH PRIVILEGES;
 END
 
@@ -73,6 +73,7 @@ BEGIN
 	GRANT EXECUTE ON PROCEDURE grantAdmin TO id@host IDENTIFIED BY passwd;
 	GRANT INSERT,UPDATE ON TaskType TO id@host IDENTIFIED BY passwd;
 	GRANT UPDATE ON User TO id@host IDENTIFIED BY passwd;
+	UPDATE User SET isAdmin=1 WHERE dbUser=id;
 	FLUSH PRIVILEGES;
 END
 
@@ -85,6 +86,7 @@ BEGIN
 	REVOKE EXECUTE ON PROCEDURE grantAdmin FROM id@host;
 	REVOKE INSERT,UPDATE ON TaskType FROM id@host;
 	REVOKE UPDATE ON User FROM id@host;
+	UPDATE User SET isAdmin=0 WHERE dbUser=id;
 	FLUSH PRIVILEGES;
 END
 
