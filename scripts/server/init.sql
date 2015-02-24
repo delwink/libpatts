@@ -44,11 +44,11 @@ END
 
 CREATE PROCEDURE clockOut (taskID INT UNSIGNED)
 BEGIN
-	-- need to declare local variable username here equal to userID from
-	-- the TaskItem with the id of taskID
+	DECLARE @username VARCHAR(8);
+	SELECT @username = userID FROM TaskItem WHERE id=taskID;
 
 	UPDATE TaskItem SET onClock=0,stopTime=NOW()
-	       WHERE id=taskID AND userID=username;
+	       WHERE id=taskID AND userID=@username;
 END
 
 CREATE PROCEDURE createUser (
