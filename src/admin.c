@@ -28,23 +28,23 @@ int
 patts_create_user (const char *id, const char *host, const char *passwd)
 {
   int rc;
-  const char *fmt = "CALL createUser('%s','%s','%s')";
-  char *query;
-  size_t qlen = 1;
+  const char *fmt = "'%s','%s','%s'";
+  char *args;
+  size_t len = 1;
 
-  qlen += strlen (fmt) - 6;
-  qlen += strlen (id);
-  qlen += strlen (host);
-  qlen += strlen (passwd);
+  len += strlen (fmt) - 6;
+  len += strlen (id);
+  len += strlen (host);
+  len += strlen (passwd);
 
-  query = sqon_malloc (qlen * sizeof (char));
-  if (NULL == query)
+  args = sqon_malloc (len * sizeof (char));
+  if (NULL == args)
     return PATTS_MEMORYERROR;
 
-  snprintf (query, qlen, fmt, id, host, passwd);
+  snprintf (args, len, fmt, id, host, passwd);
 
-  rc = sqon_query (patts_get_db (), query, NULL, NULL);
-  sqon_free (query);
+  rc = call_procedure ("createUser", args);
+  sqon_free (args);
 
   return rc;
 }
