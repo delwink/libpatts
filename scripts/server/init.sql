@@ -36,11 +36,13 @@ CREATE TABLE IF NOT EXISTS TaskItem
 	PRIMARY KEY(`id`)
 );
 
+DELIMITER //
+
 CREATE PROCEDURE clockIn (taskID INT UNSIGNED, username VARCHAR(8))
 BEGIN
 	INSERT INTO TaskItem(state,onClock,startTime,typeID,userID)
 	       VALUES(1,1,NOW(),taskID,username);
-END
+END//
 
 CREATE PROCEDURE clockOut (taskID INT UNSIGNED)
 BEGIN
@@ -49,7 +51,7 @@ BEGIN
 
 	UPDATE TaskItem SET onClock=0,stopTime=NOW()
 	       WHERE id=taskID AND userID=@username;
-END
+END//
 
 CREATE PROCEDURE createUser (
        newUser VARCHAR(8),
@@ -61,7 +63,7 @@ BEGIN
 	INSERT INTO User(state,isAdmin,dbUser,firstName,middleName,lastName)
 	       VALUES(1,0,newUser,'','','');
 	FLUSH PRIVILEGES;
-END
+END//
 
 CREATE PROCEDURE grantAdmin (
        id VARCHAR(8),
@@ -76,7 +78,7 @@ BEGIN
 	GRANT UPDATE ON User TO id@host IDENTIFIED BY passwd;
 	UPDATE User SET isAdmin=1 WHERE dbUser=id;
 	FLUSH PRIVILEGES;
-END
+END//
 
 CREATE PROCEDURE revokeAdmin (
        id VARCHAR(8),
@@ -90,7 +92,9 @@ BEGIN
 	REVOKE UPDATE ON User FROM id@host;
 	UPDATE User SET isAdmin=0 WHERE dbUser=id;
 	FLUSH PRIVILEGES;
-END
+END//
+
+DELIMITER ;
 
 CALL createUser('patts', '%', 'patts');
 CALL grantAdmin('patts', '%', 'patts');
