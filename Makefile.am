@@ -8,7 +8,7 @@ dist_pkgconfig_DATA = patts.pc
 
 lib_LTLIBRARIES = libpatts.la
 libpatts_la_SOURCES = src/admin.c src/get.c src/internal.c src/patts.c\
-src/user.c
+src/setup.c src/user.c
 
 libpatts_la_LDFLAGS = -version-info 0:0:0
 
