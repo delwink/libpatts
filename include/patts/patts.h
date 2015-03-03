@@ -15,6 +15,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file patts.h
+ * @version 0.0
+ * @date 3/2/2015
+ * @author David McMackins II
+ * @brief Functions global to PATTS
+ */
+
 #ifndef DELWINK_PATTS_H
 #define DELWINK_PATTS_H
 
