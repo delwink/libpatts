@@ -18,7 +18,7 @@
 /**
  * @file patts.h
  * @version 0.0
- * @date 3/2/2015
+ * @date 3/6/2015
  * @author David McMackins II
  * @brief Functions global to PATTS
  */
@@ -58,16 +58,37 @@ extern "C"
 {
 #endif
 
+/**
+ * @brief Initializes connection to the PATTS database.
+ * @param db_type Database connection type.
+ * @param host Hostname or IP address of the database server.
+ * @param user Database username.
+ * @param passwd Database authentication password.
+ * @param database Database to be used.
+ * @return Nonzero on error.
+ */
 int
 patts_init (uint8_t db_type, const char *host, const char *user,
 	    const char *passwd, const char *database);
 
+/**
+ * @brief Gets the database connection object.
+ * @return PATTS database connection object pointer or NULL on failure.
+ */
 sqon_dbsrv *
 patts_get_db (void);
 
+/**
+ * @brief Gets the active username.
+ * @return String representation of the active username.
+ */
 const char *
 patts_get_user (void);
 
+/**
+ * @brief Checks user's admin rights.
+ * @return true if user is a PATTS administrator, else false.
+ */
 bool
 patts_have_admin (void);
 
