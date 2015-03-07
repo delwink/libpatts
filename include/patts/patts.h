@@ -18,7 +18,7 @@
 /**
  * @file patts.h
  * @version 0.0
- * @date 3/6/2015
+ * @date 3/7/2015
  * @author David McMackins II
  * @brief Functions global to PATTS
  */
@@ -43,14 +43,29 @@
 "You should have received a copy of the GNU Affero General Public License\n"\
 "along with this program.  If not, see <http://www.gnu.org/licenses/>."
 
+/**
+ * @brief Error loading JSON internally.
+ */
 #define PATTS_LOADERROR   -60
 
+/**
+ * @brief Error allocating memory.
+ */
 #define PATTS_MEMORYERROR SQON_MEMORYERROR-50
 
+/**
+ * @brief Unexpected input from caller or result from function.
+ */
 #define PATTS_UNEXPECTED  SQON_UNSUPPORTED-50
 
+/**
+ * @brief Buffer overflow error.
+ */
 #define PATTS_OVERFLOW    SQON_OVERFLOW-50
 
+/**
+ * @brief User not found in database.
+ */
 #define PATTS_NOSUCHUSER  SQON_NOPK-50
 
 #ifdef __cplusplus
