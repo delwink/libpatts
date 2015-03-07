@@ -34,6 +34,8 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
   char *query;
   size_t qlen = 1;
 
+  sqon_init ();
+
   switch (db_type)
     {
     case SQON_DBCONN_MYSQL:
