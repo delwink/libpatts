@@ -18,9 +18,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <jansson.h>
+
 #include "patts.h"
 
-static sqon_dbsrv *PATTSDB;
+static sqon_dbsrv *PATTSDB = NULL;
 static bool HAVE_ADMIN = false;
 static char user_id[8];
 
