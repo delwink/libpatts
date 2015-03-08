@@ -21,7 +21,7 @@
 
 #include "patts.h"
 
-static sqon_dbsrv *PATTSDB = NULL;
+static sqon_dbsrv PATTSDB;
 static bool HAVE_ADMIN = false;
 static char user_id[8];
 
@@ -43,8 +43,7 @@ patts_init (uint8_t db_type, const char *host, const char *user,
 
   sqon_init ();
 
-  sqon_dbsrv db = sqon_new_connection (db_type, host, user, passwd, database);
-  PATTSDB = &db;
+  PATTSDB = sqon_new_connection (db_type, host, user, passwd, database);
 
   qlen += strlen (fmt) - 2;
   qlen += strlen (user);
@@ -73,7 +72,7 @@ patts_init (uint8_t db_type, const char *host, const char *user,
 
   isAdmin = json_string_value (json_object_get (user_cols, "isAdmin"));
 
-  if (!strcmp (isAdmin, "\\u0001") || !strcmp (isAdmin, "1"))
+  if (!strcmp (isAdmin, "\001") || !strcmp (isAdmin, "1"))
     HAVE_ADMIN = true;
   else if (!strcmp (isAdmin, "") || !strcmp (isAdmin, "0"))
     HAVE_ADMIN = false;
@@ -88,7 +87,7 @@ patts_init (uint8_t db_type, const char *host, const char *user,
 sqon_dbsrv *
 patts_get_db ()
 {
-  return PATTSDB;
+  return &PATTSDB;
 }
 
 const char *
