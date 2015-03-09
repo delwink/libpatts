@@ -301,7 +301,8 @@ patts_get_child_items (char **out, const char *id)
   json_decref (result_arr);
 
   fmt = "SELECT * FROM TaskType "
-    "WHERE state=1 AND startTime>='%s' AND stopTime<='%s' AND userID='%s'";
+    "WHERE state=1 AND startTime>='%s' AND stopTime<='%s' AND userID='%s' "
+    "AND id<>%s";
 
   qlen = 1 + strlen (fmt) - 6;
   qlen += DATETIME_LEN * 2;
@@ -315,28 +316,12 @@ patts_get_child_items (char **out, const char *id)
       return PATTS_MEMORYERROR;
     }
 
-  snprintf (query, qlen, fmt, old_start, old_stop, patts_get_user ());
+  snprintf (query, qlen, fmt, old_start, old_stop, patts_get_user (), id);
   sqon_free (old_start);
   sqon_free (old_stop);
 
-  rc = sqon_query (patts_get_db (), query, &result, "id");
+  rc = sqon_query (patts_get_db (), query, out, "id");
   sqon_free (query);
 
-  if (rc)
-    return rc;
-
-  result_obj = json_loads (result, 0, NULL);
-  sqon_free (result);
-
-  rc = json_object_del (result_obj, id); // remove parent from child list
-
-  if (!rc)
-    {
-      *out = json_dumps (result_obj, JSON_PRESERVE_ORDER);
-      if (NULL == *out)
-	rc = PATTS_MEMORYERROR;
-    }
-
-  json_decref (result_obj);
   return rc;
 }
