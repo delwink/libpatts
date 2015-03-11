@@ -300,7 +300,7 @@ patts_get_child_items (char **out, const char *id)
 
   json_decref (result_arr);
 
-  fmt = "SELECT * FROM TaskType "
+  fmt = "SELECT * FROM TaskItem "
     "WHERE state=1 AND startTime>='%s' AND stopTime<='%s' AND userID='%s' "
     "AND id<>%s";
 
