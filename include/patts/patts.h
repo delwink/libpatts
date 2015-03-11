@@ -20,7 +20,7 @@
  * @version 0.0
  * @date 3/7/2015
  * @author David McMackins II
- * @brief Functions global to PATTS
+ * @brief Functions global to PATTS.
  */
 
 #ifndef DELWINK_PATTS_H
