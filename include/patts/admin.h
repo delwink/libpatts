@@ -15,6 +15,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file admin.h
+ * @version 0.0
+ * @date 3/12/2015
+ * @brief Functions for PATTS administrators.
+ */
+
 #ifndef DELWINK_PATTS_ADMIN_H
 #define DELWINK_PATTS_ADMIN_H
 
@@ -23,21 +30,56 @@ extern "C"
 {
 #endif
 
+/**
+ * @brief Creates a new user on the database and applies proper permissions for
+ * a new user.
+ * @param id A username for the new user.
+ * @param host The hostname (or wildcard string) from which this user will be
+ * allowed to connect.
+ * @param passwd A password for the new user.
+ * @return Nonzero on error.
+ */
 int
 patts_create_user (const char *id, const char *host, const char *passwd);
 
+/**
+ * @brief Creates a new PATTS task type.
+ * @param parentID The ID number of the parent type ("0" if top-level).
+ * @param displayName The display name of the new type.
+ * @return Nonzero on error.
+ */
 int
 patts_create_task (const char *parentID, const char *displayName);
 
+/**
+ * @brief Deactivates a user in the database.
+ * @param id The username of the user to be deactivated.
+ * @return Nonzero on error.
+ */
 int
 patts_delete_user (const char *id);
 
+/**
+ * @brief Deactivates a task type.
+ * @param id String represenation of the ID number of the task to be
+ * deactivated.
+ * @return Nonzero on error.
 int
 patts_delete_task (const char *id);
 
+/**
+ * @brief Grants admin permissions to a PATTS user.
+ * @param id Username of the new admin user.
+ * @return Nonzero on error.
+ */
 int
 patts_grant_admin (const char *id);
 
+/**
+ * @brief Revokes admin permissions from a PATTS user.
+ * @param id Username of the admin user to be demoted.
+ * @return Nonzero on error.
+ */
 int
 patts_revoke_admin (const char *id);
 
