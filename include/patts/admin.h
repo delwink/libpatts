@@ -64,6 +64,7 @@ patts_delete_user (const char *id);
  * @param id String represenation of the ID number of the task to be
  * deactivated.
  * @return Nonzero on error.
+ */
 int
 patts_delete_task (const char *id);
 
