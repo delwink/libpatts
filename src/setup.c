@@ -112,10 +112,10 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
     "CREATE PROCEDURE clockOut (taskID INT UNSIGNED) "
     "BEGIN "
-    "DECLARE @username VARCHAR(8);"
-    "SELECT @username = userID FROM TaskItem WHERE id=taskID;"
+    "DECLARE username VARCHAR(8);"
+    "SELECT username = userID FROM TaskItem WHERE id=taskID;"
     "UPDATE TaskItem SET onClock=0,stopTime=NOW() "
-    "WHERE id=taskID AND userID=@username;"
+    "WHERE id=taskID AND userID=username;"
     "END",
 
     "CREATE PROCEDURE createUser (newUser VARCHAR(8), host VARCHAR(45),"
@@ -181,6 +181,9 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     {
       strcpy (query, queries[i]);
       rc = sqon_query (&srv, query, NULL, NULL);
+
+      if (rc)
+	break;
     }
 
   sqon_close (&srv);
