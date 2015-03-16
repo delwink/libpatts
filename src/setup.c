@@ -118,13 +118,34 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     "WHERE id=taskID AND userID=username;"
     "END",
 
-    "CREATE PROCEDURE createUser (newUser VARCHAR(8), host VARCHAR(45),"
+    "CREATE PROCEDURE grantPermission (perm VARCHAR(30), "
+    "target VARCHAR(30), id VARCHAR(8), host VARCHAR(45), passwd VARCHAR(45)) "
+    "BEGIN "
+    "SET @setPermissionCmd = CONCAT('GRANT ', perm, ' ON ', target, "
+    "' TO ''', id, '''@''', host, ''' IDENTIFIED BY ''', passwd, ''';');"
+    "PREPARE setPermissionStmt FROM @setPermissionCmd;"
+    "EXECUTE setPermissionStmt;"
+    "DEALLOCATE PREPARE setPermissionStmt;"
+    "FLUSH PRIVILEGES;"
+    "END",
+
+    "CREATE PROCEDURE revokePermission (perm VARCHAR(30), "
+    "target VARCHAR(30), id VARCHAR(8), host VARCHAR(45)) "
+    "BEGIN "
+    "SET @setPermissionCmd = CONCAT('REVOKE ', perm, ' ON ', target, "
+    "' FROM ''', id, '''@''', host, ''';');"
+    "PREPARE setPermissionStmt FROM @setPermissionCmd;"
+    "EXECUTE setPermissionStmt;"
+    "DEALLOCATE PREPARE setPermissionStmt;"
+    "FLUSH PRIVILEGES;"
+    "END",
+
+    "CREATE PROCEDURE createUser (id VARCHAR(8), host VARCHAR(45), "
     "passwd VARCHAR(45)) "
     "BEGIN "
-    "GRANT SELECT ON * TO newUser@host IDENTIFIED BY passwd;"
+    "CALL grantPermission('SELECT', 'User', id, host, passwd);"
     "INSERT INTO User(state,isAdmin,dbUser,firstName,middleName,lastName) "
-    "VALUES(1,0,newUser,'','','');"
-    "FLUSH PRIVILEGES;"
+    "VALUES(1,0,id,'','','');"
     "END",
 
     "CREATE PROCEDURE grantAdmin (id VARCHAR(8), host VARCHAR(45),"
@@ -155,7 +176,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     "CALL grantAdmin('patts', '%', 'patts')"
   };
 
-  const size_t num_queries = 12;
+  const size_t num_queries = 14;
 
   size_t longest = 0;
   for (size_t i = 0; i < num_queries; ++i)
