@@ -151,32 +151,39 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     "CREATE PROCEDURE grantAdmin (id VARCHAR(8), host VARCHAR(45),"
     "passwd VARCHAR(45)) "
     "BEGIN "
-    "GRANT EXECUTE ON PROCEDURE createUser TO id@host IDENTIFIED BY passwd;"
-    "GRANT EXECUTE ON PROCEDURE grantAdmin TO id@host IDENTIFIED BY passwd;"
-    "GRANT EXECUTE ON PROCEDURE revokeAdmin TO id@host IDENTIFIED BY passwd;"
-    "GRANT INSERT,UPDATE ON TaskType TO id@host IDENTIFIED BY passwd;"
-    "GRANT UPDATE ON User TO id@host IDENTIFIED BY passwd;"
+    "CALL grantPermission('EXECUTE', 'PROCEDURE createUser', id, host,"
+    "passwd);"
+    "CALL grantPermission('EXECUTE', 'PROCEDURE grantAdmin', id, host,"
+    "passwd);"
+    "CALL grantPermission('EXECUTE', 'PROCEDURE revokeAdmin', id, host,"
+    "passwd);"
+    "CALL grantPermission('INSERT,UPDATE', 'TaskType', id, host, passwd);"
+    "CALL grantPermission('UPDATE', 'User', id, host, passwd);"
     "UPDATE User SET isAdmin=1 WHERE dbUser=id;"
     "FLUSH PRIVILEGES;"
     "END",
 
     "CREATE PROCEDURE revokeAdmin (id VARCHAR(8), host VARCHAR(45)) "
     "BEGIN "
-    "REVOKE EXECUTE ON PROCEDURE createUser FROM id@host;"
-    "REVOKE EXECUTE ON PROCEDURE grantAdmin FROM id@host;"
-    "REVOKE EXECUTE ON PROCEDURE revokeAdmin FROM id@host;"
-    "REVOKE INSERT,UPDATE ON TaskType FROM id@host;"
-    "REVOKE UPDATE ON User FROM id@host;"
+    "CALL revokePermission('EXECUTE', 'PROCEDURE createUser', id, host);"
+    "CALL revokePermission('EXECUTE', 'PROCEDURE grantAdmin', id, host);"
+    "CALL revokePermission('EXECUTE', 'PROCEDURE revokeAdmin', id, host);"
+    "CALL revokePermission('INSERT,UPDATE', 'TaskType', id, host);"
+    "CALL revokePermission('UPDATE', 'User', id, host);"
     "UPDATE User SET isAdmin=0 WHERE dbUser=id;"
     "FLUSH PRIVILEGES;"
     "END",
 
     "CALL createUser('patts', '%', 'patts')",
 
-    "CALL grantAdmin('patts', '%', 'patts')"
+    "CALL grantAdmin('patts', '%', 'patts')",
+
+
+    "UPDATE User SET firstName='Admin',middleName='User',lastName='Account' "
+    "WHERE dbUser='patts'"
   };
 
-  const size_t num_queries = 14;
+  const size_t num_queries = 15;
 
   size_t longest = 0;
   for (size_t i = 0; i < num_queries; ++i)
