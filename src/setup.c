@@ -178,7 +178,6 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
     "CALL grantAdmin('patts', '%', 'patts')",
 
-
     "UPDATE User SET firstName='Admin',middleName='User',lastName='Account' "
     "WHERE dbUser='patts'"
   };
