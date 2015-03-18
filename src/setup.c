@@ -184,19 +184,6 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
   const size_t num_queries = 15;
 
-  size_t longest = 0;
-  for (size_t i = 0; i < num_queries; ++i)
-    {
-      size_t temp = strlen (queries[i]);
-
-      if (temp > longest)
-	longest = temp + 1;
-    }
-
-  query = sqon_malloc (longest * sizeof (char));
-  if (NULL == query)
-    return PATTS_MEMORYERROR;
-
   rc = sqon_connect (&srv);
   if (rc)
     {
@@ -204,17 +191,16 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
       return rc;
     }
 
-  for (size_t i = 0; i < num_queries; ++i)
+  size_t i;
+  for (i = 0; i < num_queries; ++i)
     {
-      strcpy (query, queries[i]);
-      rc = sqon_query (&srv, query, NULL, NULL);
+      rc = sqon_query (&srv, queries[i], NULL, NULL);
 
       if (rc)
 	break;
     }
 
   sqon_close (&srv);
-  sqon_free (query);
 
   return rc;
 }
