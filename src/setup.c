@@ -151,6 +151,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     "CREATE PROCEDURE grantAdmin (id VARCHAR(8), host VARCHAR(45),"
     "passwd VARCHAR(45)) "
     "BEGIN "
+    "SET max_sp_recursion_depth=255;"
     "CALL grantPermission('EXECUTE', 'PROCEDURE createUser', id, host,"
     "passwd);"
     "CALL grantPermission('EXECUTE', 'PROCEDURE grantAdmin', id, host,"
@@ -165,6 +166,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
     "CREATE PROCEDURE revokeAdmin (id VARCHAR(8), host VARCHAR(45)) "
     "BEGIN "
+    "SET max_sp_recursion_depth=255;"
     "CALL revokePermission('EXECUTE', 'PROCEDURE createUser', id, host);"
     "CALL revokePermission('EXECUTE', 'PROCEDURE grantAdmin', id, host);"
     "CALL revokePermission('EXECUTE', 'PROCEDURE revokeAdmin', id, host);"
