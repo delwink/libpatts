@@ -188,10 +188,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
   rc = sqon_connect (&srv);
   if (rc)
-    {
-      sqon_free (query);
-      return rc;
-    }
+    return rc;
 
   size_t i;
   for (i = 0; i < num_queries; ++i)
