@@ -26,7 +26,7 @@
 #define DATETIME_LEN 20 /* Enough space to hold a DATETIME plus a NUL byte */
 
 static int
-get_all (char **out, const char *table)
+get_all (char **out, const char *table, const char *pk)
 {
   int rc;
   const char *fmt = "SELECT * FROM %s";
@@ -42,14 +42,14 @@ get_all (char **out, const char *table)
 
   snprintf (query, qlen, fmt, table);
 
-  rc = sqon_query (patts_get_db (), query, out, "id");
+  rc = sqon_query (patts_get_db (), query, out, pk);
   sqon_free (query);
 
   return rc;
 }
 
 static int
-get_where (char **out, const char *table, const char *where)
+get_where (char **out, const char *table, const char *where, const char *pk)
 {
   int rc;
   const char *fmt = "SELECT * FROM %s WHERE %s";
@@ -66,30 +66,31 @@ get_where (char **out, const char *table, const char *where)
 
   snprintf (query, qlen, fmt, table, where);
 
-  rc = sqon_query (patts_get_db (), query, out, "id");
+  rc = sqon_query (patts_get_db (), query, out, pk);
   sqon_free (query);
 
   return rc;
 }
 
 static int
-get_by_id (char **out, const char *table, const char *id)
+get_by_id (char **out, const char *table, const char *id, const char *pk)
 {
   int rc;
-  const char *wherefmt = "id=%s";
+  const char *wherefmt = "%s=%s";
   char *where;
   size_t wlen = 1;
 
   wlen += strlen (wherefmt) - 2;
+  wlen += strlen (pk);
   wlen += strlen (id);
 
   where = sqon_malloc (wlen * sizeof (char));
   if (NULL == where)
     return PATTS_MEMORYERROR;
 
-  snprintf (where, wlen, wherefmt, id);
+  snprintf (where, wlen, wherefmt, pk, id);
 
-  rc = get_where (out, table, where);
+  rc = get_where (out, table, where, pk);
   sqon_free (where);
 
   return rc;
@@ -122,25 +123,25 @@ get_children (char **out, const char *table, const char *parent_id)
 int
 patts_get_users (char **out)
 {
-  return get_all (out, "User");
+  return get_all (out, "User", "dbUser");
 }
 
 int
 patts_get_user_byid (char **out, const char *id)
 {
-  return get_by_id (out, "User", id);
+  return get_by_id (out, "User", id, "dbUser");
 }
 
 int
 patts_get_types (char **out)
 {
-  return get_all (out, "TaskType");
+  return get_all (out, "TaskType", "id");
 }
 
 int
 patts_get_type_byid (char **out, const char *id)
 {
-  return get_by_id (out, "TaskType", id);
+  return get_by_id (out, "TaskType", id, "id");
 }
 
 int
@@ -152,13 +153,13 @@ patts_get_child_types (char **out, const char *parent_id)
 int
 patts_get_items (char **out)
 {
-  return get_all (out, "TaskItem");
+  return get_all (out, "TaskItem", "id");
 }
 
 int
 patts_get_item_byid (char **out, const char *id)
 {
-  return get_by_id (out, "TaskItem", id);
+  return get_by_id (out, "TaskItem", id, "id");
 }
 
 int
