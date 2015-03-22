@@ -143,7 +143,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     "CREATE PROCEDURE createUser (id VARCHAR(8), host VARCHAR(45), "
     "passwd VARCHAR(45)) "
     "BEGIN "
-    "CALL grantPermission('SELECT', 'User', id, host, passwd);"
+    "CALL grantPermission('SELECT', '*', id, host, passwd);"
     "INSERT INTO User(state,isAdmin,dbUser,firstName,middleName,lastName) "
     "VALUES(1,0,id,'','','');"
     "END",
