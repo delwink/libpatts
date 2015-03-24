@@ -29,19 +29,81 @@ patts_create_user (const char *id, const char *host, const char *passwd)
 {
   int rc;
   const char *fmt = "'%s','%s','%s'";
-  char *args;
+  char *args, *esc_id, *esc_host, *esc_passwd;
   size_t len = 1;
+  size_t lens[] = {
+    strlen (id) * 2 + 1,
+    strlen (host) * 2 + 1,
+    strlen (passwd) * 2 + 1
+  };
+
+  esc_id = sqon_malloc (lens[0] * sizeof (char));
+  if (NULL == esc_id)
+    return PATTS_MEMORYERROR;
+
+  esc_host = sqon_malloc (lens[1] * sizeof (char));
+  if (NULL == esc_host)
+    {
+      sqon_free (esc_id);
+      return PATTS_MEMORYERROR;
+    }
+
+  esc_passwd = sqon_malloc (lens[2] * sizeof (char));
+  if (NULL == esc_passwd)
+    {
+      sqon_free (esc_id);
+      sqon_free (esc_host);
+      return PATTS_MEMORYERROR;
+    }
+
+  for (size_t i = 0; i < 3; ++i)
+    {
+      switch (i)
+	{
+	case 0:
+	  rc = sqon_escape (patts_get_db (), id, esc_id, lens[i], false);
+	  break;
+
+	case 1:
+	  rc = sqon_escape (patts_get_db (), host, esc_host, lens[i], false);
+	  break;
+
+	case 2:
+	  rc = sqon_escape (patts_get_db (), passwd, esc_passwd, lens[i],
+			    false);
+	  break;
+	}
+
+      if (rc)
+	break;
+    }
+
+  if (rc)
+    {
+      sqon_free (esc_id);
+      sqon_free (esc_host);
+      sqon_free (esc_passwd);
+      return rc;
+    }
 
   len += strlen (fmt) - 6;
-  len += strlen (id);
-  len += strlen (host);
-  len += strlen (passwd);
+  len += strlen (esc_id);
+  len += strlen (esc_host);
+  len += strlen (esc_passwd);
 
   args = sqon_malloc (len * sizeof (char));
   if (NULL == args)
-    return PATTS_MEMORYERROR;
+    {
+      sqon_free (esc_id);
+      sqon_free (esc_host);
+      sqon_free (esc_passwd);
+      return PATTS_MEMORYERROR;
+    }
 
-  snprintf (args, len, fmt, id, host, passwd);
+  snprintf (args, len, fmt, esc_id, esc_host, esc_passwd);
+  sqon_free (esc_id);
+  sqon_free (esc_host);
+  sqon_free (esc_passwd);
 
   rc = call_procedure ("createUser", args);
   sqon_free (args);
@@ -55,18 +117,65 @@ patts_create_task (const char *parentID, const char *displayName)
   int rc;
   const char *fmt = "INSERT INTO TaskType(parentID,displayName) "
     "VALUES(%s,'%s')";
-  char *query;
+  char *query, *esc_parent, *esc_dispname;
   size_t qlen = 1;
+  size_t lens[] = {
+    strlen (parentID) * 2 + 1,
+    strlen (displayName) * 2 + 1
+  };
+
+  esc_parent = sqon_malloc (lens[0] * sizeof (char));
+  if (NULL == esc_parent)
+    return PATTS_MEMORYERROR;
+
+  esc_dispname = sqon_malloc (lens[1] * sizeof (char));
+  if (NULL == esc_dispname)
+    {
+      sqon_free (esc_parent);
+      return PATTS_MEMORYERROR;
+    }
+
+  for (size_t i = 0; i < 2; ++i)
+    {
+      switch (i)
+	{
+	case 0:
+	  rc = sqon_escape (patts_get_db (), parentID, esc_parent, lens[i],
+			    false);
+	  break;
+
+	case 1:
+	  rc = sqon_escape (patts_get_db (), displayName, esc_dispname,
+			    lens[i], false);
+	  break;
+	}
+
+      if (rc)
+	break;
+    }
+
+  if (rc)
+    {
+      sqon_free (esc_parent);
+      sqon_free (esc_dispname);
+      return rc;
+    }
 
   qlen += strlen (fmt) - 4;
-  qlen += strlen (parentID);
-  qlen += strlen (displayName);
+  qlen += strlen (esc_parent);
+  qlen += strlen (esc_dispname);
 
   query = sqon_malloc (qlen * sizeof (char));
   if (NULL == query)
-    return PATTS_MEMORYERROR;
+    {
+      sqon_free (esc_parent);
+      sqon_free (esc_dispname);
+      return PATTS_MEMORYERROR;
+    }
 
-  snprintf (query, qlen, fmt, parentID, displayName);
+  snprintf (query, qlen, fmt, esc_parent, esc_dispname);
+  sqon_free (esc_parent);
+  sqon_free (esc_dispname);
 
   rc = sqon_query (patts_get_db (), query, NULL, NULL);
   sqon_free (query);
@@ -79,19 +188,80 @@ set_state (const char *id, const char *table, const char *state)
 {
   int rc;
   const char *fmt = "UPDATE %s SET state=%s WHERE id=%s";
-  char *query;
+  char *query, *esc_id, *esc_table, *esc_state;
   size_t qlen = 1;
+  size_t lens[] = {
+    strlen (id) * 2 + 1,
+    strlen (table) * 2 + 1,
+    strlen (state) * 2 + 1
+  };
+
+  esc_id = sqon_malloc (lens[0] * sizeof (char));
+  if (NULL == esc_id)
+    return PATTS_MEMORYERROR;
+
+  esc_table = sqon_malloc (lens[1] * sizeof (char));
+  if (NULL == esc_table)
+    {
+      sqon_free (esc_id);
+      return PATTS_MEMORYERROR;
+    }
+
+  esc_state = sqon_malloc (lens[2] * sizeof (char));
+  if (NULL == esc_state)
+    {
+      sqon_free (esc_id);
+      sqon_free (esc_table);
+      return PATTS_MEMORYERROR;
+    }
+
+  for (size_t i = 0; i < 3; ++i)
+    {
+      switch (i)
+	{
+	case 0:
+	  rc = sqon_escape (patts_get_db (), id, esc_id, lens[i], false);
+	  break;
+
+	case 1:
+	  rc = sqon_escape (patts_get_db (), table, esc_table, lens[i], false);
+	  break;
+
+	case 2:
+	  rc = sqon_escape (patts_get_db (), state, esc_state, lens[i], false);
+	  break;
+	}
+
+      if (rc)
+	break;
+    }
+
+  if (rc)
+    {
+      sqon_free (esc_id);
+      sqon_free (esc_table);
+      sqon_free (esc_state);
+      return rc;
+    }
 
   qlen += strlen (fmt) - 6;
-  qlen += strlen (id);
-  qlen += strlen (table);
-  qlen += strlen (state);
+  qlen += strlen (esc_id);
+  qlen += strlen (esc_table);
+  qlen += strlen (esc_state);
 
   query = sqon_malloc (qlen * sizeof (char));
   if (NULL == query)
-    return PATTS_MEMORYERROR;
+    {
+      sqon_free (esc_id);
+      sqon_free (esc_table);
+      sqon_free (esc_state);
+      return PATTS_MEMORYERROR;
+    }
 
-  snprintf (query, qlen, fmt, table, state, id);
+  snprintf (query, qlen, fmt, esc_table, esc_state, esc_id);
+  sqon_free (esc_id);
+  sqon_free (esc_table);
+  sqon_free (esc_state);
 
   rc = sqon_query (patts_get_db (), query, NULL, NULL);
   sqon_free (query);
@@ -111,14 +281,83 @@ patts_delete_task (const char *id)
   return set_state (id, "TaskType", "0");
 }
 
-int
-patts_grant_admin (const char *id)
+static int
+proc_with_id (const char *proc, const char *id, const char *host)
 {
-  return call_procedure ("grantAdmin", id);
+  int rc;
+  const char *fmt = "'%s','%s'";
+  char *args, *esc_id, *esc_host;
+  size_t len = 1;
+  size_t lens[] = {
+    strlen (id) * 2 + 1,
+    strlen (host) * 2 + 1
+  };
+
+  esc_id = sqon_malloc (lens[0] * sizeof (char));
+  if (NULL == esc_id)
+    return PATTS_MEMORYERROR;
+
+  esc_host = sqon_malloc (lens[1] * sizeof (char));
+  if (NULL == esc_host)
+    {
+      sqon_free (esc_id);
+      return PATTS_MEMORYERROR;
+    }
+
+  for (size_t i = 0; i < 2; ++i)
+    {
+      switch (i)
+	{
+	case 0:
+	  rc = sqon_escape (patts_get_db (), id, esc_id, lens[i], false);
+	  break;
+
+	case 1:
+	  rc = sqon_escape (patts_get_db (), host, esc_host, lens[i], false);
+	  break;
+	}
+
+      if (rc)
+	break;
+    }
+
+  if (rc)
+    {
+      sqon_free (esc_id);
+      sqon_free (esc_host);
+      return rc;
+    }
+
+  len += strlen (fmt) - 4;
+  len += strlen (esc_id);
+  len += strlen (esc_host);
+
+  args = sqon_malloc (len * sizeof (char));
+  if (NULL == args)
+    {
+      sqon_free (esc_id);
+      sqon_free (esc_host);
+      return PATTS_MEMORYERROR;
+    }
+
+  snprintf (args, len, fmt, esc_id, esc_host);
+  sqon_free (esc_id);
+  sqon_free (esc_host);
+
+  rc = call_procedure (proc, args);
+  sqon_free (args);
+
+  return rc;
 }
 
 int
-patts_revoke_admin (const char *id)
+patts_grant_admin (const char *id, const char *host)
 {
-  return call_procedure ("revokeAdmin", id);
+  return proc_with_id ("grantAdmin", id, host);
+}
+
+int
+patts_revoke_admin (const char *id, const char *host)
+{
+  return proc_with_id ("revokeAdmin", id, host);
 }

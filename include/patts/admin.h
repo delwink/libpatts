@@ -71,18 +71,20 @@ patts_delete_task (const char *id);
 /**
  * @brief Grants admin permissions to a PATTS user.
  * @param id Username of the new admin user.
+ * @param host Hostname for which to deny the user privileges.
  * @return Nonzero on error.
  */
 int
-patts_grant_admin (const char *id);
+patts_grant_admin (const char *id, const char *host);
 
 /**
  * @brief Revokes admin permissions from a PATTS user.
  * @param id Username of the admin user to be demoted.
+ * @param host Hostname for which to deny the user privileges.
  * @return Nonzero on error.
  */
 int
-patts_revoke_admin (const char *id);
+patts_revoke_admin (const char *id, const char *host);
 
 #ifdef __cplusplus
 }
