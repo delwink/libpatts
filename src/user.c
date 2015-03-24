@@ -103,5 +103,23 @@ patts_clockin (const char *type)
 int
 patts_clockout (const char *item)
 {
-  return call_procedure ("clockOut", item);
+  int rc;
+  char *esc_item;
+  size_t len = strlen (item) * 2 + 1;
+
+  esc_item = sqon_malloc (len * sizeof (char));
+  if (NULL == esc_item)
+    return PATTS_MEMORYERROR;
+
+  rc = sqon_escape (patts_get_db (), item, esc_item, len, false);
+  if (rc)
+    {
+      sqon_free (esc_item);
+      return rc;
+    }
+
+  rc =  call_procedure ("clockOut", esc_item);
+  sqon_free (esc_item);
+
+  return rc;
 }
