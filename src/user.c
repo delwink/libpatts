@@ -81,18 +81,33 @@ patts_clockin (const char *type)
 {
   int rc;
   const char *fmt = "1,1,NOW(),%s,'%s'";
-  char *args;
-  size_t len = 1;
+  char *args, *esc_type;
+  size_t len = 1, typelen = strlen (type) * 2 + 1;
+
+  esc_type = sqon_malloc (typelen * sizeof (char));
+  if (NULL == esc_type)
+    return PATTS_MEMORYERROR;
+
+  rc = sqon_escape (patts_get_db (), type, esc_type, typelen, false);
+  if (rc)
+    {
+      sqon_free (esc_type);
+      return rc;
+    }
 
   len += strlen (fmt) - 4;
-  len += strlen (type);
+  len += strlen (esc_type);
   len += strlen (patts_get_user ());
 
   args = sqon_malloc (len * sizeof (char));
   if (NULL == args)
-    return PATTS_MEMORYERROR;
+    {
+      sqon_free (esc_type);
+      return PATTS_MEMORYERROR;
+    }
 
-  snprintf (args, len, fmt, type, patts_get_user ());
+  snprintf (args, len, fmt, esc_type, patts_get_user ());
+  sqon_free (esc_type);
 
   rc = call_procedure ("clockIn", args);
   sqon_free (args);
