@@ -77,18 +77,33 @@ get_by_id (char **out, const char *table, const char *id, const char *pk)
 {
   int rc;
   const char *wherefmt = "%s=%s";
-  char *where;
-  size_t wlen = 1;
+  char *where, *esc_id;
+  size_t wlen = 1, idlen = strlen (id) * 2 + 1;
+
+  esc_id = sqon_malloc (idlen * sizeof (char));
+  if (NULL == esc_id)
+    return PATTS_MEMORYERROR;
+
+  rc = sqon_escape (patts_get_db (), id, esc_id, idlen, false);
+  if (rc)
+    {
+      sqon_free (esc_id);
+      return rc;
+    }
 
   wlen += strlen (wherefmt) - 2;
   wlen += strlen (pk);
-  wlen += strlen (id);
+  wlen += strlen (esc_id);
 
   where = sqon_malloc (wlen * sizeof (char));
   if (NULL == where)
-    return PATTS_MEMORYERROR;
+    {
+      sqon_free (esc_id);
+      return PATTS_MEMORYERROR;
+    }
 
-  snprintf (where, wlen, wherefmt, pk, id);
+  snprintf (where, wlen, wherefmt, pk, esc_id);
+  sqon_free (esc_id);
 
   rc = get_where (out, table, where, pk);
   sqon_free (where);
