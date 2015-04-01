@@ -31,17 +31,36 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
   int rc;
   sqon_dbsrv srv;
   const char *fmt;
-  char *query;
+  char *query, *esc_host, *esc_user, *esc_passwd, *esc_database;
   size_t qlen = 1;
+  size_t lens[] = {
+    strlen (host) * 2 + 1,
+    strlen (user) * 2 + 1,
+    strlen (passwd) * 2 + 1,
+    strlen (database) * 2 + 1
+  };
+
+  esc_database = sqon_malloc (lens[3] * sizeof (char));
+  if (NULL == esc_database)
+    return PATTS_MEMORYERROR;
 
   sqon_init ();
+
+  srv = sqon_new_connection (db_type, host, user, passwd, NULL);
+
+  rc = sqon_escape (&srv, database, esc_database, lens[3], false);
+  if (rc)
+    {
+      sqon_free (esc_database);
+      return rc;
+    }
 
   switch (db_type)
     {
     case SQON_DBCONN_MYSQL:
       fmt = "CREATE DATABASE %s";
       qlen += strlen (fmt) - 2;
-      qlen += strlen (database);
+      qlen += strlen (esc_database);
 
       query = sqon_malloc (qlen * sizeof (char));
       if (NULL == query)
@@ -50,9 +69,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 	  break;
 	}
 
-      snprintf (query, qlen, fmt, database);
-
-      srv = sqon_new_connection (db_type, host, user, passwd, NULL);
+      snprintf (query, qlen, fmt, esc_database);
 
       rc = sqon_query (&srv, query, NULL, NULL);
       sqon_free (query);
@@ -64,9 +81,67 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     }
 
   if (rc)
-    return rc;
+    {
+      sqon_free (esc_database);
+      return rc;
+    }
 
-  srv = sqon_new_connection (db_type, host, user, passwd, database);
+  esc_host = sqon_malloc (lens[0] * sizeof (char));
+  if (NULL == esc_host)
+    {
+      sqon_free (esc_database);
+      return PATTS_MEMORYERROR;
+    }
+
+  esc_user = sqon_malloc (lens[1] * sizeof (char));
+  if (NULL == esc_user)
+    {
+      sqon_free (esc_host);
+      sqon_free (esc_database);
+      return PATTS_MEMORYERROR;
+    }
+
+  esc_passwd = sqon_malloc (lens[2] * sizeof (char));
+  if (NULL == esc_passwd)
+    {
+      sqon_free (esc_host);
+      sqon_free (esc_user);
+      sqon_free (esc_database);
+      return PATTS_MEMORYERROR;
+    }
+
+  for (size_t i = 0; i < 3; ++i)
+    {
+      switch (i)
+	{
+	case 0:
+	  rc = sqon_escape (&srv, host, esc_host, lens[i], false);
+	  break;
+
+	case 1:
+	  rc = sqon_escape (&srv, user, esc_user, lens[i], false);
+	  break;
+
+	case 2:
+	  rc = sqon_escape (&srv, passwd, esc_passwd, lens[i], false);
+	  break;
+	}
+
+      if (rc)
+	break;
+    }
+
+  if (rc)
+    {
+      sqon_free (esc_host);
+      sqon_free (esc_user);
+      sqon_free (esc_passwd);
+      sqon_free (esc_database);
+      return rc;
+    }
+
+  srv = sqon_new_connection (db_type, esc_host, esc_user, esc_passwd,
+			     esc_database);
 
   char *queries[] = {
     "CREATE TABLE Meta(version INT UNSIGNED)",
@@ -188,7 +263,13 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
   rc = sqon_connect (&srv);
   if (rc)
-    return rc;
+    {
+      sqon_free (esc_host);
+      sqon_free (esc_user);
+      sqon_free (esc_passwd);
+      sqon_free (esc_database);
+      return rc;
+    }
 
   size_t i;
   for (i = 0; i < num_queries; ++i)
@@ -198,6 +279,11 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
       if (rc)
 	break;
     }
+
+  sqon_free (esc_host);
+  sqon_free (esc_user);
+  sqon_free (esc_passwd);
+  sqon_free (esc_database);
 
   sqon_close (&srv);
 
