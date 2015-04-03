@@ -31,7 +31,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
   int rc;
   sqon_dbsrv srv;
   const char *fmt;
-  char *query, *esc_host, *esc_user, *esc_passwd, *esc_database;
+  char *query, *esc_database;
   size_t qlen = 1;
   size_t lens[] = {
     strlen (host) * 2 + 1,
@@ -80,68 +80,12 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
       break;
     }
 
-  if (rc)
-    {
-      sqon_free (esc_database);
-      return rc;
-    }
-
-  esc_host = sqon_malloc (lens[0] * sizeof (char));
-  if (NULL == esc_host)
-    {
-      sqon_free (esc_database);
-      return PATTS_MEMORYERROR;
-    }
-
-  esc_user = sqon_malloc (lens[1] * sizeof (char));
-  if (NULL == esc_user)
-    {
-      sqon_free (esc_host);
-      sqon_free (esc_database);
-      return PATTS_MEMORYERROR;
-    }
-
-  esc_passwd = sqon_malloc (lens[2] * sizeof (char));
-  if (NULL == esc_passwd)
-    {
-      sqon_free (esc_host);
-      sqon_free (esc_user);
-      sqon_free (esc_database);
-      return PATTS_MEMORYERROR;
-    }
-
-  for (size_t i = 0; i < 3; ++i)
-    {
-      switch (i)
-	{
-	case 0:
-	  rc = sqon_escape (&srv, host, esc_host, lens[i], false);
-	  break;
-
-	case 1:
-	  rc = sqon_escape (&srv, user, esc_user, lens[i], false);
-	  break;
-
-	case 2:
-	  rc = sqon_escape (&srv, passwd, esc_passwd, lens[i], false);
-	  break;
-	}
-
-      if (rc)
-	break;
-    }
+  sqon_free (esc_database);
 
   if (rc)
-    {
-      sqon_free (esc_host);
-      sqon_free (esc_user);
-      sqon_free (esc_passwd);
-      sqon_free (esc_database);
-      return rc;
-    }
+    return rc;
 
-  srv = sqon_new_connection (db_type, esc_host, esc_user, esc_passwd,
-			     esc_database);
+  srv = sqon_new_connection (db_type, host, user, passwd, database);
 
   char *queries[] = {
     "CREATE TABLE Meta(version INT UNSIGNED)",
@@ -263,13 +207,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
   rc = sqon_connect (&srv);
   if (rc)
-    {
-      sqon_free (esc_host);
-      sqon_free (esc_user);
-      sqon_free (esc_passwd);
-      sqon_free (esc_database);
-      return rc;
-    }
+    return rc;
 
   size_t i;
   for (i = 0; i < num_queries; ++i)
@@ -279,11 +217,6 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
       if (rc)
 	break;
     }
-
-  sqon_free (esc_host);
-  sqon_free (esc_user);
-  sqon_free (esc_passwd);
-  sqon_free (esc_database);
 
   sqon_close (&srv);
 
