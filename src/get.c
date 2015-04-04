@@ -116,18 +116,34 @@ get_children (char **out, const char *table, const char *parent_id)
 {
   int rc;
   const char *fmt = "SELECT * FROM %s WHERE parentID=%s";
-  char *query;
+  char *query, *esc_parent;
   size_t qlen = 1;
+  size_t plen = strlen (parent_id) * 2 + 1;
+
+  esc_parent = sqon_malloc (plen * sizeof (char));
+  if (NULL == esc_parent)
+    return PATTS_MEMORYERROR;
+
+  rc = sqon_escape (patts_get_db (), parent_id, esc_parent, plen, false);
+  if (rc)
+    {
+      sqon_free (esc_parent);
+      return rc;
+    }
 
   qlen += strlen (fmt) - 4;
   qlen += strlen (table);
-  qlen += strlen (parent_id);
+  qlen += strlen (esc_parent);
 
   query = sqon_malloc (qlen * sizeof (char));
   if (NULL == query)
-    return PATTS_MEMORYERROR;
+    {
+      sqon_free (esc_parent);
+      return PATTS_MEMORYERROR;
+    }
 
-  snprintf (query, qlen, fmt, table, parent_id);
+  snprintf (query, qlen, fmt, table, esc_parent);
+  sqon_free (esc_parent);
 
   rc = sqon_query (patts_get_db (), query, out, "id");
   sqon_free (query);
