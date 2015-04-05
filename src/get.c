@@ -199,17 +199,33 @@ patts_get_last_item (size_t *out, const char *user_id)
   int rc;
   const char *fmt = "SELECT id FROM TaskItem WHERE userID='%s' "
     "ORDER BY id DESC LIMIT 1";
-  char *result, *query;
+  char *result, *query, *esc_user;
   size_t qlen = 1;
+  size_t ulen = strlen (user_id) * 2 + 1;
+
+  esc_user = sqon_malloc (ulen * sizeof (char));
+  if (NULL == esc_user)
+    return PATTS_MEMORYERROR;
+
+  rc = sqon_escape (patts_get_db (), user_id, esc_user, ulen, false);
+  if (rc)
+    {
+      sqon_free (esc_user);
+      return rc;
+    }
 
   qlen += strlen (fmt) - 2;
-  qlen += strlen (user_id);
+  qlen += strlen (esc_user);
 
   query = sqon_malloc (qlen * sizeof (char));
   if (NULL == query)
-    return PATTS_MEMORYERROR;
+    {
+      sqon_free (esc_user);
+      return PATTS_MEMORYERROR;
+    }
 
-  snprintf (query, qlen, fmt, user_id);
+  snprintf (query, qlen, fmt, esc_user);
+  sqon_free (esc_user);
 
   rc = sqon_query (patts_get_db (), query, &result, NULL);
   sqon_free (query);
