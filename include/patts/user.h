@@ -15,6 +15,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file user.h
+ * @version 0.0
+ * @date 4/7/2015
+ * @author David McMackins II
+ * @brief PATTS user functions.
+ */
+
 #ifndef DELWINK_PATTS_USER_H
 #define DELWINK_PATTS_USER_H
 
@@ -23,15 +31,35 @@ extern "C"
 {
 #endif
 
+/**
+ * @brief Gets the active task for the current user.
+ * @param out Unallocated pointer to string for the output.
+ * @return Nonzero on error.
+ */
 int
 patts_get_active_task (char **out);
 
+/**
+ * @brief Gets the tree of active tasks for the user.
+ * @param out Unallocated pointer to string for the output.
+ * @return Nonzero on error.
+ */
 int
 patts_get_tree (char **out);
 
+/**
+ * @brief Clock into a task.
+ * @param type String representation of the typeID of the task.
+ * @return Nonzero on error.
+ */
 int
 patts_clockin (const char *type);
 
+/**
+ * @brief Clock out of a task and all its subtasks.
+ * @param item String representation of the item ID.
+ * @return Nonzero on error.
+ */
 int
 patts_clockout (const char *item);
 

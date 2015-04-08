@@ -15,6 +15,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file setup.h
+ * @version 0.0
+ * @date 4/7/2015
+ * @author David McMackins II
+ * @brief PATTS database setup utilities.
+ */
+
 #ifndef DELWINK_PATTS_SETUP_H
 #define DELWINK_PATTS_SETUP_H
 
@@ -25,6 +33,15 @@ extern "C"
 {
 #endif
 
+/**
+ * @brief Creates and sets up a new PATTS database.
+ * @param db_type Database connection type.
+ * @param host Hostname or IP address of the database server.
+ * @param user Database server username.
+ * @param passwd Database server authentication password.
+ * @param database Database to be created.
+ * @return Nonzero on error.
+ */
 int
 patts_setup (uint8_t db_type, const char *host, const char *user,
 	     const char *passwd, const char *database);

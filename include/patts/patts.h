@@ -18,7 +18,7 @@
 /**
  * @file patts.h
  * @version 0.0
- * @date 3/7/2015
+ * @date 4/7/2015
  * @author David McMackins II
  * @brief Functions global to PATTS.
  */
@@ -28,8 +28,14 @@
 
 #include <sqon.h>
 
+/**
+ * @brief libpatts software version.
+ */
 #define PATTS_VERSION "0.0.0"
 
+/**
+ * @brief libpatts copyright license information.
+ */
 #define PATTS_COPYRIGHT \
 "libpatts - Backend library for PATTS Ain't Time Tracking Software\n"\
 "Copyright (C) 2014-2015 Delwink, LLC\n\n"\
@@ -77,8 +83,8 @@ extern "C"
  * @brief Initializes connection to the PATTS database.
  * @param db_type Database connection type.
  * @param host Hostname or IP address of the database server.
- * @param user Database username.
- * @param passwd Database authentication password.
+ * @param user Database server username.
+ * @param passwd Database server authentication password.
  * @param database Database to be used.
  * @return Nonzero on error.
  */

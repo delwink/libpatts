@@ -57,3 +57,4 @@ ltmain.sh
 # packaging
 pkg/
 *.tar.gz
+doc/api/
