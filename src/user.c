@@ -81,8 +81,70 @@ patts_clockin (const char *type)
 {
   int rc;
   const char *fmt = "1,1,NOW(),%s,'%s'";
-  char *args, *esc_type;
+  char *args, *active_task, *active_task_id, *child_tasks, *esc_type;
   size_t len = 1, typelen = strlen (type) * 2 + 1;
+  json_t *json_child_tasks;
+
+  rc = patts_get_active_task (&active_task);
+  if (rc)
+    return rc;
+
+  active_task_id = sqon_malloc (MAX_ID_LEN * sizeof (char));
+  if (NULL == active_task_id)
+    {
+      sqon_free (active_task);
+      return PATTS_MEMORYERROR;
+    }
+
+  rc = sscanf (active_task, "{\"%s\":", active_task_id);
+  sqon_free (active_task);
+  if (1 != rc)
+    {
+      sqon_free (active_task_id);
+      return PATTS_UNEXPECTED;
+    }
+
+  child_tasks = sqon_malloc (MAX_ID_LEN * sizeof (char));
+  if (NULL == child_tasks)
+    {
+      sqon_free (active_task_id);
+      return PATTS_MEMORYERROR;
+    }
+
+  rc = patts_get_child_types (&child_tasks, active_task_id);
+  sqon_free (active_task_id);
+  if (rc)
+    {
+      sqon_free (child_tasks);
+      return rc;
+    }
+
+  json_child_tasks = json_loads (child_tasks, 0, NULL);
+  sqon_free (child_tasks);
+  if (NULL == json_child_tasks)
+    return PATTS_MEMORYERROR;
+
+  if (!json_is_object (json_child_tasks))
+    {
+      json_decref (json_child_tasks);
+      return PATTS_UNEXPECTED;
+    }
+
+  const char *key;
+  json_t *value;
+  bool found = false;
+  json_object_foreach (json_child_tasks, key, value)
+    {
+      if (!strcmp (key, type))
+	{
+	  found = true;
+	  break;
+	}
+    }
+  json_decref (json_child_tasks);
+
+  if (!found)
+    return PATTS_UNAVAILABLE;
 
   esc_type = sqon_malloc (typelen * sizeof (char));
   if (NULL == esc_type)

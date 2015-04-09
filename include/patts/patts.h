@@ -65,6 +65,11 @@
 #define PATTS_UNEXPECTED  SQON_UNSUPPORTED-50
 
 /**
+ * @brief Selected task cannot be clocked into.
+ */
+#define PATTS_UNAVAILABLE PATTS_UNEXPECTED-1
+
+/**
  * @brief Buffer overflow error.
  */
 #define PATTS_OVERFLOW    SQON_OVERFLOW-50
