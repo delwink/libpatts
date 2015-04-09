@@ -112,7 +112,7 @@ patts_create_user (const char *id, const char *host, const char *passwd)
 }
 
 int
-patts_create_task (const char *parentID, const char *displayName)
+patts_create_task (const char *parent_id, const char *display_name)
 {
   int rc;
   const char *fmt = "INSERT INTO TaskType(parentID,displayName) "
@@ -120,8 +120,8 @@ patts_create_task (const char *parentID, const char *displayName)
   char *query, *esc_parent, *esc_dispname;
   size_t qlen = 1;
   size_t lens[] = {
-    strlen (parentID) * 2 + 1,
-    strlen (displayName) * 2 + 1
+    strlen (parent_id) * 2 + 1,
+    strlen (display_name) * 2 + 1
   };
 
   esc_parent = sqon_malloc (lens[0] * sizeof (char));
@@ -140,12 +140,12 @@ patts_create_task (const char *parentID, const char *displayName)
       switch (i)
 	{
 	case 0:
-	  rc = sqon_escape (patts_get_db (), parentID, esc_parent, lens[i],
+	  rc = sqon_escape (patts_get_db (), parent_id, esc_parent, lens[i],
 			    false);
 	  break;
 
 	case 1:
-	  rc = sqon_escape (patts_get_db (), displayName, esc_dispname,
+	  rc = sqon_escape (patts_get_db (), display_name, esc_dispname,
 			    lens[i], false);
 	  break;
 	}

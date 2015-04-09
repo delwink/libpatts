@@ -18,7 +18,7 @@
 /**
  * @file admin.h
  * @version 0.0
- * @date 3/12/2015
+ * @date 4/9/2015
  * @brief Functions for PATTS administrators.
  */
 
@@ -44,12 +44,12 @@ patts_create_user (const char *id, const char *host, const char *passwd);
 
 /**
  * @brief Creates a new PATTS task type.
- * @param parentID The ID number of the parent type ("0" if top-level).
- * @param displayName The display name of the new type.
+ * @param parent_id The ID number of the parent type ("0" if top-level).
+ * @param display_name The display name of the new type.
  * @return Nonzero on error.
  */
 int
-patts_create_task (const char *parentID, const char *displayName);
+patts_create_task (const char *parent_id, const char *display_name);
 
 /**
  * @brief Deactivates a user in the database.
