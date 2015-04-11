@@ -133,7 +133,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     "BEGIN "
     "DECLARE username VARCHAR(8);"
     "SELECT username = userID FROM TaskItem WHERE id=taskID;"
-    "UPDATE TaskItem SET onClock=0,stopTime=NOW() "
+    "UPDATE TaskItem SET onClock=0,stopTime=CURRENT_TIMESTAMP "
     "WHERE id=taskID AND userID=username;"
     "END",
 
