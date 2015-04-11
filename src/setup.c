@@ -134,7 +134,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     "DECLARE username VARCHAR(8);"
     "SELECT username = userID FROM TaskItem WHERE id=taskID;"
     "UPDATE TaskItem SET onClock=0,stopTime=CURRENT_TIMESTAMP "
-    "WHERE id=taskID AND userID=username;"
+    "WHERE id=taskID AND userID=username AND onClock=1;"
     "END",
 
     "CREATE PROCEDURE grantPermission (perm VARCHAR(30), "
