@@ -80,7 +80,7 @@ int
 patts_clockin (const char *type)
 {
   int rc;
-  const char *fmt = "1,1,CURRENT_TIMESTAMP,%s,'%s'";
+  const char *fmt = "%s,'%s'";
   char *args, *active_task, *active_task_id, *child_tasks, *esc_type;
   size_t len = 1, typelen = strlen (type) * 2 + 1;
   json_t *json_child_tasks;
