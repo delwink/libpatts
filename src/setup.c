@@ -126,7 +126,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     "CREATE PROCEDURE clockIn (taskID INT UNSIGNED, username VARCHAR(8)) "
     "BEGIN "
     "INSERT INTO TaskItem(state,onClock,startTime,typeID,userID) "
-    "VALUES(1,1,NOW(),taskID,username);"
+    "VALUES(1,1,CURRENT_TIMESTAMP,taskID,username);"
     "END",
 
     "CREATE PROCEDURE clockOut (taskID INT UNSIGNED) "
