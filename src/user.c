@@ -104,20 +104,10 @@ patts_clockin (const char *type)
       return PATTS_UNEXPECTED;
     }
 
-  child_tasks = sqon_malloc (MAX_ID_LEN * sizeof (char));
-  if (NULL == child_tasks)
-    {
-      sqon_free (active_task_id);
-      return PATTS_MEMORYERROR;
-    }
-
   rc = patts_get_child_types (&child_tasks, active_task_id);
   sqon_free (active_task_id);
   if (rc)
-    {
-      sqon_free (child_tasks);
-      return rc;
-    }
+    return rc;
 
   json_child_tasks = json_loads (child_tasks, 0, NULL);
   sqon_free (child_tasks);
