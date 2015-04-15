@@ -25,8 +25,6 @@
 #include "get.h"
 #include "internal.h"
 
-#define MAX_ID_LEN 10 /* maximum length for a 32-bit INT in characters */
-
 int
 patts_get_active_task (char **out)
 {

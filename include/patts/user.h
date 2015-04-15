@@ -26,6 +26,8 @@
 #ifndef DELWINK_PATTS_USER_H
 #define DELWINK_PATTS_USER_H
 
+#define MAX_ID_LEN 12 // max length for a 32-bit INT in characters plus NUL
+
 #ifdef __cplusplus
 extern "C"
 {
