@@ -117,3 +117,33 @@ patts_have_admin ()
 {
   return HAVE_ADMIN;
 }
+
+uint32_t
+strtou32 (const char *s)
+{
+  return (uint32_t) strtod (s, NULL);
+}
+
+int
+patts_get_db_version (uint32_t *out)
+{
+  int rc;
+  char *result;
+  json_t *meta_header, *metadata;
+
+  rc = sqon_query (patts_get_db (), "SELECT version FROM Meta", &result, NULL);
+  if (rc)
+    return rc;
+
+  meta_header = json_loads (result, 0, NULL);
+  sqon_free (result);
+  if (NULL == meta_header)
+    return PATTS_UNEXPECTED;
+
+  metadata = json_array_get (meta_header, 0);
+
+  *out = strtou32 (json_string_value (json_object_get (metadata, "version")));
+  json_decref (meta_header);
+
+  return 0;
+}

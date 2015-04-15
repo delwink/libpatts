@@ -18,7 +18,7 @@
 /**
  * @file patts.h
  * @version 0.0
- * @date 4/7/2015
+ * @date 4/14/2015
  * @author David McMackins II
  * @brief Functions global to PATTS.
  */
@@ -26,6 +26,7 @@
 #ifndef DELWINK_PATTS_H
 #define DELWINK_PATTS_H
 
+#include <stdint.h>
 #include <sqon.h>
 
 /**
@@ -117,6 +118,14 @@ patts_get_user (void);
  */
 bool
 patts_have_admin (void);
+
+/**
+ * @brief Checks the database schema version on the remote server.
+ * @param out Pointer to the output location.
+ * @return Nonzero on error.
+ */
+int
+patts_get_db_version (uint32_t *out);
 
 #ifdef __cplusplus
 }
