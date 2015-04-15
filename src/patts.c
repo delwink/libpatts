@@ -131,7 +131,8 @@ patts_get_db_version (uint32_t *out)
   char *result;
   json_t *meta_header, *metadata;
 
-  rc = sqon_query (patts_get_db (), "SELECT version FROM Meta", &result, NULL);
+  rc = sqon_query (patts_get_db (), "SELECT version FROM Meta LIMIT 1",
+		   &result, NULL);
   if (rc)
     return rc;
 
