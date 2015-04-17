@@ -22,6 +22,7 @@
 
 #include "patts.h"
 #include "get.h"
+#include "user.h"
 
 #define DATETIME_LEN 20 /* Enough space to hold a DATETIME plus a NUL byte */
 
@@ -194,7 +195,7 @@ patts_get_item_byid (char **out, const char *id)
 }
 
 int
-patts_get_last_item (size_t *out, const char *user_id)
+patts_get_last_item (char **out, const char *user_id)
 {
   int rc;
   const char *fmt = "SELECT id FROM TaskItem WHERE userID='%s' "
@@ -233,15 +234,18 @@ patts_get_last_item (size_t *out, const char *user_id)
   if (rc)
     return rc;
 
-  unsigned int temp;
+  *out = sqon_malloc (MAX_ID_LEN * sizeof (char));
+  if (NULL == *out)
+    return PATTS_MEMORYERROR;
 
-  rc = sscanf (result, "[{\"id\": \"%u\"}]", &temp);
+  rc = sscanf (result, "[{\"id\": \"%s\"}]", *out);
   sqon_free (result);
 
   if (!rc)
-    return PATTS_UNEXPECTED;
-
-  *out = temp;
+    {
+      sqon_free (*out);
+      return PATTS_UNEXPECTED;
+    }
 
   return 0;
 }

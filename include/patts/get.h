@@ -18,7 +18,7 @@
 /**
  * @file get.h
  * @version 0.0
- * @date 3/10/2015
+ * @date 4/15/2015
  * @brief Functions for getting information from the PATTS database.
  */
 
@@ -92,12 +92,12 @@ patts_get_item_byid (char **out, const char *id);
 
 /**
  * @brief Gets the last PATTS task ID number for a given user.
- * @param out Address of output variable.
+ * @param out Unallocated pointer to string for the output.
  * @param user_id Username with which to find the task ID.
  * @return Nonzero on error.
  */
 int
-patts_get_last_item (size_t *out, const char *user_id);
+patts_get_last_item (char **out, const char *user_id);
 
 /**
  * @brief Gets all PATTS items for a given user.
