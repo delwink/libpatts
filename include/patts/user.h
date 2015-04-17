@@ -18,7 +18,7 @@
 /**
  * @file user.h
  * @version 0.0
- * @date 4/7/2015
+ * @date 4/16/2015
  * @author David McMackins II
  * @brief PATTS user functions.
  */
@@ -26,7 +26,11 @@
 #ifndef DELWINK_PATTS_USER_H
 #define DELWINK_PATTS_USER_H
 
-#define MAX_ID_LEN 12 // max length for a 32-bit INT in characters plus NUL
+/**
+ * @brief Maximum length in characters for a 32-bit signed integer plus a NUL
+ * terminating byte.
+ */
+#define MAX_ID_LEN 12
 
 #ifdef __cplusplus
 extern "C"
