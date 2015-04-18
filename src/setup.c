@@ -23,6 +23,7 @@
 #include "setup.h"
 
 #define LATEST_DB_VERSION "1"
+#define LATEST_DB_VERSION_NUM 1
 
 int
 patts_setup (uint8_t db_type, const char *host, const char *user,
@@ -219,6 +220,21 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     }
 
   sqon_close (&srv);
+
+  return rc;
+}
+
+int
+patts_version_check (int64_t *out)
+{
+  int rc;
+  uint32_t installed_version;
+
+  rc = patts_get_db_version (&installed_version);
+  if (rc)
+    return rc;
+
+  *out = LATEST_DB_VERSION_NUM - installed_version;
 
   return rc;
 }

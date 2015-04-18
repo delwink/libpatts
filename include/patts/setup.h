@@ -46,6 +46,16 @@ int
 patts_setup (uint8_t db_type, const char *host, const char *user,
 	     const char *passwd, const char *database);
 
+/**
+ * @brief Compares the current database schema to the version supported by this
+ * interface.
+ * @param out Pointer to output value which is positive when an update is
+ * needed, negative when the library is out of date, and zero when up-to-date.
+ * @return Nonzero on error.
+ */
+int
+patts_version_check (int64_t *out);
+
 #ifdef __cplusplus
 }
 #endif
