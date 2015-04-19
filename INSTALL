@@ -18,7 +18,7 @@ Installing the Dependencies
 You will likely need to build libsqon manually, unless your software
 distribution packages it for you. The following should work on any GNU system.
 
-    $ wget http://delwink.com/dl/libsqon-X.Y.Z.tar.gz
+    $ wget http://delwink.com/dl/libsqon-delX.Y.Z.tar.gz
     $ tar xzf libsqon-delX.Y.Z.tar.gz
     $ cd libsqon-delX.Y.Z
     $ ./autogen.sh
