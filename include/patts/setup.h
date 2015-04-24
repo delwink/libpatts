@@ -40,11 +40,12 @@ extern "C"
  * @param user Database server username.
  * @param passwd Database server authentication password.
  * @param database Database to be created.
+ * @param port String representation of the port number.
  * @return Nonzero on error.
  */
 int
 patts_setup (uint8_t db_type, const char *host, const char *user,
-	     const char *passwd, const char *database);
+	     const char *passwd, const char *database, const char *port);
 
 /**
  * @brief Compares the current database schema to the version supported by this

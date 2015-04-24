@@ -92,17 +92,25 @@ extern "C"
  * @param user Database server username.
  * @param passwd Database server authentication password.
  * @param database Database to be used.
+ * @param port String representation of the port number.
  * @return Nonzero on error.
  */
 int
 patts_init (uint8_t db_type, const char *host, const char *user,
-	    const char *passwd, const char *database);
+	    const char *passwd, const char *database, const char *port);
+
+/**
+ * @brief Free memory used internally by libpatts; call after finished using
+ * the library or before a second call to patts_init().
+ */
+void
+patts_cleanup (void);
 
 /**
  * @brief Gets the database connection object.
  * @return PATTS database connection object pointer or NULL on failure.
  */
-sqon_dbsrv *
+sqon_DatabaseServer *
 patts_get_db (void);
 
 /**

@@ -80,7 +80,7 @@ patts_clockin (const char *type)
   int rc;
   const char *fmt = "%s,'%s'";
   char *args, *active_task, *active_task_id, *child_tasks, *esc_type;
-  size_t len = 1, typelen = strlen (type) * 2 + 1;
+  size_t len = 1;
   json_t *json_child_tasks;
 
   rc = patts_get_active_task (&active_task);
@@ -134,16 +134,9 @@ patts_clockin (const char *type)
   if (!found)
     return PATTS_UNAVAILABLE;
 
-  esc_type = sqon_malloc (typelen * sizeof (char));
-  if (NULL == esc_type)
-    return PATTS_MEMORYERROR;
-
-  rc = sqon_escape (patts_get_db (), type, esc_type, typelen, false);
+  rc = sqon_escape (patts_get_db (), type, &esc_type, false);
   if (rc)
-    {
-      sqon_free (esc_type);
-      return rc;
-    }
+    return rc;
 
   len += strlen (fmt) - 4;
   len += strlen (esc_type);
@@ -170,18 +163,10 @@ patts_clockout (const char *item)
 {
   int rc;
   char *esc_item;
-  size_t len = strlen (item) * 2 + 1;
 
-  esc_item = sqon_malloc (len * sizeof (char));
-  if (NULL == esc_item)
-    return PATTS_MEMORYERROR;
-
-  rc = sqon_escape (patts_get_db (), item, esc_item, len, false);
+  rc = sqon_escape (patts_get_db (), item, &esc_item, false);
   if (rc)
-    {
-      sqon_free (esc_item);
-      return rc;
-    }
+    return rc;
 
   rc =  call_procedure ("clockOut", esc_item);
   sqon_free (esc_item);

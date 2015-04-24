@@ -27,34 +27,21 @@
 
 int
 patts_setup (uint8_t db_type, const char *host, const char *user,
-	     const char *passwd, const char *database)
+	     const char *passwd, const char *database, const char *port)
 {
   int rc;
-  sqon_dbsrv srv;
+  sqon_DatabaseServer *srv;
   const char *fmt;
   char *query, *esc_database;
   size_t qlen = 1;
-  size_t lens[] = {
-    strlen (host) * 2 + 1,
-    strlen (user) * 2 + 1,
-    strlen (passwd) * 2 + 1,
-    strlen (database) * 2 + 1
-  };
-
-  esc_database = sqon_malloc (lens[3] * sizeof (char));
-  if (NULL == esc_database)
-    return PATTS_MEMORYERROR;
 
   sqon_init ();
 
-  srv = sqon_new_connection (db_type, host, user, passwd, NULL);
+  srv = sqon_new_connection (db_type, host, user, passwd, NULL, port);
 
-  rc = sqon_escape (&srv, database, esc_database, lens[3], false);
+  rc = sqon_escape (srv, database, &esc_database, false);
   if (rc)
-    {
-      sqon_free (esc_database);
-      return rc;
-    }
+    return rc;
 
   switch (db_type)
     {
@@ -72,7 +59,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
       snprintf (query, qlen, fmt, esc_database);
 
-      rc = sqon_query (&srv, query, NULL, NULL);
+      rc = sqon_query (srv, query, NULL, NULL);
       sqon_free (query);
       break;
 
@@ -82,11 +69,12 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     }
 
   sqon_free (esc_database);
+  sqon_free_connection (srv);
 
   if (rc)
     return rc;
 
-  srv = sqon_new_connection (db_type, host, user, passwd, database);
+  srv = sqon_new_connection (db_type, host, user, passwd, database, port);
 
   char *queries[] = {
     "CREATE TABLE Meta(version INT UNSIGNED)",
@@ -206,20 +194,20 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
   const size_t num_queries = 15;
 
-  rc = sqon_connect (&srv);
+  rc = sqon_connect (srv);
   if (rc)
     return rc;
 
   size_t i;
   for (i = 0; i < num_queries; ++i)
     {
-      rc = sqon_query (&srv, queries[i], NULL, NULL);
+      rc = sqon_query (srv, queries[i], NULL, NULL);
 
       if (rc)
 	break;
     }
 
-  sqon_close (&srv);
+  sqon_close (srv);
 
   return rc;
 }

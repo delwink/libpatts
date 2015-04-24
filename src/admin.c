@@ -31,58 +31,23 @@ patts_create_user (const char *id, const char *host, const char *passwd)
   const char *fmt = "'%s','%s','%s'";
   char *args, *esc_id, *esc_host, *esc_passwd;
   size_t len = 1;
-  size_t lens[] = {
-    strlen (id) * 2 + 1,
-    strlen (host) * 2 + 1,
-    strlen (passwd) * 2 + 1
-  };
 
-  esc_id = sqon_malloc (lens[0] * sizeof (char));
-  if (NULL == esc_id)
-    return PATTS_MEMORYERROR;
+  rc = sqon_escape (patts_get_db (), id, &esc_id, false);
+  if (rc)
+    return rc;
 
-  esc_host = sqon_malloc (lens[1] * sizeof (char));
-  if (NULL == esc_host)
+  rc = sqon_escape (patts_get_db (), host, &esc_host, false);
+  if (rc)
     {
       sqon_free (esc_id);
-      return PATTS_MEMORYERROR;
+      return rc;
     }
 
-  esc_passwd = sqon_malloc (lens[2] * sizeof (char));
-  if (NULL == esc_passwd)
-    {
-      sqon_free (esc_id);
-      sqon_free (esc_host);
-      return PATTS_MEMORYERROR;
-    }
-
-  for (size_t i = 0; i < 3; ++i)
-    {
-      switch (i)
-	{
-	case 0:
-	  rc = sqon_escape (patts_get_db (), id, esc_id, lens[i], false);
-	  break;
-
-	case 1:
-	  rc = sqon_escape (patts_get_db (), host, esc_host, lens[i], false);
-	  break;
-
-	case 2:
-	  rc = sqon_escape (patts_get_db (), passwd, esc_passwd, lens[i],
-			    false);
-	  break;
-	}
-
-      if (rc)
-	break;
-    }
-
+  rc = sqon_escape (patts_get_db (), passwd, &esc_passwd, false);
   if (rc)
     {
       sqon_free (esc_id);
       sqon_free (esc_host);
-      sqon_free (esc_passwd);
       return rc;
     }
 
@@ -119,45 +84,15 @@ patts_create_task (const char *parent_id, const char *display_name)
     "VALUES(%s,'%s')";
   char *query, *esc_parent, *esc_dispname;
   size_t qlen = 1;
-  size_t lens[] = {
-    strlen (parent_id) * 2 + 1,
-    strlen (display_name) * 2 + 1
-  };
 
-  esc_parent = sqon_malloc (lens[0] * sizeof (char));
-  if (NULL == esc_parent)
-    return PATTS_MEMORYERROR;
+  rc = sqon_escape (patts_get_db (), parent_id, &esc_parent, false);
+  if (rc)
+    return rc;
 
-  esc_dispname = sqon_malloc (lens[1] * sizeof (char));
-  if (NULL == esc_dispname)
-    {
-      sqon_free (esc_parent);
-      return PATTS_MEMORYERROR;
-    }
-
-  for (size_t i = 0; i < 2; ++i)
-    {
-      switch (i)
-	{
-	case 0:
-	  rc = sqon_escape (patts_get_db (), parent_id, esc_parent, lens[i],
-			    false);
-	  break;
-
-	case 1:
-	  rc = sqon_escape (patts_get_db (), display_name, esc_dispname,
-			    lens[i], false);
-	  break;
-	}
-
-      if (rc)
-	break;
-    }
-
+  rc = sqon_escape (patts_get_db (), display_name, &esc_dispname, false);
   if (rc)
     {
       sqon_free (esc_parent);
-      sqon_free (esc_dispname);
       return rc;
     }
 
@@ -190,57 +125,23 @@ set_state (const char *id, const char *table, const char *state)
   const char *fmt = "UPDATE %s SET state=%s WHERE id=%s";
   char *query, *esc_id, *esc_table, *esc_state;
   size_t qlen = 1;
-  size_t lens[] = {
-    strlen (id) * 2 + 1,
-    strlen (table) * 2 + 1,
-    strlen (state) * 2 + 1
-  };
 
-  esc_id = sqon_malloc (lens[0] * sizeof (char));
-  if (NULL == esc_id)
-    return PATTS_MEMORYERROR;
+  rc = sqon_escape (patts_get_db (), id, &esc_id, false);
+  if (rc)
+    return rc;
 
-  esc_table = sqon_malloc (lens[1] * sizeof (char));
-  if (NULL == esc_table)
+  rc = sqon_escape (patts_get_db (), table, &esc_table, false);
+  if (rc)
     {
       sqon_free (esc_id);
-      return PATTS_MEMORYERROR;
+      return rc;
     }
 
-  esc_state = sqon_malloc (lens[2] * sizeof (char));
-  if (NULL == esc_state)
-    {
-      sqon_free (esc_id);
-      sqon_free (esc_table);
-      return PATTS_MEMORYERROR;
-    }
-
-  for (size_t i = 0; i < 3; ++i)
-    {
-      switch (i)
-	{
-	case 0:
-	  rc = sqon_escape (patts_get_db (), id, esc_id, lens[i], false);
-	  break;
-
-	case 1:
-	  rc = sqon_escape (patts_get_db (), table, esc_table, lens[i], false);
-	  break;
-
-	case 2:
-	  rc = sqon_escape (patts_get_db (), state, esc_state, lens[i], false);
-	  break;
-	}
-
-      if (rc)
-	break;
-    }
-
+  rc = sqon_escape (patts_get_db (), state, &esc_state, false);
   if (rc)
     {
       sqon_free (esc_id);
       sqon_free (esc_table);
-      sqon_free (esc_state);
       return rc;
     }
 
@@ -288,43 +189,15 @@ proc_with_id (const char *proc, const char *id, const char *host)
   const char *fmt = "'%s','%s'";
   char *args, *esc_id, *esc_host;
   size_t len = 1;
-  size_t lens[] = {
-    strlen (id) * 2 + 1,
-    strlen (host) * 2 + 1
-  };
 
-  esc_id = sqon_malloc (lens[0] * sizeof (char));
-  if (NULL == esc_id)
-    return PATTS_MEMORYERROR;
+  rc = sqon_escape (patts_get_db (), id, &esc_id, false);
+  if (rc)
+    return rc;
 
-  esc_host = sqon_malloc (lens[1] * sizeof (char));
-  if (NULL == esc_host)
-    {
-      sqon_free (esc_id);
-      return PATTS_MEMORYERROR;
-    }
-
-  for (size_t i = 0; i < 2; ++i)
-    {
-      switch (i)
-	{
-	case 0:
-	  rc = sqon_escape (patts_get_db (), id, esc_id, lens[i], false);
-	  break;
-
-	case 1:
-	  rc = sqon_escape (patts_get_db (), host, esc_host, lens[i], false);
-	  break;
-	}
-
-      if (rc)
-	break;
-    }
-
+  rc = sqon_escape (patts_get_db (), host, &esc_host, false);
   if (rc)
     {
       sqon_free (esc_id);
-      sqon_free (esc_host);
       return rc;
     }
 

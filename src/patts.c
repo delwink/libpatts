@@ -21,13 +21,13 @@
 
 #include "patts.h"
 
-static sqon_dbsrv PATTSDB;
+static sqon_DatabaseServer *PATTSDB;
 static bool HAVE_ADMIN = false;
-static char user_id[8];
+static char user_id[9];
 
 int
 patts_init (uint8_t db_type, const char *host, const char *user,
-	    const char *passwd, const char *database)
+	    const char *passwd, const char *database, const char *port)
 {
   int rc = 0;
   const char *fmt = "SELECT isAdmin FROM User WHERE dbUser='%s'";
@@ -35,7 +35,6 @@ patts_init (uint8_t db_type, const char *host, const char *user,
   const char *isAdmin;
   json_t *list, *user_cols;
   size_t qlen = 1;
-  size_t ulen = strlen (user) * 2 + 1;
 
   if (strlen (user) >= 8)
     return PATTS_OVERFLOW;
@@ -44,18 +43,11 @@ patts_init (uint8_t db_type, const char *host, const char *user,
 
   sqon_init ();
 
-  PATTSDB = sqon_new_connection (db_type, host, user, passwd, database);
+  PATTSDB = sqon_new_connection (db_type, host, user, passwd, database, port);
 
-  esc_user = sqon_malloc (ulen * sizeof (char));
-  if (NULL == esc_user)
-    return PATTS_MEMORYERROR;
-
-  rc = sqon_escape (patts_get_db (), user, esc_user, ulen, false);
+  rc = sqon_escape (patts_get_db (), user, &esc_user, false);
   if (rc)
-    {
-      sqon_free (esc_user);
-      return rc;
-    }
+    return rc;
 
   qlen += strlen (fmt) - 2;
   qlen += strlen (esc_user);
@@ -100,10 +92,16 @@ patts_init (uint8_t db_type, const char *host, const char *user,
   return rc;
 }
 
-sqon_dbsrv *
+void
+patts_cleanup ()
+{
+  sqon_free_connection (PATTSDB);
+}
+
+sqon_DatabaseServer *
 patts_get_db ()
 {
-  return &PATTSDB;
+  return PATTSDB;
 }
 
 const char *
