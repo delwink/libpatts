@@ -227,22 +227,29 @@ patts_get_last_item (char **out, const char *user_id)
   return 0;
 }
 
-int
-patts_get_items_byuser (char **out, const char *user_id)
+static int
+items_byuser (char **out, const char *user_id, const char *fmt)
 {
   int rc;
-  const char *fmt = "SELECT * FROM TaskItem WHERE state=1 AND userID='%s'";
-  char *query;
+  char *query, *esc_user;
   size_t qlen = 1;
 
+  rc = sqon_escape (patts_get_db (), user_id, &esc_user, false);
+  if (rc)
+    return rc;
+
   qlen += strlen (fmt) - 2;
-  qlen += strlen (user_id);
+  qlen += strlen (esc_user);
 
   query = sqon_malloc (qlen * sizeof (char));
   if (NULL == query)
-    return PATTS_MEMORYERROR;
+    {
+      sqon_free (esc_user);
+      return PATTS_MEMORYERROR;
+    }
 
-  snprintf (query, qlen, fmt, user_id);
+  snprintf (query, qlen, fmt, esc_user);
+  sqon_free (esc_user);
 
   rc = sqon_query (patts_get_db (), query, out, "id");
   sqon_free (query);
@@ -251,27 +258,17 @@ patts_get_items_byuser (char **out, const char *user_id)
 }
 
 int
+patts_get_items_byuser (char **out, const char *user_id)
+{
+  return items_byuser (out, user_id,
+		       "SELECT * FROM TaskItem WHERE state=1 AND userID='%s'");
+}
+
+int
 patts_get_items_byuser_onclock (char **out, const char *user_id)
 {
-  int rc;
-  const char *fmt = "SELECT * FROM TaskItem "
-    "WHERE state=1 AND userID='%s' AND onClock=1";
-  char *query;
-  size_t qlen = 1;
-
-  qlen += strlen (fmt) - 2;
-  qlen += strlen (user_id);
-
-  query = sqon_malloc (qlen * sizeof (char));
-  if (NULL == query)
-    return PATTS_MEMORYERROR;
-
-  snprintf (query, qlen, fmt, user_id);
-
-  rc = sqon_query (patts_get_db (), query, out, "id");
-  sqon_free (query);
-
-  return rc;
+  return items_byuser (out, user_id, "SELECT * FROM TaskItem "
+		       "WHERE state=1 AND onClock=1 AND userID='%s'");
 }
 
 int
@@ -279,20 +276,28 @@ patts_get_child_items (char **out, const char *id)
 {
   int rc;
   const char *fmt = "SELECT startTime,stopTime FROM TaskItem WHERE id=%s";
-  char *query, *result, *old_start, *old_stop;
+  char *query, *result, *old_start, *old_stop, *esc_id;
   json_t *result_arr, *result_obj;
   size_t qlen = 1;
 
+  rc = sqon_escape (patts_get_db (), id, &esc_id, false);
+  if (rc)
+    return rc;
+
   qlen += strlen (fmt) - 2;
-  qlen += strlen (id);
+  qlen += strlen (esc_id);
 
   query = sqon_malloc (qlen * sizeof (char));
   if (NULL == query)
-    return PATTS_MEMORYERROR;
+    {
+      sqon_free (esc_id);
+      return PATTS_MEMORYERROR;
+    }
 
   old_start = sqon_malloc (DATETIME_LEN * sizeof (char));
   if (NULL == old_start)
     {
+      sqon_free (esc_id);
       sqon_free (query);
       return PATTS_MEMORYERROR;
     }
@@ -300,12 +305,14 @@ patts_get_child_items (char **out, const char *id)
   old_stop = sqon_malloc (DATETIME_LEN * sizeof (char));
   if (NULL == old_stop)
     {
+      sqon_free (esc_id);
       sqon_free (query);
       sqon_free (old_start);
       return PATTS_MEMORYERROR;
     }
 
-  snprintf (query, qlen, fmt, id);
+  snprintf (query, qlen, fmt, esc_id);
+  sqon_free (esc_id);
 
   rc = sqon_query (patts_get_db (), query, &result, NULL);
   sqon_free (query);
