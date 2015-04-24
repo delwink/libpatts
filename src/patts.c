@@ -25,6 +25,25 @@ static sqon_DatabaseServer *PATTSDB;
 static bool HAVE_ADMIN = false;
 static char user_id[9];
 
+void *
+patts_malloc (size_t n)
+{
+  return sqon_malloc (n);
+}
+
+void
+patts_free (void *v)
+{
+  sqon_free (v);
+}
+
+void
+patts_set_alloc_funcs (void *(*new_malloc) (size_t n),
+		       void (*new_free) (void *v))
+{
+  sqon_set_alloc_funcs (new_malloc, new_free);
+}
+
 int
 patts_init (uint8_t db_type, const char *host, const char *user,
 	    const char *passwd, const char *database, const char *port)

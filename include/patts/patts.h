@@ -86,6 +86,31 @@ extern "C"
 #endif
 
 /**
+ * @brief Internally-used implementation of malloc(); defaults to
+ * sqon_malloc().
+ * @param n Number of bytes to allocate on the heap.
+ * @return Pointer to n bytes of available memory.
+ */
+void *
+patts_malloc (size_t n);
+
+/**
+ * @brief Frees memory allocated with patts_malloc().
+ * @param v Pointer returned by earlier call to patts_malloc().
+ */
+void
+patts_free (void *v);
+
+/**
+ * @brief Changes the memory management functions used internally.
+ * @param new_malloc The new malloc() function to be used.
+ * @param new_free The new free() function to be used.
+ */
+void
+patts_set_alloc_funcs (void *(*new_malloc) (size_t n),
+		       void (*new_free) (void *v));
+
+/**
  * @brief Initializes connection to the PATTS database.
  * @param db_type Database connection type.
  * @param host Hostname or IP address of the database server.
