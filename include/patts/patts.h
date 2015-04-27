@@ -18,7 +18,7 @@
 /**
  * @file patts.h
  * @version 0.0
- * @date 4/14/2015
+ * @date 4/27/2015
  * @author David McMackins II
  * @brief Functions global to PATTS.
  */
@@ -109,6 +109,11 @@ patts_free (void *v);
 void
 patts_set_alloc_funcs (void *(*new_malloc) (size_t n),
 		       void (*new_free) (void *v));
+
+/**
+ * @brief Alias for libsqon's MySQL database connection type.
+ */
+#define PATTS_DBCONN_MYSQL SQON_DBCONN_MYSQL
 
 /**
  * @brief Initializes connection to the PATTS database.
