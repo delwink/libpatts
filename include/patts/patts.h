@@ -58,27 +58,27 @@
 /**
  * @brief Error allocating memory.
  */
-#define PATTS_MEMORYERROR SQON_MEMORYERROR-50
-
-/**
- * @brief Unexpected input from caller or result from function.
- */
-#define PATTS_UNEXPECTED  SQON_UNSUPPORTED-50
-
-/**
- * @brief Selected task cannot be clocked into.
- */
-#define PATTS_UNAVAILABLE PATTS_UNEXPECTED-1
+#define PATTS_MEMORYERROR -62
 
 /**
  * @brief Buffer overflow error.
  */
-#define PATTS_OVERFLOW    SQON_OVERFLOW-50
+#define PATTS_OVERFLOW    -63
+
+/**
+ * @brief Unexpected input from caller or result from function.
+ */
+#define PATTS_UNEXPECTED  -64
+
+/**
+ * @brief Selected task cannot be clocked into.
+ */
+#define PATTS_UNAVAILABLE -65
 
 /**
  * @brief User not found in database.
  */
-#define PATTS_NOSUCHUSER  SQON_NOPK-50
+#define PATTS_NOSUCHUSER  -73
 
 #ifdef __cplusplus
 extern "C"
