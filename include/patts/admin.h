@@ -18,7 +18,7 @@
 /**
  * @file admin.h
  * @version 0.0
- * @date 4/9/2015
+ * @date 5/10/2015
  * @brief Functions for PATTS administrators.
  */
 
@@ -71,7 +71,7 @@ patts_delete_task (const char *id);
 /**
  * @brief Grants admin permissions to a PATTS user.
  * @param id Username of the new admin user.
- * @param host Hostname for which to deny the user privileges.
+ * @param host Hostname for which to grant the user privileges.
  * @return Nonzero on error.
  */
 int
