@@ -93,7 +93,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
     "CREATE TABLE TaskType"
     "("
-    "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+    "id SERIAL,"
     "state BIT NOT NULL,"
     "parentID INT UNSIGNED NOT NULL,"
     "displayName VARCHAR(45) CHARACTER SET utf8 NOT NULL,"
@@ -102,7 +102,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
     "CREATE TABLE TaskItem"
     "("
-    "id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
+    "id SERIAL,"
     "state BIT NOT NULL,"
     "onClock BIT NOT NULL,"
     "typeID INT UNSIGNED NOT NULL,"
