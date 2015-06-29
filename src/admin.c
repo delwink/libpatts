@@ -120,14 +120,14 @@ patts_create_task (const char *parent_id, const char *display_name)
 
 static int
 set_state (const char *id, const char *table, const char *state,
-	   const char *idcol)
+	   const char *idcol, bool quote_id)
 {
   int rc;
   const char *fmt = "UPDATE %s SET state=%s WHERE %s=%s";
   char *query, *esc_id, *esc_table, *esc_state;
   size_t qlen = 1;
 
-  rc = sqon_escape (patts_get_db (), id, &esc_id, false);
+  rc = sqon_escape (patts_get_db (), id, &esc_id, quote_id);
   if (rc)
     return rc;
 
@@ -175,13 +175,13 @@ set_state (const char *id, const char *table, const char *state,
 int
 patts_delete_user (const char *id)
 {
-  return set_state (id, "User", "0", "dbUser");
+  return set_state (id, "User", "0", "dbUser", true);
 }
 
 int
 patts_delete_task (const char *id)
 {
-  return set_state (id, "TaskType", "0", "id");
+  return set_state (id, "TaskType", "0", "id", false);
 }
 
 static int
