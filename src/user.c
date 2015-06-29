@@ -105,7 +105,7 @@ patts_clockin (const char *type)
   if (rc)
     return rc;
 
-  if (strcmp (active_task, "[]"))
+  if (strcmp (active_task, "[]") && strcmp (active_task, "{}"))
     {
       json_t *json_active_task = json_loads (active_task, 0, NULL);
       sqon_free (active_task);
