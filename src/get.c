@@ -335,16 +335,17 @@ patts_get_child_items (char **out, const char *id)
       sqon_free (old_stop);
       return rc;
     }
-
-  result_arr = json_loads (result, 0, NULL);
-  sqon_free (result);
-  if (NULL == result_arr)
+  else if (!strcmp (result, "[]"))
     {
+      sqon_free (result);
       sqon_free (old_start);
       sqon_free (old_stop);
       *out = NULL;
       return 0;
     }
+
+  result_arr = json_loads (result, 0, NULL);
+  sqon_free (result);
 
   result_obj = json_array_get (result_arr, 0);
 
