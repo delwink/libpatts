@@ -30,7 +30,7 @@ static int
 get_all (char **out, const char *table, const char *pk)
 {
   int rc;
-  const char *fmt = "SELECT * FROM %s";
+  const char *fmt = "SELECT * FROM %s WHERE state=1";
   char *query;
   size_t qlen = 1;
 
@@ -53,7 +53,7 @@ static int
 get_where (char **out, const char *table, const char *where, const char *pk)
 {
   int rc;
-  const char *fmt = "SELECT * FROM %s WHERE %s";
+  const char *fmt = "SELECT * FROM %s WHERE state=1 AND %s";
   char *query;
   size_t qlen = 1;
 
@@ -110,7 +110,7 @@ static int
 get_children (char **out, const char *table, const char *parent_id)
 {
   int rc;
-  const char *fmt = "SELECT * FROM %s WHERE parentID=%s";
+  const char *fmt = "SELECT * FROM %s WHERE state=1 AND parentID=%s";
   char *query, *esc_parent;
   size_t qlen = 1;
 
@@ -184,7 +184,7 @@ int
 patts_get_last_item (char **out, const char *user_id)
 {
   int rc;
-  const char *fmt = "SELECT id FROM TaskItem WHERE userID='%s' "
+  const char *fmt = "SELECT id FROM TaskItem WHERE state=1 AND userID='%s' "
     "ORDER BY id DESC LIMIT 1";
   char *result, *query, *esc_user;
   size_t qlen = 1;
@@ -286,7 +286,8 @@ int
 patts_get_child_items (char **out, const char *id)
 {
   int rc;
-  const char *fmt = "SELECT startTime,stopTime FROM TaskItem WHERE id=%s";
+  const char *fmt = "SELECT startTime,stopTime FROM TaskItem WHERE "
+    "state=1 AND id=%s";
   char *query, *result, *old_start, *old_stop, *esc_id;
   json_t *result_arr, *result_obj;
   size_t qlen = 1;
@@ -337,6 +338,13 @@ patts_get_child_items (char **out, const char *id)
 
   result_arr = json_loads (result, 0, NULL);
   sqon_free (result);
+  if (NULL == result_arr)
+    {
+      sqon_free (old_start);
+      sqon_free (old_stop);
+      *out = NULL;
+      return 0;
+    }
 
   result_obj = json_array_get (result_arr, 0);
 
