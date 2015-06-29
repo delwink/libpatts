@@ -74,14 +74,15 @@ get_where (char **out, const char *table, const char *where, const char *pk)
 }
 
 static int
-get_by_id (char **out, const char *table, const char *id, const char *pk)
+get_by_id (char **out, const char *table, const char *id, const char *pk,
+	   bool quote)
 {
   int rc;
   const char *wherefmt = "%s=%s";
   char *where, *esc_id;
   size_t wlen = 1;
 
-  rc = sqon_escape (patts_get_db (), id, &esc_id, false);
+  rc = sqon_escape (patts_get_db (), id, &esc_id, quote);
   if (rc)
     return rc;
 
@@ -146,7 +147,7 @@ patts_get_users (char **out)
 int
 patts_get_user_byid (char **out, const char *id)
 {
-  return get_by_id (out, "User", id, "dbUser");
+  return get_by_id (out, "User", id, "dbUser", true);
 }
 
 int
@@ -158,7 +159,7 @@ patts_get_types (char **out)
 int
 patts_get_type_byid (char **out, const char *id)
 {
-  return get_by_id (out, "TaskType", id, "id");
+  return get_by_id (out, "TaskType", id, "id", false);
 }
 
 int
@@ -176,7 +177,7 @@ patts_get_items (char **out)
 int
 patts_get_item_byid (char **out, const char *id)
 {
-  return get_by_id (out, "TaskItem", id, "id");
+  return get_by_id (out, "TaskItem", id, "id", false);
 }
 
 int
@@ -211,9 +212,19 @@ patts_get_last_item (char **out, const char *user_id)
   if (rc)
     return rc;
 
+  if (!strcmp (result, "[]"))
+    {
+      *out = NULL;
+      sqon_free (result);
+      return 0;
+    }
+
   *out = sqon_malloc (MAX_ID_LEN * sizeof (char));
   if (NULL == *out)
-    return PATTS_MEMORYERROR;
+    {
+      sqon_free (result);
+      return PATTS_MEMORYERROR;
+    }
 
   rc = sscanf (result, "[{\"id\": \"%s\"}]", *out);
   sqon_free (result);

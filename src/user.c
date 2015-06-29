@@ -44,7 +44,7 @@ patts_get_active_task (char **out)
 
   snprintf (query, qlen, fmt, patts_get_user ());
 
-  rc = sqon_query (patts_get_db (), query, out, NULL);
+  rc = sqon_query (patts_get_db (), query, out, "id");
   sqon_free (query);
 
   return rc;
@@ -74,65 +74,111 @@ patts_get_tree (char **out)
   return rc;
 }
 
+static int
+parent_type (char **out, const char *type)
+{
+  int rc;
+  const char *fmt = "SELECT parentID FROM TaskType WHERE id=%s";
+  size_t len = strlen (fmt) + MAX_ID_LEN;
+
+  char *query = sqon_malloc (len * sizeof (char));
+  if (NULL == query)
+    return PATTS_MEMORYERROR;
+
+  snprintf (query, len, fmt, type);
+
+  rc = sqon_query (patts_get_db (), query, out, NULL);
+  sqon_free (query);
+
+  return rc;
+}
+
 int
 patts_clockin (const char *type)
 {
   int rc;
   const char *fmt = "%s,'%s'";
-  char *args, *active_task, *active_task_id, *child_tasks, *esc_type;
+  char *args, *active_task, *esc_type;
   size_t len = 1;
-  json_t *json_child_tasks;
 
   rc = patts_get_active_task (&active_task);
   if (rc)
     return rc;
 
-  active_task_id = sqon_malloc (MAX_ID_LEN * sizeof (char));
-  if (NULL == active_task_id)
+  if (strcmp (active_task, "[]"))
     {
+      json_t *json_active_task = json_loads (active_task, 0, NULL);
       sqon_free (active_task);
-      return PATTS_MEMORYERROR;
-    }
+      if (NULL == json_active_task)
+	return SQON_MEMORYERROR;
 
-  rc = sscanf (active_task, "{\"%s\":", active_task_id);
-  sqon_free (active_task);
-  if (1 != rc)
-    {
-      sqon_free (active_task_id);
-      return PATTS_UNEXPECTED;
-    }
-
-  rc = patts_get_child_types (&child_tasks, active_task_id);
-  sqon_free (active_task_id);
-  if (rc)
-    return rc;
-
-  json_child_tasks = json_loads (child_tasks, 0, NULL);
-  sqon_free (child_tasks);
-  if (NULL == json_child_tasks)
-    return PATTS_MEMORYERROR;
-
-  if (!json_is_object (json_child_tasks))
-    {
-      json_decref (json_child_tasks);
-      return PATTS_UNEXPECTED;
-    }
-
-  const char *key;
-  json_t *value;
-  bool found = false;
-  json_object_foreach (json_child_tasks, key, value)
-    {
-      if (!strcmp (key, type))
+      const char *key;
+      json_t *value;
+      const char *active_task_type;
+      json_object_foreach (json_active_task, key, value)
 	{
-	  found = true;
+	  json_t *type = json_object_get (value, "typeID");
+	  active_task_type = json_string_value (type);
 	  break;
 	}
-    }
-  json_decref (json_child_tasks);
 
-  if (!found)
-    return PATTS_UNAVAILABLE;
+      char *child_tasks;
+      rc = patts_get_child_types (&child_tasks, active_task_type);
+      json_decref (json_active_task);
+      if (rc)
+	return rc;
+
+      json_t *json_child_tasks = json_loads (child_tasks, 0, NULL);
+      sqon_free (child_tasks);
+      if (NULL == json_child_tasks)
+	return PATTS_MEMORYERROR;
+
+      if (!json_is_object (json_child_tasks))
+	{
+	  json_decref (json_child_tasks);
+	  return PATTS_UNEXPECTED;
+	}
+
+      bool found = false;
+      json_object_foreach (json_child_tasks, key, value)
+	{
+	  if (!strcmp (key, type))
+	    {
+	      found = true;
+	      break;
+	    }
+	}
+      json_decref (json_child_tasks);
+
+      if (!found)
+	return PATTS_UNAVAILABLE;
+    }
+  else
+    {
+      sqon_free (active_task);
+
+      char *this;
+      rc = parent_type (&this, type);
+      if (rc)
+	return rc;
+
+      if (!strcmp (this, "[]"))
+	{
+	  sqon_free (this);
+	  return PATTS_UNAVAILABLE;
+	}
+
+      unsigned long long parent;
+      rc = sscanf (this, "[{\"parentID\": \"%llu\"}]", &parent);
+      sqon_free (this);
+      if (!rc)
+	return PATTS_UNEXPECTED;
+
+      if (0 == parent)
+	rc = 0;
+      else
+	return PATTS_UNAVAILABLE;
+    }
 
   rc = sqon_escape (patts_get_db (), type, &esc_type, false);
   if (rc)

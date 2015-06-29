@@ -80,8 +80,8 @@ int
 patts_create_task (const char *parent_id, const char *display_name)
 {
   int rc;
-  const char *fmt = "INSERT INTO TaskType(parentID,displayName) "
-    "VALUES(%s,'%s')";
+  const char *fmt = "INSERT INTO TaskType(parentID,displayName,state) "
+    "VALUES(%s,'%s',1)";
   char *query, *esc_parent, *esc_dispname;
   size_t qlen = 1;
 

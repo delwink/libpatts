@@ -120,21 +120,32 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
     "CREATE PROCEDURE clockOut (taskID INT UNSIGNED) "
     "BEGIN "
-    "DECLARE username VARCHAR(8);"
-    "SELECT username = userID FROM TaskItem WHERE id=taskID;"
     "UPDATE TaskItem SET onClock=0,stopTime=CURRENT_TIMESTAMP "
-    "WHERE id=taskID AND userID=username AND onClock=1;"
+    "WHERE id=taskID AND onClock=1;"
     "END",
 
-    "CREATE PROCEDURE grantPermission (perm VARCHAR(30), "
-    "target VARCHAR(30), id VARCHAR(8), host VARCHAR(45), passwd VARCHAR(45)) "
+    "CREATE PROCEDURE grantPermissionSuffix (perm VARCHAR(30), "
+    "target VARCHAR(30), id VARCHAR(8), host VARCHAR(45), suffix VARCHAR(45)) "
     "BEGIN "
     "SET @setPermissionCmd = CONCAT('GRANT ', perm, ' ON ', target, "
-    "' TO ''', id, '''@''', host, ''' IDENTIFIED BY ''', passwd, ''';');"
+    "' TO ''', id, '''@''', host, ''' ', suffix, ';');"
     "PREPARE setPermissionStmt FROM @setPermissionCmd;"
     "EXECUTE setPermissionStmt;"
     "DEALLOCATE PREPARE setPermissionStmt;"
     "FLUSH PRIVILEGES;"
+    "END",
+
+    "CREATE PROCEDURE grantPermissionPasswd (perm VARCHAR(30), "
+    "target VARCHAR(30), id VARCHAR(8), host VARCHAR(45), passwd VARCHAR(45)) "
+    "BEGIN "
+    "CALL grantPermissionSuffix(perm, target, id, host, "
+    "CONCAT('IDENTIFIED BY ''', passwd, ''''));"
+    "END",
+
+    "CREATE PROCEDURE grantPermission(perm VARCHAR(30), "
+    "target VARCHAR(30), id VARCHAR(8), host VARCHAR(45)) "
+    "BEGIN "
+    "CALL grantPermissionSuffix(perm, target, id, host, '');"
     "END",
 
     "CREATE PROCEDURE revokePermission (perm VARCHAR(30), "
@@ -151,23 +162,23 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     "CREATE PROCEDURE createUser (id VARCHAR(8), host VARCHAR(45), "
     "passwd VARCHAR(45)) "
     "BEGIN "
-    "CALL grantPermission('SELECT', '*', id, host, passwd);"
+    "CALL grantPermissionPasswd('SELECT', '*', id, host, passwd);"
+    "CALL grantPermissionPasswd('EXECUTE', 'PROCEDURE clockIn', id, host, "
+    "passwd);"
+    "CALL grantPermissionPasswd('EXECUTE', 'PROCEDURE clockOut', id, host, "
+    "passwd);"
     "INSERT INTO User(state,isAdmin,dbUser,firstName,middleName,lastName) "
     "VALUES(1,0,id,'','','');"
     "END",
 
-    "CREATE PROCEDURE grantAdmin (id VARCHAR(8), host VARCHAR(45),"
-    "passwd VARCHAR(45)) "
+    "CREATE PROCEDURE grantAdmin (id VARCHAR(8), host VARCHAR(45)) "
     "BEGIN "
     "SET max_sp_recursion_depth=255;"
-    "CALL grantPermission('EXECUTE', 'PROCEDURE createUser', id, host,"
-    "passwd);"
-    "CALL grantPermission('EXECUTE', 'PROCEDURE grantAdmin', id, host,"
-    "passwd);"
-    "CALL grantPermission('EXECUTE', 'PROCEDURE revokeAdmin', id, host,"
-    "passwd);"
-    "CALL grantPermission('INSERT,UPDATE', 'TaskType', id, host, passwd);"
-    "CALL grantPermission('UPDATE', 'User', id, host, passwd);"
+    "CALL grantPermission('EXECUTE', 'PROCEDURE createUser', id, host);"
+    "CALL grantPermission('EXECUTE', 'PROCEDURE grantAdmin', id, host);"
+    "CALL grantPermission('EXECUTE', 'PROCEDURE revokeAdmin', id, host);"
+    "CALL grantPermission('INSERT,UPDATE', 'TaskType', id, host);"
+    "CALL grantPermission('UPDATE', 'User', id, host);"
     "UPDATE User SET isAdmin=1 WHERE dbUser=id;"
     "FLUSH PRIVILEGES;"
     "END",
@@ -186,13 +197,13 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
     "CALL createUser('patts', '%', 'patts')",
 
-    "CALL grantAdmin('patts', '%', 'patts')",
+    "CALL grantAdmin('patts', '%')",
 
     "UPDATE User SET firstName='Admin',middleName='User',lastName='Account' "
     "WHERE dbUser='patts'"
   };
 
-  const size_t num_queries = 15;
+  const size_t num_queries = 17;
 
   rc = sqon_connect (srv);
   if (rc)
