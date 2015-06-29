@@ -119,10 +119,11 @@ patts_create_task (const char *parent_id, const char *display_name)
 }
 
 static int
-set_state (const char *id, const char *table, const char *state)
+set_state (const char *id, const char *table, const char *state,
+	   const char *idcol)
 {
   int rc;
-  const char *fmt = "UPDATE %s SET state=%s WHERE id=%s";
+  const char *fmt = "UPDATE %s SET state=%s WHERE %s=%s";
   char *query, *esc_id, *esc_table, *esc_state;
   size_t qlen = 1;
 
@@ -145,7 +146,8 @@ set_state (const char *id, const char *table, const char *state)
       return rc;
     }
 
-  qlen += strlen (fmt) - 6;
+  qlen += strlen (fmt) - 8;
+  qlen += strlen (idcol);
   qlen += strlen (esc_id);
   qlen += strlen (esc_table);
   qlen += strlen (esc_state);
@@ -159,7 +161,7 @@ set_state (const char *id, const char *table, const char *state)
       return PATTS_MEMORYERROR;
     }
 
-  snprintf (query, qlen, fmt, esc_table, esc_state, esc_id);
+  snprintf (query, qlen, fmt, esc_table, esc_state, idcol, esc_id);
   sqon_free (esc_id);
   sqon_free (esc_table);
   sqon_free (esc_state);
@@ -173,13 +175,13 @@ set_state (const char *id, const char *table, const char *state)
 int
 patts_delete_user (const char *id)
 {
-  return set_state (id, "User", "0");
+  return set_state (id, "User", "0", "dbUser");
 }
 
 int
 patts_delete_task (const char *id)
 {
-  return set_state (id, "TaskType", "0");
+  return set_state (id, "TaskType", "0", "id");
 }
 
 static int
