@@ -18,7 +18,7 @@
 /**
  * @file get.h
  * @version 0.0
- * @date 06/29/2015
+ * @date 06/28/2015
  * @brief Functions for getting information from the PATTS database.
  */
 
@@ -119,7 +119,7 @@ patts_get_items_byuser_onclock (char **out, const char *user_id);
 
 /**
  * @brief Gets all child items for a PATTS task (calculated based on data).
- * @param out Unallocated pointer to string for the output; NULL if none.
+ * @param out Unallocated pointer to string for the output.
  * @param id String representation of the ID number of the parent task.
  * @return Nonzero on error.
  */

@@ -340,8 +340,7 @@ patts_get_child_items (char **out, const char *id)
       sqon_free (result);
       sqon_free (old_start);
       sqon_free (old_stop);
-      *out = NULL;
-      return 0;
+      return PATTS_NOSUCHITEM;
     }
 
   result_arr = json_loads (result, 0, NULL);
@@ -349,19 +348,24 @@ patts_get_child_items (char **out, const char *id)
 
   result_obj = json_array_get (result_arr, 0);
 
+  json_t *stop = json_object_get (result_obj, "stopTime");
+  bool stopped = json_typeof (stop) != JSON_NULL;
+
   strcpy (old_start,
 	  json_string_value (json_object_get (result_obj, "startTime")));
-  strcpy (old_stop,
-	  json_string_value (json_object_get (result_obj, "stopTime")));
+  if (stopped)
+    strcpy (old_stop, json_string_value (stop));
 
   json_decref (result_arr);
 
   fmt = "SELECT * FROM TaskItem "
-    "WHERE state=1 AND startTime>='%s' AND stopTime<='%s' AND userID='%s' "
+    "WHERE state=1 AND startTime>='%s' %s%s%s AND userID='%s' "
     "AND id<>%s";
+  const char *stop_check = "AND stopTime<='";
 
-  qlen = 1 + strlen (fmt) - 6;
+  qlen = 1 + strlen (fmt) - 12;
   qlen += DATETIME_LEN * 2;
+  qlen += strlen (stop_check) + 1;
   qlen += strlen (patts_get_user ());
 
   query = sqon_malloc (qlen * sizeof (char));
@@ -372,7 +376,9 @@ patts_get_child_items (char **out, const char *id)
       return PATTS_MEMORYERROR;
     }
 
-  snprintf (query, qlen, fmt, old_start, old_stop, patts_get_user (), id);
+  snprintf (query, qlen, fmt, old_start, stopped ? stop_check : "",
+	    stopped ? old_stop : "", stopped ? "'" : "", patts_get_user (),
+	    id);
   sqon_free (old_start);
   sqon_free (old_stop);
 

@@ -18,7 +18,7 @@
 /**
  * @file patts.h
  * @version 0.0
- * @date 4/27/2015
+ * @date 06/29/2015
  * @author David McMackins II
  * @brief Functions global to PATTS.
  */
@@ -79,6 +79,11 @@
  * @brief User not found in database.
  */
 #define PATTS_NOSUCHUSER  -73
+
+/**
+ * @brief TaskItem not found in database or is inactive.
+ */
+#define PATTS_NOSUCHITEM  -74
 
 #ifdef __cplusplus
 extern "C"
