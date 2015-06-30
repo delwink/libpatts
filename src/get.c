@@ -219,21 +219,18 @@ patts_get_last_item (char **out, const char *user_id)
       return 0;
     }
 
-  *out = sqon_malloc (MAX_ID_LEN * sizeof (char));
-  if (NULL == *out)
-    {
-      sqon_free (result);
-      return PATTS_MEMORYERROR;
-    }
-
-  rc = sscanf (result, "[{\"id\": \"%s\"}]", *out);
+  unsigned long long id;
+  rc = sscanf (result, "[{\"id\": \"%llu\"}]", &id);
   sqon_free (result);
 
   if (!rc)
-    {
-      sqon_free (*out);
-      return PATTS_UNEXPECTED;
-    }
+    return PATTS_UNEXPECTED;
+
+  *out = sqon_malloc (MAX_ID_LEN * sizeof (char));
+  if (NULL == *out)
+    return PATTS_MEMORYERROR;
+
+  snprintf (*out, MAX_ID_LEN, "%llu", id);
 
   return 0;
 }
