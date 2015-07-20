@@ -114,7 +114,7 @@ patts_clockin (const char *type)
 
       const char *key;
       json_t *value;
-      const char *active_task_type;
+      const char *active_task_type = NULL;
       json_object_foreach (json_active_task, key, value)
 	{
 	  json_t *type = json_object_get (value, "typeID");
