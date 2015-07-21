@@ -18,7 +18,7 @@
 /**
  * @file patts.h
  * @version 0.0
- * @date 06/29/2015
+ * @date 07/20/2015
  * @author David McMackins II
  * @brief Functions global to PATTS.
  */
@@ -142,11 +142,51 @@ void
 patts_cleanup (void);
 
 /**
- * @brief Gets the database connection object.
- * @return PATTS database connection object pointer or NULL on failure.
+ * @brief Explicitly establish connection with the PATTS database server.
+ * @return Nonzero if error connecting.
  */
-sqon_DatabaseServer *
-patts_get_db (void);
+int
+patts_connect (void);
+
+/**
+ * @brief Closes a connection to the PATTS database server.
+ */
+void
+patts_close (void);
+
+/**
+ * @brief Query the PATTS database.
+ * @param query UTF-8 encoded SQL statement.
+ * @param out Pointer to string which will be allocated and populated with
+ * JSON-formatted response from the database; must free with patts_free();
+ * populated as object if table has a primary key, else an array; can be NULL
+ * if no result is expected.
+ * @param primary_key Primary key expected in return value, if any (else NULL).
+ * @return Negative if input or IO error; positive if error from server.
+ */
+int
+patts_query (const char *query, char **out, const char *primary_key);
+
+/**
+ * @brief Gets the primary key of a table.
+ * @param table Name of the database table.
+ * @param out Pointer to string which will be allocated and populated with the
+ * table's primary key.
+ * @return Negative if input or IO error; positive if error from server.
+ */
+int
+patts_get_primary_key (const char *table, char **out);
+
+/**
+ * @brief Properly escapes a string for the database engine.
+ * @param in String to be escaped.
+ * @param out Pointer to string which will be allocated and populated with the
+ * escaped value.
+ * @param quote Whether to surround the output string in apostrophes.
+ * @return Nonzero on error.
+ */
+int
+patts_escape (const char *in, char **out, bool quote);
 
 /**
  * @brief Gets the active username.

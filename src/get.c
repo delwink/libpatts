@@ -37,14 +37,14 @@ get_all (char **out, const char *table, const char *pk)
   qlen += strlen (fmt) - 2;
   qlen += strlen (table);
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     return PATTS_MEMORYERROR;
 
   snprintf (query, qlen, fmt, table);
 
-  rc = sqon_query (patts_get_db (), query, out, pk);
-  sqon_free (query);
+  rc = patts_query (query, out, pk);
+  patts_free (query);
 
   return rc;
 }
@@ -61,14 +61,14 @@ get_where (char **out, const char *table, const char *where, const char *pk)
   qlen += strlen (table);
   qlen += strlen (where);
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     return PATTS_MEMORYERROR;
 
   snprintf (query, qlen, fmt, table, where);
 
-  rc = sqon_query (patts_get_db (), query, out, pk);
-  sqon_free (query);
+  rc = patts_query (query, out, pk);
+  patts_free (query);
 
   return rc;
 }
@@ -82,7 +82,7 @@ get_by_id (char **out, const char *table, const char *id, const char *pk,
   char *where, *esc_id;
   size_t wlen = 1;
 
-  rc = sqon_escape (patts_get_db (), id, &esc_id, quote);
+  rc = patts_escape (id, &esc_id, quote);
   if (rc)
     return rc;
 
@@ -90,18 +90,18 @@ get_by_id (char **out, const char *table, const char *id, const char *pk,
   wlen += strlen (pk);
   wlen += strlen (esc_id);
 
-  where = sqon_malloc (wlen * sizeof (char));
+  where = patts_malloc (wlen * sizeof (char));
   if (NULL == where)
     {
-      sqon_free (esc_id);
+      patts_free (esc_id);
       return PATTS_MEMORYERROR;
     }
 
   snprintf (where, wlen, wherefmt, pk, esc_id);
-  sqon_free (esc_id);
+  patts_free (esc_id);
 
   rc = get_where (out, table, where, pk);
-  sqon_free (where);
+  patts_free (where);
 
   return rc;
 }
@@ -114,7 +114,7 @@ get_children (char **out, const char *table, const char *parent_id)
   char *query, *esc_parent;
   size_t qlen = 1;
 
-  rc = sqon_escape (patts_get_db (), parent_id, &esc_parent, false);
+  rc = patts_escape (parent_id, &esc_parent, false);
   if (rc)
     return rc;
 
@@ -122,18 +122,18 @@ get_children (char **out, const char *table, const char *parent_id)
   qlen += strlen (table);
   qlen += strlen (esc_parent);
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     {
-      sqon_free (esc_parent);
+      patts_free (esc_parent);
       return PATTS_MEMORYERROR;
     }
 
   snprintf (query, qlen, fmt, table, esc_parent);
-  sqon_free (esc_parent);
+  patts_free (esc_parent);
 
-  rc = sqon_query (patts_get_db (), query, out, "id");
-  sqon_free (query);
+  rc = patts_query (query, out, "id");
+  patts_free (query);
 
   return rc;
 }
@@ -189,25 +189,25 @@ patts_get_last_item (char **out, const char *user_id)
   char *result, *query, *esc_user;
   size_t qlen = 1;
 
-  rc = sqon_escape (patts_get_db (), user_id, &esc_user, false);
+  rc = patts_escape (user_id, &esc_user, false);
   if (rc)
     return rc;
 
   qlen += strlen (fmt) - 2;
   qlen += strlen (esc_user);
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     {
-      sqon_free (esc_user);
+      patts_free (esc_user);
       return PATTS_MEMORYERROR;
     }
 
   snprintf (query, qlen, fmt, esc_user);
-  sqon_free (esc_user);
+  patts_free (esc_user);
 
-  rc = sqon_query (patts_get_db (), query, &result, NULL);
-  sqon_free (query);
+  rc = patts_query (query, &result, NULL);
+  patts_free (query);
 
   if (rc)
     return rc;
@@ -215,18 +215,18 @@ patts_get_last_item (char **out, const char *user_id)
   if (!strcmp (result, "[]"))
     {
       *out = NULL;
-      sqon_free (result);
+      patts_free (result);
       return 0;
     }
 
   unsigned long long id;
   rc = sscanf (result, "[{\"id\": \"%llu\"}]", &id);
-  sqon_free (result);
+  patts_free (result);
 
   if (!rc)
     return PATTS_UNEXPECTED;
 
-  *out = sqon_malloc (MAX_ID_LEN * sizeof (char));
+  *out = patts_malloc (MAX_ID_LEN * sizeof (char));
   if (NULL == *out)
     return PATTS_MEMORYERROR;
 
@@ -242,25 +242,25 @@ items_byuser (char **out, const char *user_id, const char *fmt)
   char *query, *esc_user;
   size_t qlen = 1;
 
-  rc = sqon_escape (patts_get_db (), user_id, &esc_user, false);
+  rc = patts_escape (user_id, &esc_user, false);
   if (rc)
     return rc;
 
   qlen += strlen (fmt) - 2;
   qlen += strlen (esc_user);
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     {
-      sqon_free (esc_user);
+      patts_free (esc_user);
       return PATTS_MEMORYERROR;
     }
 
   snprintf (query, qlen, fmt, esc_user);
-  sqon_free (esc_user);
+  patts_free (esc_user);
 
-  rc = sqon_query (patts_get_db (), query, out, "id");
-  sqon_free (query);
+  rc = patts_query (query, out, "id");
+  patts_free (query);
 
   return rc;
 }
@@ -289,59 +289,59 @@ patts_get_child_items (char **out, const char *id)
   json_t *result_arr, *result_obj;
   size_t qlen = 1;
 
-  rc = sqon_escape (patts_get_db (), id, &esc_id, false);
+  rc = patts_escape (id, &esc_id, false);
   if (rc)
     return rc;
 
   qlen += strlen (fmt) - 2;
   qlen += strlen (esc_id);
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     {
-      sqon_free (esc_id);
+      patts_free (esc_id);
       return PATTS_MEMORYERROR;
     }
 
-  old_start = sqon_malloc (DATETIME_LEN * sizeof (char));
+  old_start = patts_malloc (DATETIME_LEN * sizeof (char));
   if (NULL == old_start)
     {
-      sqon_free (esc_id);
-      sqon_free (query);
+      patts_free (esc_id);
+      patts_free (query);
       return PATTS_MEMORYERROR;
     }
 
-  old_stop = sqon_malloc (DATETIME_LEN * sizeof (char));
+  old_stop = patts_malloc (DATETIME_LEN * sizeof (char));
   if (NULL == old_stop)
     {
-      sqon_free (esc_id);
-      sqon_free (query);
-      sqon_free (old_start);
+      patts_free (esc_id);
+      patts_free (query);
+      patts_free (old_start);
       return PATTS_MEMORYERROR;
     }
 
   snprintf (query, qlen, fmt, esc_id);
-  sqon_free (esc_id);
+  patts_free (esc_id);
 
-  rc = sqon_query (patts_get_db (), query, &result, NULL);
-  sqon_free (query);
+  rc = patts_query (query, &result, NULL);
+  patts_free (query);
 
   if (rc)
     {
-      sqon_free (old_start);
-      sqon_free (old_stop);
+      patts_free (old_start);
+      patts_free (old_stop);
       return rc;
     }
   else if (!strcmp (result, "[]"))
     {
-      sqon_free (result);
-      sqon_free (old_start);
-      sqon_free (old_stop);
+      patts_free (result);
+      patts_free (old_start);
+      patts_free (old_stop);
       return PATTS_NOSUCHITEM;
     }
 
   result_arr = json_loads (result, 0, NULL);
-  sqon_free (result);
+  patts_free (result);
 
   result_obj = json_array_get (result_arr, 0);
 
@@ -365,22 +365,22 @@ patts_get_child_items (char **out, const char *id)
   qlen += strlen (stop_check) + 1;
   qlen += strlen (patts_get_user ());
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     {
-      sqon_free (old_start);
-      sqon_free (old_stop);
+      patts_free (old_start);
+      patts_free (old_stop);
       return PATTS_MEMORYERROR;
     }
 
   snprintf (query, qlen, fmt, old_start, stopped ? stop_check : "",
 	    stopped ? old_stop : "", stopped ? "'" : "", patts_get_user (),
 	    id);
-  sqon_free (old_start);
-  sqon_free (old_stop);
+  patts_free (old_start);
+  patts_free (old_stop);
 
-  rc = sqon_query (patts_get_db (), query, out, "id");
-  sqon_free (query);
+  rc = patts_query (query, out, "id");
+  patts_free (query);
 
   return rc;
 }

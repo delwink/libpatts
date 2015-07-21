@@ -38,14 +38,14 @@ patts_get_active_task (char **out)
   qlen += strlen (fmt) - 2;
   qlen += strlen (patts_get_user ());
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     return PATTS_MEMORYERROR;
 
   snprintf (query, qlen, fmt, patts_get_user ());
 
-  rc = sqon_query (patts_get_db (), query, out, "id");
-  sqon_free (query);
+  rc = patts_query (query, out, "id");
+  patts_free (query);
 
   return rc;
 }
@@ -62,14 +62,14 @@ patts_get_tree (char **out)
   qlen += strlen (fmt) - 2;
   qlen += strlen (patts_get_user ());
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     return PATTS_MEMORYERROR;
 
   snprintf (query, qlen, fmt, patts_get_user ());
 
-  rc = sqon_query (patts_get_db (), query, out, "id");
-  sqon_free (query);
+  rc = patts_query (query, out, "id");
+  patts_free (query);
 
   return rc;
 }
@@ -81,14 +81,14 @@ parent_type (char **out, const char *type)
   const char *fmt = "SELECT parentID FROM TaskType WHERE id=%s";
   size_t len = strlen (fmt) + MAX_ID_LEN;
 
-  char *query = sqon_malloc (len * sizeof (char));
+  char *query = patts_malloc (len * sizeof (char));
   if (NULL == query)
     return PATTS_MEMORYERROR;
 
   snprintf (query, len, fmt, type);
 
-  rc = sqon_query (patts_get_db (), query, out, NULL);
-  sqon_free (query);
+  rc = patts_query (query, out, NULL);
+  patts_free (query);
 
   return rc;
 }
@@ -108,7 +108,7 @@ patts_clockin (const char *type)
   if (strcmp (active_task, "[]") && strcmp (active_task, "{}"))
     {
       json_t *json_active_task = json_loads (active_task, 0, NULL);
-      sqon_free (active_task);
+      patts_free (active_task);
       if (NULL == json_active_task)
 	return SQON_MEMORYERROR;
 
@@ -129,7 +129,7 @@ patts_clockin (const char *type)
 	return rc;
 
       json_t *json_child_tasks = json_loads (child_tasks, 0, NULL);
-      sqon_free (child_tasks);
+      patts_free (child_tasks);
       if (NULL == json_child_tasks)
 	return PATTS_MEMORYERROR;
 
@@ -155,7 +155,7 @@ patts_clockin (const char *type)
     }
   else
     {
-      sqon_free (active_task);
+      patts_free (active_task);
 
       char *this;
       rc = parent_type (&this, type);
@@ -164,13 +164,13 @@ patts_clockin (const char *type)
 
       if (!strcmp (this, "[]"))
 	{
-	  sqon_free (this);
+	  patts_free (this);
 	  return PATTS_UNAVAILABLE;
 	}
 
       unsigned long long parent;
       rc = sscanf (this, "[{\"parentID\": \"%llu\"}]", &parent);
-      sqon_free (this);
+      patts_free (this);
       if (!rc)
 	return PATTS_UNEXPECTED;
 
@@ -180,7 +180,7 @@ patts_clockin (const char *type)
 	return PATTS_UNAVAILABLE;
     }
 
-  rc = sqon_escape (patts_get_db (), type, &esc_type, false);
+  rc = patts_escape (type, &esc_type, false);
   if (rc)
     return rc;
 
@@ -188,18 +188,18 @@ patts_clockin (const char *type)
   len += strlen (esc_type);
   len += strlen (patts_get_user ());
 
-  args = sqon_malloc (len * sizeof (char));
+  args = patts_malloc (len * sizeof (char));
   if (NULL == args)
     {
-      sqon_free (esc_type);
+      patts_free (esc_type);
       return PATTS_MEMORYERROR;
     }
 
   snprintf (args, len, fmt, esc_type, patts_get_user ());
-  sqon_free (esc_type);
+  patts_free (esc_type);
 
   rc = call_procedure ("clockIn", args);
-  sqon_free (args);
+  patts_free (args);
 
   return rc;
 }
@@ -210,12 +210,12 @@ patts_clockout (const char *item)
   int rc;
   char *esc_item;
 
-  rc = sqon_escape (patts_get_db (), item, &esc_item, false);
+  rc = patts_escape (item, &esc_item, false);
   if (rc)
     return rc;
 
   rc =  call_procedure ("clockOut", esc_item);
-  sqon_free (esc_item);
+  patts_free (esc_item);
 
   return rc;
 }

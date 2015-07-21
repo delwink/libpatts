@@ -35,14 +35,14 @@ call_procedure (const char *proc, const char *args)
   qlen += strlen (proc);
   qlen += strlen (args);
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     return PATTS_MEMORYERROR;
 
   snprintf (query, qlen, fmt, proc, args);
 
-  rc = sqon_query (patts_get_db (), query, NULL, NULL);
-  sqon_free (query);
+  rc = patts_query (query, NULL, NULL);
+  patts_free (query);
 
   return rc;
 }

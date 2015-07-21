@@ -32,22 +32,22 @@ patts_create_user (const char *id, const char *host, const char *passwd)
   char *args, *esc_id, *esc_host, *esc_passwd;
   size_t len = 1;
 
-  rc = sqon_escape (patts_get_db (), id, &esc_id, false);
+  rc = patts_escape (id, &esc_id, false);
   if (rc)
     return rc;
 
-  rc = sqon_escape (patts_get_db (), host, &esc_host, false);
+  rc = patts_escape (host, &esc_host, false);
   if (rc)
     {
-      sqon_free (esc_id);
+      patts_free (esc_id);
       return rc;
     }
 
-  rc = sqon_escape (patts_get_db (), passwd, &esc_passwd, false);
+  rc = patts_escape (passwd, &esc_passwd, false);
   if (rc)
     {
-      sqon_free (esc_id);
-      sqon_free (esc_host);
+      patts_free (esc_id);
+      patts_free (esc_host);
       return rc;
     }
 
@@ -56,22 +56,22 @@ patts_create_user (const char *id, const char *host, const char *passwd)
   len += strlen (esc_host);
   len += strlen (esc_passwd);
 
-  args = sqon_malloc (len * sizeof (char));
+  args = patts_malloc (len * sizeof (char));
   if (NULL == args)
     {
-      sqon_free (esc_id);
-      sqon_free (esc_host);
-      sqon_free (esc_passwd);
+      patts_free (esc_id);
+      patts_free (esc_host);
+      patts_free (esc_passwd);
       return PATTS_MEMORYERROR;
     }
 
   snprintf (args, len, fmt, esc_id, esc_host, esc_passwd);
-  sqon_free (esc_id);
-  sqon_free (esc_host);
-  sqon_free (esc_passwd);
+  patts_free (esc_id);
+  patts_free (esc_host);
+  patts_free (esc_passwd);
 
   rc = call_procedure ("createUser", args);
-  sqon_free (args);
+  patts_free (args);
 
   return rc;
 }
@@ -85,14 +85,14 @@ patts_create_task (const char *parent_id, const char *display_name)
   char *query, *esc_parent, *esc_dispname;
   size_t qlen = 1;
 
-  rc = sqon_escape (patts_get_db (), parent_id, &esc_parent, false);
+  rc = patts_escape (parent_id, &esc_parent, false);
   if (rc)
     return rc;
 
-  rc = sqon_escape (patts_get_db (), display_name, &esc_dispname, false);
+  rc = patts_escape (display_name, &esc_dispname, false);
   if (rc)
     {
-      sqon_free (esc_parent);
+      patts_free (esc_parent);
       return rc;
     }
 
@@ -100,20 +100,20 @@ patts_create_task (const char *parent_id, const char *display_name)
   qlen += strlen (esc_parent);
   qlen += strlen (esc_dispname);
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     {
-      sqon_free (esc_parent);
-      sqon_free (esc_dispname);
+      patts_free (esc_parent);
+      patts_free (esc_dispname);
       return PATTS_MEMORYERROR;
     }
 
   snprintf (query, qlen, fmt, esc_parent, esc_dispname);
-  sqon_free (esc_parent);
-  sqon_free (esc_dispname);
+  patts_free (esc_parent);
+  patts_free (esc_dispname);
 
-  rc = sqon_query (patts_get_db (), query, NULL, NULL);
-  sqon_free (query);
+  rc = patts_query (query, NULL, NULL);
+  patts_free (query);
 
   return rc;
 }
@@ -127,22 +127,22 @@ set_state (const char *id, const char *table, const char *state,
   char *query, *esc_id, *esc_table, *esc_state;
   size_t qlen = 1;
 
-  rc = sqon_escape (patts_get_db (), id, &esc_id, quote_id);
+  rc = patts_escape (id, &esc_id, quote_id);
   if (rc)
     return rc;
 
-  rc = sqon_escape (patts_get_db (), table, &esc_table, false);
+  rc = patts_escape (table, &esc_table, false);
   if (rc)
     {
-      sqon_free (esc_id);
+      patts_free (esc_id);
       return rc;
     }
 
-  rc = sqon_escape (patts_get_db (), state, &esc_state, false);
+  rc = patts_escape (state, &esc_state, false);
   if (rc)
     {
-      sqon_free (esc_id);
-      sqon_free (esc_table);
+      patts_free (esc_id);
+      patts_free (esc_table);
       return rc;
     }
 
@@ -152,22 +152,22 @@ set_state (const char *id, const char *table, const char *state,
   qlen += strlen (esc_table);
   qlen += strlen (esc_state);
 
-  query = sqon_malloc (qlen * sizeof (char));
+  query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     {
-      sqon_free (esc_id);
-      sqon_free (esc_table);
-      sqon_free (esc_state);
+      patts_free (esc_id);
+      patts_free (esc_table);
+      patts_free (esc_state);
       return PATTS_MEMORYERROR;
     }
 
   snprintf (query, qlen, fmt, esc_table, esc_state, idcol, esc_id);
-  sqon_free (esc_id);
-  sqon_free (esc_table);
-  sqon_free (esc_state);
+  patts_free (esc_id);
+  patts_free (esc_table);
+  patts_free (esc_state);
 
-  rc = sqon_query (patts_get_db (), query, NULL, NULL);
-  sqon_free (query);
+  rc = patts_query (query, NULL, NULL);
+  patts_free (query);
 
   return rc;
 }
@@ -192,14 +192,14 @@ proc_with_id (const char *proc, const char *id, const char *host)
   char *args, *esc_id, *esc_host;
   size_t len = 1;
 
-  rc = sqon_escape (patts_get_db (), id, &esc_id, false);
+  rc = patts_escape (id, &esc_id, false);
   if (rc)
     return rc;
 
-  rc = sqon_escape (patts_get_db (), host, &esc_host, false);
+  rc = patts_escape (host, &esc_host, false);
   if (rc)
     {
-      sqon_free (esc_id);
+      patts_free (esc_id);
       return rc;
     }
 
@@ -207,20 +207,20 @@ proc_with_id (const char *proc, const char *id, const char *host)
   len += strlen (esc_id);
   len += strlen (esc_host);
 
-  args = sqon_malloc (len * sizeof (char));
+  args = patts_malloc (len * sizeof (char));
   if (NULL == args)
     {
-      sqon_free (esc_id);
-      sqon_free (esc_host);
+      patts_free (esc_id);
+      patts_free (esc_host);
       return PATTS_MEMORYERROR;
     }
 
   snprintf (args, len, fmt, esc_id, esc_host);
-  sqon_free (esc_id);
-  sqon_free (esc_host);
+  patts_free (esc_id);
+  patts_free (esc_host);
 
   rc = call_procedure (proc, args);
-  sqon_free (args);
+  patts_free (args);
 
   return rc;
 }

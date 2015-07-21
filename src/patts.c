@@ -64,7 +64,7 @@ patts_init (uint8_t db_type, const char *host, const char *user,
 
   PATTSDB = sqon_new_connection (db_type, host, user, passwd, database, port);
 
-  rc = sqon_escape (patts_get_db (), user, &esc_user, false);
+  rc = patts_escape (user, &esc_user, false);
   if (rc)
     return rc;
 
@@ -80,7 +80,7 @@ patts_init (uint8_t db_type, const char *host, const char *user,
 
   snprintf (query, qlen, fmt, esc_user);
 
-  rc = sqon_query (patts_get_db (), query, &user_info, NULL);
+  rc = patts_query (query, &user_info, NULL);
   sqon_free (query);
   sqon_free (esc_user);
 
@@ -117,10 +117,34 @@ patts_cleanup ()
   sqon_free_connection (PATTSDB);
 }
 
-sqon_DatabaseServer *
-patts_get_db ()
+int
+patts_connect ()
 {
-  return PATTSDB;
+  return sqon_connect (PATTSDB);
+}
+
+void
+patts_close ()
+{
+  sqon_close (PATTSDB);
+}
+
+int
+patts_query (const char *query, char **out, const char *primary_key)
+{
+  return sqon_query (PATTSDB, query, out, primary_key);
+}
+
+int
+patts_get_primary_key (const char *table, char **out)
+{
+  return sqon_get_primary_key (PATTSDB, table, out);
+}
+
+int
+patts_escape (const char *in, char **out, bool quote)
+{
+  return sqon_escape (PATTSDB, in, out, quote);
 }
 
 const char *
@@ -148,8 +172,7 @@ patts_get_db_version (uint32_t *out)
   char *result;
   json_t *meta_header, *metadata;
 
-  rc = sqon_query (patts_get_db (), "SELECT version FROM Meta LIMIT 1",
-		   &result, NULL);
+  rc = patts_query ("SELECT version FROM Meta LIMIT 1", &result, NULL);
   if (rc)
     return rc;
 
