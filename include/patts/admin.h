@@ -18,7 +18,8 @@
 /**
  * @file admin.h
  * @version 0.0
- * @date 5/10/2015
+ * @date 07/26/2015
+ * @author David McMackins II
  * @brief Functions for PATTS administrators.
  */
 
@@ -26,9 +27,14 @@
 #define DELWINK_PATTS_ADMIN_H
 
 #ifdef __cplusplus
-extern "C"
-{
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS
+# define __END_DECLS
 #endif
+
+__BEGIN_DECLS
 
 /**
  * @brief Creates a new user on the database and applies proper permissions for
@@ -86,8 +92,6 @@ patts_grant_admin (const char *id, const char *host);
 int
 patts_revoke_admin (const char *id, const char *host);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
 
 #endif

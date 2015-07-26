@@ -33,9 +33,14 @@
 #define MAX_ID_LEN 12
 
 #ifdef __cplusplus
-extern "C"
-{
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS
+# define __END_DECLS
 #endif
+
+__BEGIN_DECLS
 
 /**
  * @brief Gets the active task for the current user.
@@ -69,8 +74,6 @@ patts_clockin (const char *type);
 int
 patts_clockout (const char *item);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
 
 #endif

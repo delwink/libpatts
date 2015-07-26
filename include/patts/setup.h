@@ -29,9 +29,14 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS
+# define __END_DECLS
 #endif
+
+__BEGIN_DECLS
 
 /**
  * @brief Creates and sets up a new PATTS database.
@@ -57,8 +62,6 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 int
 patts_version_check (int64_t *out);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
 
 #endif

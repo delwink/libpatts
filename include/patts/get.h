@@ -18,7 +18,8 @@
 /**
  * @file get.h
  * @version 0.0
- * @date 06/28/2015
+ * @date 07/26/2015
+ * @author David McMackins II
  * @brief Functions for getting information from the PATTS database.
  */
 
@@ -26,9 +27,14 @@
 #define DELWINK_PATTS_GET_H
 
 #ifdef __cplusplus
-extern "C"
-{
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS
+# define __END_DECLS
 #endif
+
+__BEGIN_DECLS
 
 /**
  * @brief Gets all PATTS users.
@@ -126,8 +132,6 @@ patts_get_items_byuser_onclock (char **out, const char *user_id);
 int
 patts_get_child_items (char **out, const char *id);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
 
 #endif

@@ -18,7 +18,7 @@
 /**
  * @file patts.h
  * @version 0.0
- * @date 07/20/2015
+ * @date 07/26/2015
  * @author David McMackins II
  * @brief Functions global to PATTS.
  */
@@ -50,45 +50,30 @@
 "You should have received a copy of the GNU Affero General Public License\n"\
 "along with this program.  If not, see <http://www.gnu.org/licenses/>."
 
-/**
- * @brief Error loading JSON internally.
- */
-#define PATTS_LOADERROR   -60
-
-/**
- * @brief Error allocating memory.
- */
-#define PATTS_MEMORYERROR -62
-
-/**
- * @brief Buffer overflow error.
- */
-#define PATTS_OVERFLOW    -63
-
-/**
- * @brief Unexpected input from caller or result from function.
- */
-#define PATTS_UNEXPECTED  -64
-
-/**
- * @brief Selected task cannot be clocked into.
- */
-#define PATTS_UNAVAILABLE -65
-
-/**
- * @brief User not found in database.
- */
-#define PATTS_NOSUCHUSER  -73
-
-/**
- * @brief TaskItem not found in database or is inactive.
- */
-#define PATTS_NOSUCHITEM  -74
-
 #ifdef __cplusplus
-extern "C"
-{
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS
+# define __END_DECLS
 #endif
+
+__BEGIN_DECLS
+
+/**
+ * @brief Error codes returned on failure.
+ */
+enum patts_error
+{
+  PATTS_LOADERROR   = -60,
+  PATTS_MEMORYERROR = -62,
+  PATTS_OVERFLOW    = -63,
+  PATTS_UNEXPECTED  = -64,
+  PATTS_UNAVAILABLE = -65,
+
+  PATTS_NOSUCHUSER  = -73,
+  PATTS_NOSUCHITEM  = -74
+};
 
 /**
  * @brief Internally-used implementation of malloc(); defaults to
@@ -210,8 +195,6 @@ patts_have_admin (void);
 int
 patts_get_db_version (uint32_t *out);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
 
 #endif
