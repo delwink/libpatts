@@ -1,6 +1,6 @@
 SUBDIRS = include
 ACLOCAL_AMFLAGS = -I m4 --install
-dist_doc_DATA = README.md
+dist_doc_DATA = README
 licensedir = $(datadir)/licenses/$(PACKAGE_NAME)
 dist_license_DATA = COPYING
 pkgconfigdir = $(libdir)/pkgconfig
