@@ -59,7 +59,7 @@ patts_init (uint8_t db_type, const char *host, const char *user,
   json_t *list, *user_cols;
   size_t qlen = 1;
 
-  if (strlen (user) >= 8)
+  if (strlen (user) > USERNAME_LEN)
     return PATTS_OVERFLOW;
 
   sqon_init ();
