@@ -27,6 +27,7 @@
 static sqon_DatabaseServer *PATTSDB;
 static bool HAVE_ADMIN = false;
 static char user_id[USERNAME_LEN + 1];
+static char esc_user_id[USERNAME_LEN * 2 + 1];
 
 void *
 patts_malloc (size_t n)
@@ -68,10 +69,11 @@ patts_init (uint8_t db_type, const char *host, const char *user,
   if (rc)
     return rc;
 
-  strcpy (user_id, esc_user);
+  strcpy (user_id, user);
+  strcpy (esc_user_id, esc_user);
 
   qlen += strlen (fmt) - 2;
-  qlen += USERNAME_LEN;
+  qlen += USERNAME_LEN * 2;
   char query[qlen];
 
   snprintf (query, qlen, fmt, esc_user);
@@ -144,6 +146,12 @@ const char *
 patts_get_user ()
 {
   return user_id;
+}
+
+const char *
+patts_get_user_esc ()
+{
+  return esc_user_id;
 }
 
 bool

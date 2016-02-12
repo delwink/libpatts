@@ -1,6 +1,6 @@
 /*
  *  libpatts - Backend library for PATTS Ain't Time Tracking Software
- *  Copyright (C) 2014-2015 Delwink, LLC
+ *  Copyright (C) 2014-2016 Delwink, LLC
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -17,8 +17,8 @@
 
 /**
  * @file patts.h
- * @version 0.0
- * @date 07/26/2015
+ * @version 0.1
+ * @date 02/11/2016
  * @author David McMackins II
  * @brief Functions global to PATTS.
  */
@@ -179,6 +179,13 @@ patts_escape (const char *in, char **out, bool quote);
  */
 const char *
 patts_get_user (void);
+
+/**
+ * @brief Gets an escaped version of the active username.
+ * @return String containing the escaped username.
+ */
+const char *
+patts_get_user_esc (void);
 
 /**
  * @brief Checks user's admin rights.

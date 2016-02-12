@@ -289,14 +289,14 @@ patts_get_child_items (char **out, const char *id)
   qlen = 1 + strlen (fmt) - 12;
   qlen += DATETIME_LEN * 2;
   qlen += strlen (stop_check) + 1;
-  qlen += USERNAME_LEN;
+  qlen += USERNAME_LEN * 2;
 
   query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
     return PATTS_MEMORYERROR;
 
   snprintf (query, qlen, fmt, old_start, stopped ? stop_check : "",
-	    stopped ? old_stop : "", stopped ? "'" : "", patts_get_user (),
+	    stopped ? old_stop : "", stopped ? "'" : "", patts_get_user_esc (),
 	    id);
 
   rc = patts_query (query, out, "id");

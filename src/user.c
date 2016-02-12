@@ -35,10 +35,10 @@ patts_get_active_task (char **out)
   size_t qlen = 1;
 
   qlen += strlen (fmt) - 2;
-  qlen += USERNAME_LEN;
+  qlen += USERNAME_LEN * 2;
   char query[qlen];
 
-  snprintf (query, qlen, fmt, patts_get_user ());
+  snprintf (query, qlen, fmt, patts_get_user_esc ());
   return patts_query (query, out, "id");
 }
 
@@ -50,10 +50,10 @@ patts_get_tree (char **out)
   size_t qlen = 1;
 
   qlen += strlen (fmt) - 2;
-  qlen += USERNAME_LEN;
+  qlen += USERNAME_LEN * 2;
   char query[qlen];
 
-  snprintf (query, qlen, fmt, patts_get_user ());
+  snprintf (query, qlen, fmt, patts_get_user_esc ());
   return patts_query (query, out, "id");
 }
 
@@ -187,10 +187,10 @@ patts_clockin (const char *type)
 
   len += strlen (fmt) - 4;
   len += MAX_ID_LEN * 2;
-  len += USERNAME_LEN;
+  len += USERNAME_LEN * 2;
   char args[len];
 
-  snprintf (args, len, fmt, esc_type, patts_get_user ());
+  snprintf (args, len, fmt, esc_type, patts_get_user_esc ());
   patts_free (esc_type);
 
   return call_procedure ("clockIn", args);

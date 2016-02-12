@@ -21,7 +21,7 @@
 #define DATETIME_LEN (19)
 #define DISPNAME_LEN (90)
 #define MAX_ID_LEN   (10)
-#define USERNAME_LEN (16)
+#define USERNAME_LEN (8)
 
 int
 call_procedure (const char *proc, const char *args);
