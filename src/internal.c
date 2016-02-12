@@ -1,6 +1,6 @@
 /*
  *  libpatts - Backend library for PATTS Ain't Time Tracking Software
- *  Copyright (C) 2014-2015 Delwink, LLC
+ *  Copyright (C) 2014-2016 Delwink, LLC
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -20,29 +20,20 @@
 #include <stdio.h>
 #include <sqon.h>
 
-#include "patts.h"
 #include "internal.h"
+#include "patts.h"
 
 int
 call_procedure (const char *proc, const char *args)
 {
-  int rc;
   const char *fmt = "CALL %s(%s)";
-  char *query;
   size_t qlen = 1;
 
   qlen += strlen (fmt) - 4;
   qlen += strlen (proc);
   qlen += strlen (args);
-
-  query = patts_malloc (qlen * sizeof (char));
-  if (NULL == query)
-    return PATTS_MEMORYERROR;
+  char query[qlen];
 
   snprintf (query, qlen, fmt, proc, args);
-
-  rc = patts_query (query, NULL, NULL);
-  patts_free (query);
-
-  return rc;
+  return patts_query (query, NULL, NULL);
 }

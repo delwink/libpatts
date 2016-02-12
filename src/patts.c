@@ -1,6 +1,6 @@
 /*
  *  libpatts - Backend library for PATTS Ain't Time Tracking Software
- *  Copyright (C) 2014-2015 Delwink, LLC
+ *  Copyright (C) 2014-2016 Delwink, LLC
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -15,15 +15,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
+#include <inttypes.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <jansson.h>
 
+#include "internal.h"
 #include "patts.h"
 
 static sqon_DatabaseServer *PATTSDB;
 static bool HAVE_ADMIN = false;
-static char user_id[9];
+static char user_id[USERNAME_LEN + 1];
 
 void *
 patts_malloc (size_t n)
@@ -50,7 +53,7 @@ patts_init (uint8_t db_type, const char *host, const char *user,
 {
   int rc = 0;
   const char *fmt = "SELECT isAdmin FROM User WHERE dbUser='%s'";
-  char *query, *user_info, *esc_user;
+  char *user_info, *esc_user;
   const char *isAdmin;
   json_t *list, *user_cols;
   size_t qlen = 1;
@@ -58,32 +61,23 @@ patts_init (uint8_t db_type, const char *host, const char *user,
   if (strlen (user) >= 8)
     return PATTS_OVERFLOW;
 
-  strcpy (user_id, user);
-
   sqon_init ();
-
   PATTSDB = sqon_new_connection (db_type, host, user, passwd, database, port);
 
   rc = patts_escape (user, &esc_user, false);
   if (rc)
     return rc;
 
-  qlen += strlen (fmt) - 2;
-  qlen += strlen (esc_user);
+  strcpy (user_id, esc_user);
 
-  query = sqon_malloc (qlen * sizeof (char));
-  if (NULL == query)
-    {
-      sqon_free (esc_user);
-      return PATTS_MEMORYERROR;
-    }
+  qlen += strlen (fmt) - 2;
+  qlen += USERNAME_LEN;
+  char query[qlen];
 
   snprintf (query, qlen, fmt, esc_user);
-
-  rc = patts_query (query, &user_info, NULL);
-  sqon_free (query);
   sqon_free (esc_user);
 
+  rc = patts_query (query, &user_info, NULL);
   if (rc)
     return rc;
 
@@ -96,12 +90,11 @@ patts_init (uint8_t db_type, const char *host, const char *user,
     return PATTS_NOSUCHUSER;
 
   user_cols = json_array_get (list, 0);
-
   isAdmin = json_string_value (json_object_get (user_cols, "isAdmin"));
 
-  if (!strcmp (isAdmin, "\001") || !strcmp (isAdmin, "1"))
+  if (strcmp (isAdmin, "\001") == 0 || strcmp (isAdmin, "1") == 0)
     HAVE_ADMIN = true;
-  else if (!strcmp (isAdmin, "") || !strcmp (isAdmin, "0"))
+  else if (strcmp (isAdmin, "") == 0 || strcmp (isAdmin, "0") == 0)
     HAVE_ADMIN = false;
   else
     rc = PATTS_UNEXPECTED;
@@ -159,12 +152,6 @@ patts_have_admin ()
   return HAVE_ADMIN;
 }
 
-uint32_t
-strtou32 (const char *s)
-{
-  return (uint32_t) strtod (s, NULL);
-}
-
 int
 patts_get_db_version (uint32_t *out)
 {
@@ -183,7 +170,8 @@ patts_get_db_version (uint32_t *out)
 
   metadata = json_array_get (meta_header, 0);
 
-  *out = strtou32 (json_string_value (json_object_get (metadata, "version")));
+  const char *v = json_string_value (json_object_get (metadata, "version"));
+  sscanf (v, "%" SCNu32, out);
   json_decref (meta_header);
 
   return 0;

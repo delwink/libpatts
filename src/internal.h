@@ -1,6 +1,6 @@
 /*
  *  libpatts - Backend library for PATTS Ain't Time Tracking Software
- *  Copyright (C) 2014-2015 Delwink, LLC
+ *  Copyright (C) 2014-2016 Delwink, LLC
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -17,6 +17,11 @@
 
 #ifndef DELWINK_PATTS_INTERNAL_H
 #define DELWINK_PATTS_INTERNAL_H
+
+#define DATETIME_LEN (19)
+#define DISPNAME_LEN (90)
+#define MAX_ID_LEN   (10)
+#define USERNAME_LEN (16)
 
 int
 call_procedure (const char *proc, const char *args);

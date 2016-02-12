@@ -1,6 +1,6 @@
 /*
  *  libpatts - Backend library for PATTS Ain't Time Tracking Software
- *  Copyright (C) 2014-2015 Delwink, LLC
+ *  Copyright (C) 2014-2016 Delwink, LLC
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -21,15 +21,15 @@
 #include <sqon.h>
 
 #include "admin.h"
-#include "patts.h"
 #include "internal.h"
+#include "patts.h"
 
 int
 patts_create_user (const char *id, const char *host, const char *passwd)
 {
   int rc;
   const char *fmt = "'%s','%s','%s'";
-  char *args, *esc_id, *esc_host, *esc_passwd;
+  char *esc_id, *esc_host, *esc_passwd;
   size_t len = 1;
 
   rc = patts_escape (id, &esc_id, false);
@@ -52,28 +52,17 @@ patts_create_user (const char *id, const char *host, const char *passwd)
     }
 
   len += strlen (fmt) - 6;
-  len += strlen (esc_id);
+  len += MAX_ID_LEN * 2;
   len += strlen (esc_host);
   len += strlen (esc_passwd);
-
-  args = patts_malloc (len * sizeof (char));
-  if (NULL == args)
-    {
-      patts_free (esc_id);
-      patts_free (esc_host);
-      patts_free (esc_passwd);
-      return PATTS_MEMORYERROR;
-    }
+  char args[len];
 
   snprintf (args, len, fmt, esc_id, esc_host, esc_passwd);
   patts_free (esc_id);
   patts_free (esc_host);
   patts_free (esc_passwd);
 
-  rc = call_procedure ("createUser", args);
-  patts_free (args);
-
-  return rc;
+  return call_procedure ("createUser", args);
 }
 
 int
@@ -82,7 +71,7 @@ patts_create_task (const char *parent_id, const char *display_name)
   int rc;
   const char *fmt = "INSERT INTO TaskType(parentID,displayName,state) "
     "VALUES(%s,'%s',1)";
-  char *query, *esc_parent, *esc_dispname;
+  char *esc_parent, *esc_dispname;
   size_t qlen = 1;
 
   rc = patts_escape (parent_id, &esc_parent, false);
@@ -97,25 +86,15 @@ patts_create_task (const char *parent_id, const char *display_name)
     }
 
   qlen += strlen (fmt) - 4;
-  qlen += strlen (esc_parent);
-  qlen += strlen (esc_dispname);
-
-  query = patts_malloc (qlen * sizeof (char));
-  if (NULL == query)
-    {
-      patts_free (esc_parent);
-      patts_free (esc_dispname);
-      return PATTS_MEMORYERROR;
-    }
+  qlen += MAX_ID_LEN * 2;
+  qlen += DISPNAME_LEN;
+  char query[qlen];
 
   snprintf (query, qlen, fmt, esc_parent, esc_dispname);
   patts_free (esc_parent);
   patts_free (esc_dispname);
 
-  rc = patts_query (query, NULL, NULL);
-  patts_free (query);
-
-  return rc;
+  return patts_query (query, NULL, NULL);
 }
 
 static int
@@ -124,7 +103,7 @@ set_state (const char *id, const char *table, const char *state,
 {
   int rc;
   const char *fmt = "UPDATE %s SET state=%s WHERE %s=%s";
-  char *query, *esc_id, *esc_table, *esc_state;
+  char *esc_id, *esc_table, *esc_state;
   size_t qlen = 1;
 
   rc = patts_escape (id, &esc_id, quote_id);
@@ -148,28 +127,17 @@ set_state (const char *id, const char *table, const char *state,
 
   qlen += strlen (fmt) - 8;
   qlen += strlen (idcol);
-  qlen += strlen (esc_id);
+  qlen += MAX_ID_LEN * 2;
   qlen += strlen (esc_table);
   qlen += strlen (esc_state);
-
-  query = patts_malloc (qlen * sizeof (char));
-  if (NULL == query)
-    {
-      patts_free (esc_id);
-      patts_free (esc_table);
-      patts_free (esc_state);
-      return PATTS_MEMORYERROR;
-    }
+  char query[qlen];
 
   snprintf (query, qlen, fmt, esc_table, esc_state, idcol, esc_id);
   patts_free (esc_id);
   patts_free (esc_table);
   patts_free (esc_state);
 
-  rc = patts_query (query, NULL, NULL);
-  patts_free (query);
-
-  return rc;
+  return patts_query (query, NULL, NULL);
 }
 
 int
@@ -189,7 +157,7 @@ proc_with_id (const char *proc, const char *id, const char *host)
 {
   int rc;
   const char *fmt = "'%s','%s'";
-  char *args, *esc_id, *esc_host;
+  char *esc_id, *esc_host;
   size_t len = 1;
 
   rc = patts_escape (id, &esc_id, false);
@@ -204,25 +172,15 @@ proc_with_id (const char *proc, const char *id, const char *host)
     }
 
   len += strlen (fmt) - 4;
-  len += strlen (esc_id);
+  len += MAX_ID_LEN * 2;
   len += strlen (esc_host);
-
-  args = patts_malloc (len * sizeof (char));
-  if (NULL == args)
-    {
-      patts_free (esc_id);
-      patts_free (esc_host);
-      return PATTS_MEMORYERROR;
-    }
+  char args[len];
 
   snprintf (args, len, fmt, esc_id, esc_host);
   patts_free (esc_id);
   patts_free (esc_host);
 
-  rc = call_procedure (proc, args);
-  patts_free (args);
-
-  return rc;
+  return call_procedure (proc, args);
 }
 
 int

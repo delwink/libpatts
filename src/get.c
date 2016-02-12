@@ -1,6 +1,6 @@
 /*
  *  libpatts - Backend library for PATTS Ain't Time Tracking Software
- *  Copyright (C) 2014-2015 Delwink, LLC
+ *  Copyright (C) 2014-2016 Delwink, LLC
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -15,62 +15,44 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <jansson.h>
 
-#include "patts.h"
 #include "get.h"
+#include "internal.h"
+#include "patts.h"
 #include "user.h"
-
-#define DATETIME_LEN 20 /* Enough space to hold a DATETIME plus a NUL byte */
 
 static int
 get_all (char **out, const char *table, const char *pk)
 {
-  int rc;
   const char *fmt = "SELECT * FROM %s WHERE state=1";
-  char *query;
   size_t qlen = 1;
 
   qlen += strlen (fmt) - 2;
   qlen += strlen (table);
-
-  query = patts_malloc (qlen * sizeof (char));
-  if (NULL == query)
-    return PATTS_MEMORYERROR;
+  char query[qlen];
 
   snprintf (query, qlen, fmt, table);
-
-  rc = patts_query (query, out, pk);
-  patts_free (query);
-
-  return rc;
+  return patts_query (query, out, pk);
 }
 
 static int
 get_where (char **out, const char *table, const char *where, const char *pk)
 {
-  int rc;
   const char *fmt = "SELECT * FROM %s WHERE state=1 AND %s";
-  char *query;
   size_t qlen = 1;
 
   qlen += strlen (fmt) - 4;
   qlen += strlen (table);
   qlen += strlen (where);
-
-  query = patts_malloc (qlen * sizeof (char));
-  if (NULL == query)
-    return PATTS_MEMORYERROR;
+  char query[qlen];
 
   snprintf (query, qlen, fmt, table, where);
-
-  rc = patts_query (query, out, pk);
-  patts_free (query);
-
-  return rc;
+  return patts_query (query, out, pk);
 }
 
 static int
@@ -79,7 +61,7 @@ get_by_id (char **out, const char *table, const char *id, const char *pk,
 {
   int rc;
   const char *wherefmt = "%s=%s";
-  char *where, *esc_id;
+  char *esc_id;
   size_t wlen = 1;
 
   rc = patts_escape (id, &esc_id, quote);
@@ -88,22 +70,13 @@ get_by_id (char **out, const char *table, const char *id, const char *pk,
 
   wlen += strlen (wherefmt) - 2;
   wlen += strlen (pk);
-  wlen += strlen (esc_id);
-
-  where = patts_malloc (wlen * sizeof (char));
-  if (NULL == where)
-    {
-      patts_free (esc_id);
-      return PATTS_MEMORYERROR;
-    }
+  wlen += MAX_ID_LEN * 2;
+  char where[wlen];
 
   snprintf (where, wlen, wherefmt, pk, esc_id);
   patts_free (esc_id);
 
-  rc = get_where (out, table, where, pk);
-  patts_free (where);
-
-  return rc;
+  return get_where (out, table, where, pk);
 }
 
 static int
@@ -111,7 +84,7 @@ get_children (char **out, const char *table, const char *parent_id)
 {
   int rc;
   const char *fmt = "SELECT * FROM %s WHERE state=1 AND parentID=%s";
-  char *query, *esc_parent;
+  char *esc_parent;
   size_t qlen = 1;
 
   rc = patts_escape (parent_id, &esc_parent, false);
@@ -120,22 +93,13 @@ get_children (char **out, const char *table, const char *parent_id)
 
   qlen += strlen (fmt) - 4;
   qlen += strlen (table);
-  qlen += strlen (esc_parent);
-
-  query = patts_malloc (qlen * sizeof (char));
-  if (NULL == query)
-    {
-      patts_free (esc_parent);
-      return PATTS_MEMORYERROR;
-    }
+  qlen += MAX_ID_LEN * 2;
+  char query[qlen];
 
   snprintf (query, qlen, fmt, table, esc_parent);
   patts_free (esc_parent);
 
-  rc = patts_query (query, out, "id");
-  patts_free (query);
-
-  return rc;
+  return patts_query (query, out, "id");
 }
 
 int
@@ -186,7 +150,7 @@ patts_get_last_item (char **out, const char *user_id)
   int rc;
   const char *fmt = "SELECT id FROM TaskItem WHERE state=1 AND userID='%s' "
     "ORDER BY id DESC LIMIT 1";
-  char *result, *query, *esc_user;
+  char *result, *esc_user;
   size_t qlen = 1;
 
   rc = patts_escape (user_id, &esc_user, false);
@@ -195,20 +159,12 @@ patts_get_last_item (char **out, const char *user_id)
 
   qlen += strlen (fmt) - 2;
   qlen += strlen (esc_user);
-
-  query = patts_malloc (qlen * sizeof (char));
-  if (NULL == query)
-    {
-      patts_free (esc_user);
-      return PATTS_MEMORYERROR;
-    }
+  char query[qlen];
 
   snprintf (query, qlen, fmt, esc_user);
   patts_free (esc_user);
 
   rc = patts_query (query, &result, NULL);
-  patts_free (query);
-
   if (rc)
     return rc;
 
@@ -219,19 +175,18 @@ patts_get_last_item (char **out, const char *user_id)
       return 0;
     }
 
-  unsigned long long id;
-  rc = sscanf (result, "[{\"id\": \"%llu\"}]", &id);
+  uint32_t id;
+  rc = sscanf (result, "[{\"id\": \"%" SCNu32 "\"}]", &id);
   patts_free (result);
 
-  if (!rc)
+  if (rc != 1)
     return PATTS_UNEXPECTED;
 
-  *out = patts_malloc (MAX_ID_LEN * sizeof (char));
+  *out = patts_malloc ((MAX_ID_LEN + 1) * sizeof (char));
   if (NULL == *out)
     return PATTS_MEMORYERROR;
 
-  snprintf (*out, MAX_ID_LEN, "%llu", id);
-
+  snprintf (*out, MAX_ID_LEN + 1, "%" PRIu32, id);
   return 0;
 }
 
@@ -239,7 +194,7 @@ static int
 items_byuser (char **out, const char *user_id, const char *fmt)
 {
   int rc;
-  char *query, *esc_user;
+  char *esc_user;
   size_t qlen = 1;
 
   rc = patts_escape (user_id, &esc_user, false);
@@ -247,22 +202,13 @@ items_byuser (char **out, const char *user_id, const char *fmt)
     return rc;
 
   qlen += strlen (fmt) - 2;
-  qlen += strlen (esc_user);
-
-  query = patts_malloc (qlen * sizeof (char));
-  if (NULL == query)
-    {
-      patts_free (esc_user);
-      return PATTS_MEMORYERROR;
-    }
+  qlen += USERNAME_LEN;
+  char query[qlen];
 
   snprintf (query, qlen, fmt, esc_user);
   patts_free (esc_user);
 
-  rc = patts_query (query, out, "id");
-  patts_free (query);
-
-  return rc;
+  return patts_query (query, out, "id");
 }
 
 int
@@ -276,7 +222,7 @@ int
 patts_get_items_byuser_onclock (char **out, const char *user_id)
 {
   return items_byuser (out, user_id, "SELECT * FROM TaskItem "
-		       "WHERE state=1 AND onClock=1 AND userID='%s'");
+		       "WHERE state=1 AND stopTime IS NULL AND userID='%s'");
 }
 
 int
@@ -285,7 +231,8 @@ patts_get_child_items (char **out, const char *id)
   int rc;
   const char *fmt = "SELECT startTime,stopTime FROM TaskItem WHERE "
     "state=1 AND id=%s";
-  char *query, *result, *old_start, *old_stop, *esc_id;
+  char old_start[DATETIME_LEN + 1], old_stop[DATETIME_LEN + 1];
+  char *query, *result, *esc_id;
   json_t *result_arr, *result_obj;
   size_t qlen = 1;
 
@@ -303,23 +250,6 @@ patts_get_child_items (char **out, const char *id)
       return PATTS_MEMORYERROR;
     }
 
-  old_start = patts_malloc (DATETIME_LEN * sizeof (char));
-  if (NULL == old_start)
-    {
-      patts_free (esc_id);
-      patts_free (query);
-      return PATTS_MEMORYERROR;
-    }
-
-  old_stop = patts_malloc (DATETIME_LEN * sizeof (char));
-  if (NULL == old_stop)
-    {
-      patts_free (esc_id);
-      patts_free (query);
-      patts_free (old_start);
-      return PATTS_MEMORYERROR;
-    }
-
   snprintf (query, qlen, fmt, esc_id);
   patts_free (esc_id);
 
@@ -328,15 +258,11 @@ patts_get_child_items (char **out, const char *id)
 
   if (rc)
     {
-      patts_free (old_start);
-      patts_free (old_stop);
       return rc;
     }
-  else if (!strcmp (result, "[]"))
+  else if (strcmp (result, "[]") == 0)
     {
       patts_free (result);
-      patts_free (old_start);
-      patts_free (old_stop);
       return PATTS_NOSUCHITEM;
     }
 
@@ -363,21 +289,15 @@ patts_get_child_items (char **out, const char *id)
   qlen = 1 + strlen (fmt) - 12;
   qlen += DATETIME_LEN * 2;
   qlen += strlen (stop_check) + 1;
-  qlen += strlen (patts_get_user ());
+  qlen += USERNAME_LEN;
 
   query = patts_malloc (qlen * sizeof (char));
   if (NULL == query)
-    {
-      patts_free (old_start);
-      patts_free (old_stop);
-      return PATTS_MEMORYERROR;
-    }
+    return PATTS_MEMORYERROR;
 
   snprintf (query, qlen, fmt, old_start, stopped ? stop_check : "",
 	    stopped ? old_stop : "", stopped ? "'" : "", patts_get_user (),
 	    id);
-  patts_free (old_start);
-  patts_free (old_stop);
 
   rc = patts_query (query, out, "id");
   patts_free (query);

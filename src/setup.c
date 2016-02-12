@@ -1,6 +1,6 @@
 /*
  *  libpatts - Backend library for PATTS Ain't Time Tracking Software
- *  Copyright (C) 2015 Delwink, LLC
+ *  Copyright (C) 2015-2016 Delwink, LLC
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +22,6 @@
 #include "patts.h"
 #include "setup.h"
 
-#define LATEST_DB_VERSION "1"
 #define LATEST_DB_VERSION_NUM 1
 
 int
@@ -32,7 +31,7 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
   int rc;
   sqon_DatabaseServer *srv;
   const char *fmt;
-  char *query, *esc_database;
+  char *esc_database;
   size_t qlen = 1;
 
   sqon_init ();
@@ -46,21 +45,15 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
   switch (db_type)
     {
     case SQON_DBCONN_MYSQL:
-      fmt = "CREATE DATABASE %s";
-      qlen += strlen (fmt) - 2;
-      qlen += strlen (esc_database);
+      {
+	fmt = "CREATE DATABASE %s";
+	qlen += strlen (fmt) - 2;
+	qlen += strlen (esc_database);
+	char query[qlen];
 
-      query = sqon_malloc (qlen * sizeof (char));
-      if (NULL == query)
-	{
-	  rc = PATTS_MEMORYERROR;
-	  break;
-	}
-
-      snprintf (query, qlen, fmt, esc_database);
-
-      rc = sqon_query (srv, query, NULL, NULL);
-      sqon_free (query);
+	snprintf (query, qlen, fmt, esc_database);
+	rc = sqon_query (srv, query, NULL, NULL);
+      }
       break;
 
     default:
@@ -78,7 +71,8 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
 
   char *queries[] = {
     "CREATE TABLE Meta(version INT UNSIGNED)",
-    "INSERT INTO Meta VALUES(" LATEST_DB_VERSION ")",
+
+    "INSERT INTO Meta VALUES(0)",
 
     "CREATE TABLE User"
     "("
@@ -195,6 +189,8 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     "FLUSH PRIVILEGES;"
     "END",
 
+    "UPDATE Meta SET version=1",
+
     "CALL createUser('patts', '%', 'patts')",
 
     "CALL grantAdmin('patts', '%')",
@@ -203,23 +199,21 @@ patts_setup (uint8_t db_type, const char *host, const char *user,
     "WHERE dbUser='patts'"
   };
 
-  const size_t num_queries = 17;
+  const size_t num_queries = 18;
 
   rc = sqon_connect (srv);
   if (rc)
     return rc;
 
-  size_t i;
-  for (i = 0; i < num_queries; ++i)
+  for (size_t i = 0; i < num_queries; ++i)
     {
       rc = sqon_query (srv, queries[i], NULL, NULL);
-
       if (rc)
 	break;
     }
 
   sqon_close (srv);
-
+  sqon_free_connection (srv);
   return rc;
 }
 
@@ -234,6 +228,5 @@ patts_version_check (int64_t *out)
     return rc;
 
   *out = LATEST_DB_VERSION_NUM - installed_version;
-
-  return rc;
+  return 0;
 }
