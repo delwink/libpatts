@@ -39,7 +39,7 @@
  */
 #define PATTS_COPYRIGHT \
 "libpatts - Backend library for PATTS Ain't Time Tracking Software\n"\
-"Copyright (C) 2014-2015 Delwink, LLC\n\n"\
+"Copyright (C) 2014-2016 Delwink, LLC\n\n"\
 "This program is free software: you can redistribute it and/or modify\n"\
 "it under the terms of the GNU Affero General Public License as published by\n"\
 "the Free Software Foundation, version 3 only.\n\n"\
