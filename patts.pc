@@ -6,7 +6,7 @@ exec_prefix = ${prefix}
 libdir = ${exec_prefix}/lib
 includedir = ${prefix}/include
 
-Version: 0.0
+Version: 0.1
 Cflags = -I${includedir}
 Description: Library backend for PATTS Ain't Time Tracking Software
 Name: patts
