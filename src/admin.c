@@ -143,7 +143,23 @@ set_state (const char *id, const char *table, const char *state,
 int
 patts_delete_user (const char *id)
 {
-  return set_state (id, "User", "0", "dbUser", true);
+  int rc;
+  const char *fmt = "'%s'";
+  size_t len = 1;
+
+  char *esc_id;
+  rc = patts_escape (id, &esc_id, false);
+  if (rc)
+    return rc;
+
+  len += strlen (fmt) - 2;
+  len += USERNAME_LEN * 2;
+  char args[len];
+
+  snprintf (args, len, fmt, esc_id);
+  patts_free (esc_id);
+
+  return call_procedure ("deleteUser", args);
 }
 
 int
