@@ -32,6 +32,9 @@ patts_create_user (const char *id, const char *host, const char *passwd)
   char *esc_id, *esc_host, *esc_passwd;
   size_t len = 1;
 
+  if (strlen (id) > USERNAME_LEN)
+    return PATTS_OVERFLOW;
+
   rc = patts_escape (id, &esc_id, false);
   if (rc)
     return rc;
@@ -73,6 +76,9 @@ patts_create_task (const char *parent_id, const char *display_name)
     "VALUES(%s,'%s',1)";
   char *esc_parent, *esc_dispname;
   size_t qlen = 1;
+
+  if (strlen (display_name) > DISPNAME_LEN / 2)
+    return PATTS_OVERFLOW;
 
   rc = patts_escape (parent_id, &esc_parent, false);
   if (rc)
@@ -147,6 +153,9 @@ patts_delete_user (const char *id)
   const char *fmt = "'%s'";
   size_t len = 1;
 
+  if (strlen (id) > USERNAME_LEN)
+    return PATTS_OVERFLOW;
+
   char *esc_id;
   rc = patts_escape (id, &esc_id, false);
   if (rc)
@@ -176,6 +185,9 @@ proc_with_id (const char *proc, const char *id, const char *host)
   char *esc_id, *esc_host;
   size_t len = 1;
 
+  if (strlen (id) > USERNAME_LEN)
+    return PATTS_OVERFLOW;
+
   rc = patts_escape (id, &esc_id, false);
   if (rc)
     return rc;
@@ -188,7 +200,7 @@ proc_with_id (const char *proc, const char *id, const char *host)
     }
 
   len += strlen (fmt) - 4;
-  len += MAX_ID_LEN * 2;
+  len += USERNAME_LEN * 2;
   len += strlen (esc_host);
   char args[len];
 

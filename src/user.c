@@ -61,6 +61,9 @@ patts_clockin (const char *type)
   int rc;
   const char *fmt = "%s,'%s'";
 
+  if (strlen (type) > MAX_ID_LEN)
+    return PATTS_OVERFLOW;
+
   char *esc_type;
   rc = patts_escape (type, &esc_type, false);
   if (rc)
@@ -87,6 +90,9 @@ patts_clockout (const char *item)
 {
   int rc;
   char *esc_item;
+
+  if (strlen (item) > MAX_ID_LEN)
+    return PATTS_OVERFLOW;
 
   rc = patts_escape (item, &esc_item, false);
   if (rc)

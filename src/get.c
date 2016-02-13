@@ -111,6 +111,9 @@ patts_get_users (char **out)
 int
 patts_get_user_byid (char **out, const char *id)
 {
+  if (strlen (id) > USERNAME_LEN)
+    return PATTS_OVERFLOW;
+
   return get_by_id (out, "User", id, "dbUser", true);
 }
 
@@ -123,12 +126,18 @@ patts_get_types (char **out)
 int
 patts_get_type_byid (char **out, const char *id)
 {
+  if (strlen (id) > MAX_ID_LEN)
+    return PATTS_OVERFLOW;
+
   return get_by_id (out, "TaskType", id, "id", false);
 }
 
 int
 patts_get_child_types (char **out, const char *parent_id)
 {
+  if (strlen (parent_id) > MAX_ID_LEN)
+    return PATTS_OVERFLOW;
+
   return get_children (out, "TaskType", parent_id);
 }
 
@@ -141,6 +150,9 @@ patts_get_items (char **out)
 int
 patts_get_item_byid (char **out, const char *id)
 {
+  if (strlen (id) > MAX_ID_LEN)
+    return PATTS_OVERFLOW;
+
   return get_by_id (out, "TaskItem", id, "id", false);
 }
 
@@ -152,6 +164,9 @@ patts_get_last_item (char **out, const char *user_id)
     "ORDER BY id DESC LIMIT 1";
   char *result, *esc_user;
   size_t qlen = 1;
+
+  if (strlen (user_id) > USERNAME_LEN)
+    return PATTS_OVERFLOW;
 
   rc = patts_escape (user_id, &esc_user, false);
   if (rc)
@@ -197,6 +212,9 @@ items_byuser (char **out, const char *user_id, const char *fmt)
   char *esc_user;
   size_t qlen = 1;
 
+  if (strlen (user_id) > USERNAME_LEN)
+    return PATTS_OVERFLOW;
+
   rc = patts_escape (user_id, &esc_user, false);
   if (rc)
     return rc;
@@ -214,6 +232,9 @@ items_byuser (char **out, const char *user_id, const char *fmt)
 int
 patts_get_items_byuser (char **out, const char *user_id)
 {
+  if (strlen (user_id) > USERNAME_LEN)
+    return PATTS_OVERFLOW;
+
   return items_byuser (out, user_id,
 		       "SELECT * FROM TaskItem WHERE state=1 AND userID='%s'");
 }
@@ -221,6 +242,9 @@ patts_get_items_byuser (char **out, const char *user_id)
 int
 patts_get_items_byuser_onclock (char **out, const char *user_id)
 {
+  if (strlen (user_id) > USERNAME_LEN)
+    return PATTS_OVERFLOW;
+
   return items_byuser (out, user_id, "SELECT * FROM TaskItem "
 		       "WHERE state=1 AND stopTime IS NULL AND userID='%s'");
 }
@@ -235,6 +259,9 @@ patts_get_child_items (char **out, const char *id)
   char *query, *result, *esc_id;
   json_t *result_arr, *result_obj;
   size_t qlen = 1;
+
+  if (strlen (id) > MAX_ID_LEN)
+    return PATTS_OVERFLOW;
 
   rc = patts_escape (id, &esc_id, false);
   if (rc)
