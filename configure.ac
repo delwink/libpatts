@@ -1,6 +1,5 @@
 AC_PREREQ([2.60])
-define(_COPYRIGHT_YEAR, 2014)
-AC_INIT([libpatts],[0.1.0],[support@delwink.com])
+AC_INIT([libpatts],[0.1.1],[support@delwink.com])
 
 AC_CONFIG_SRCDIR([src/patts.c])
 AC_CONFIG_AUX_DIR([build-aux])

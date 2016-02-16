@@ -25,7 +25,7 @@
 #include "patts.h"
 #include "setup.h"
 
-#define LATEST_DB_VERSION_NUM 2
+#define LATEST_DB_VERSION_NUM 3
 
 #define TRY(Q) { rc = sqon_query (srv, (Q), NULL, NULL); if (rc) goto end; }
 
@@ -475,6 +475,40 @@ patts_upgrade_db (uint8_t db_type, const char *host, const char *user,
       TRY ("ALTER TABLE User MODIFY dbUser VARCHAR(16)");
 
       TRY ("UPDATE Meta SET version=2");
+
+    case 2:
+      TRY ("UPDATE Meta SET version=0");
+
+      TRY ("DROP PROCEDURE clockIn");
+
+      TRY ("CREATE PROCEDURE clockIn (taskID INT UNSIGNED,"
+	   "username VARCHAR(16)) "
+	   "BEGIN "
+	   "SELECT typeID INTO @cType FROM TaskItem WHERE stopTime IS NULL "
+	   "AND userID=username AND state=1 ORDER BY id DESC LIMIT 1;"
+	   "SELECT parentID INTO @cParent FROM TaskType WHERE id=taskID "
+	   "AND state=1;"
+	   "IF @cParent IS NOT NULL "
+	   "AND (@cType IS NULL AND @cParent=0) OR @cType=@cParent THEN "
+	   "INSERT INTO TaskItem(state,startTime,typeID,userID) "
+	   "VALUES(1,CURRENT_TIMESTAMP,taskID,username);"
+	   "ELSE "
+	   "SIGNAL SQLSTATE 'HY000' SET MYSQL_ERRNO = 1210;"
+	   "END IF;"
+	   "END");
+
+      TRY ("DROP PROCEDURE deleteUser");
+
+      TRY ("CREATE PROCEDURE deleteUser (id VARCHAR(16)) "
+	   "BEGIN "
+	   "IF id IN (SELECT dbUser FROM User WHERE isAdmin=1) THEN "
+	   "CALL revokeAdmin(id, '%');"
+	   "END IF;"
+	   "CALL revokeUserPerms(id, '%');"
+	   "UPDATE User SET state=0 WHERE dbUser=id;"
+	   "END");
+
+      TRY ("UPDATE Meta SET version=3");
 
       rc = refresh_users (srv);
       if (rc)
