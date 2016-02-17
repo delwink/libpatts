@@ -24,6 +24,13 @@
 #include "internal.h"
 #include "patts.h"
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+# define PATTS_LIBRARY_VERSION VERSION
+#else
+# define PATTS_LIBRARY_VERSION "UNKNOWN"
+#endif
+
 static sqon_DatabaseServer *PATTSDB;
 static bool HAVE_ADMIN = false;
 static char user_id[USERNAME_LEN + 1];
@@ -183,4 +190,10 @@ patts_get_db_version (uint32_t *out)
   json_decref (meta_header);
 
   return 0;
+}
+
+const char *
+patts_get_library_version ()
+{
+  return PATTS_LIBRARY_VERSION;
 }

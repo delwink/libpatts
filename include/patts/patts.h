@@ -17,8 +17,8 @@
 
 /**
  * @file patts.h
- * @version 0.1
- * @date 02/11/2016
+ * @version 1.0
+ * @date 02/16/2016
  * @author David McMackins II
  * @brief Functions global to PATTS.
  */
@@ -28,27 +28,6 @@
 
 #include <stdint.h>
 #include <sqon.h>
-
-/**
- * @brief libpatts software version.
- */
-#define PATTS_VERSION "0.1.2"
-
-/**
- * @brief libpatts copyright license information.
- */
-#define PATTS_COPYRIGHT \
-"libpatts - Backend library for PATTS Ain't Time Tracking Software\n"\
-"Copyright (C) 2014-2016 Delwink, LLC\n\n"\
-"This program is free software: you can redistribute it and/or modify\n"\
-"it under the terms of the GNU Affero General Public License as published by\n"\
-"the Free Software Foundation, version 3 only.\n\n"\
-"This program is distributed in the hope that it will be useful,\n"\
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"\
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"\
-"GNU Affero General Public License for more details.\n\n"\
-"You should have received a copy of the GNU Affero General Public License\n"\
-"along with this program.  If not, see <http://www.gnu.org/licenses/>."
 
 #ifdef __cplusplus
 # define __BEGIN_DECLS extern "C" {
@@ -70,7 +49,6 @@ enum patts_error
   PATTS_OVERFLOW    = -63,
   PATTS_UNEXPECTED  = -64,
   PATTS_UNAVAILABLE = -65,
-
   PATTS_NOSUCHUSER  = -73,
   PATTS_NOSUCHITEM  = -74
 };
@@ -201,6 +179,13 @@ patts_have_admin (void);
  */
 int
 patts_get_db_version (uint32_t *out);
+
+/**
+ * @brief Checks the version of this library.
+ * @return String representation of this library version.
+ */
+const char *
+patts_get_library_version (void);
 
 __END_DECLS
 
