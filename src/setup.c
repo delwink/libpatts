@@ -25,7 +25,7 @@
 #include "patts.h"
 #include "setup.h"
 
-#define LATEST_DB_VERSION_NUM 3
+#define LATEST_DB_VERSION_NUM 4
 
 #define TRY(Q) { rc = sqon_query (srv, (Q), NULL, NULL); if (rc) goto end; }
 
@@ -508,7 +508,12 @@ patts_upgrade_db (uint8_t db_type, const char *host, const char *user,
 	   "UPDATE User SET state=0 WHERE dbUser=id;"
 	   "END");
 
-      TRY ("UPDATE Meta SET version=3");
+    case 3:
+      TRY ("UPDATE Meta SET version=0");
+
+      TRY ("ALTER TABLE TaskItem MODIFY userID VARCHAR(16)");
+
+      TRY ("UPDATE Meta SET version=4");
 
       rc = refresh_users (srv);
       if (rc)

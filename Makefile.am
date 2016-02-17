@@ -10,7 +10,7 @@ lib_LTLIBRARIES = libpatts.la
 libpatts_la_SOURCES = src/admin.c src/get.c src/internal.c src/patts.c\
 src/setup.c src/user.c
 
-libpatts_la_LDFLAGS = -version-info 1:1:1
+libpatts_la_LDFLAGS = -version-info 1:2:1
 
 libpatts_la_CFLAGS = -Wall -Wextra -std=c11 -Iinclude/patts
 

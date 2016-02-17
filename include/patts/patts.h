@@ -32,7 +32,7 @@
 /**
  * @brief libpatts software version.
  */
-#define PATTS_VERSION "0.1.1"
+#define PATTS_VERSION "0.1.2"
 
 /**
  * @brief libpatts copyright license information.
