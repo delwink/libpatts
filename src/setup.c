@@ -25,7 +25,7 @@
 #include "patts.h"
 #include "setup.h"
 
-#define LATEST_DB_VERSION_NUM 4
+#define LATEST_DB_VERSION_NUM 5
 
 #define TRY(Q) { rc = sqon_query (srv, (Q), NULL, NULL); if (rc) goto end; }
 
@@ -513,7 +513,28 @@ patts_upgrade_db (uint8_t db_type, const char *host, const char *user,
 
       TRY ("ALTER TABLE TaskItem MODIFY userID VARCHAR(16)");
 
-      TRY ("UPDATE Meta SET version=4");
+    case 4:
+      TRY ("UPDATE Meta SET version=0");
+
+      TRY ("DROP PROCEDURE clockIn");
+
+      TRY ("CREATE PROCEDURE clockIn (taskID INT UNSIGNED) "
+	   "BEGIN "
+	   "SELECT SUBSTRING_INDEX(USER(), '@', 1) INTO @user;"
+	   "SELECT typeID INTO @cType FROM TaskItem WHERE stopTime IS NULL "
+	   "AND userID=@user AND state=1 ORDER BY id DESC LIMIT 1;"
+	   "SELECT parentID INTO @cParent FROM TaskType WHERE id=taskID "
+	   "AND state=1;"
+	   "IF @cParent IS NOT NULL "
+	   "AND (@cType IS NULL AND @cParent=0) OR @cType=@cParent THEN "
+	   "INSERT INTO TaskItem(state,startTime,typeID,userID) "
+	   "VALUES(1,CURRENT_TIMESTAMP,taskID,@user);"
+	   "ELSE "
+	   "SIGNAL SQLSTATE 'HY000' SET MYSQL_ERRNO = 1210;"
+	   "END IF;"
+	   "END");
+
+      TRY ("UPDATE Meta SET version=5");
 
       rc = refresh_users (srv);
       if (rc)

@@ -59,7 +59,6 @@ int
 patts_clockin (const char *type)
 {
   int rc;
-  const char *fmt = "%s,'%s'";
 
   if (strlen (type) > MAX_ID_LEN)
     return PATTS_OVERFLOW;
@@ -69,16 +68,8 @@ patts_clockin (const char *type)
   if (rc)
     return rc;
 
-  size_t len = 1;
-  len += strlen (fmt) - 4;
-  len += MAX_ID_LEN * 2;
-  len += USERNAME_LEN * 2;
-  char args[len];
-
-  snprintf (args, len, fmt, esc_type, patts_get_user_esc ());
+  rc = call_procedure ("clockIn", esc_type);
   patts_free (esc_type);
-
-  rc = call_procedure ("clockIn", args);
   if (1210 == rc)
     rc = PATTS_UNAVAILABLE; // server said so
 
