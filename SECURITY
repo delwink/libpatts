@@ -1,0 +1,63 @@
+libpatts security brief
+=======================
+
+libpatts is designed as a "just works" solution for the PATTS system
+backend. It is intended for use in offices with trusted users with incentives
+to not abuse the underlying technology.
+
+At the time of PATTS' conceptualization in October of 2014, we wanted to create
+a simple system with as little software as possible to get the desired
+result. As a consequence, we took some shortcuts to avoid writing a dedicated
+server program, relying on the database engine to perform all server-side
+computation and input validation.
+
+This was a slight oversight. While we have done our best to ensure that
+legitimate users cannot accidentally create bad situations for themselves,
+there are some things the database engine simply will not do to prevent
+illegitimate users from attacking the server.
+
+This document will review the assumptions made by the libpatts developer
+through the course of its development and what you as a system administrator
+need to take into consideration before deploying PATTS using this library.
+
+Security of Data
+----------------
+
+User inputs are checked on the server side for sanity, but some things may be
+overlooked. For instance, it was not until database version 5 that the server
+made sure that users could only clock in as themselves. After several reviews
+of the server side procedures, we are confident that the validity of user
+inputs is safe, but that doesn't mean new things won't slip through the cracks.
+
+One thing that is not checked is sensibility of task timing. For instance, the
+server will blindly agree that it makes sense for a user to clock in and out of
+the same task over and over all day and flood the database. This ultimately
+comes down to you as an administrator to ensure that users with access to PATTS
+are trusted to not use it as a vector to fill the server's disk with useless
+data. It is not hard to clean up any bad data generated from a problem like
+this, but it is possible for an errant user to temporarily disable your server
+if they decided to be malicious.
+
+Another assumption is that none of the stored data are private. We assume that
+coworkers have no need to keep their hours secret from one another, so full
+access to browse the task log is granted to users for the convenience of
+reporting. This is something that requires some strange procedural abstraction
+to prevent without a separate server program. Don't store anything private in
+your PATTS database.
+
+Security of Service
+-------------------
+
+One of the biggest oversights in the PATTS system was the assumption that the
+server is already protected from unwanted login attempts. While the server is
+secured from unauthorized logins (or at least as secure as your password), it
+does not consider Denial of Service attacks where someone might make many
+invalid login attempts at one time to saturate the server's computational
+resources to process the bad requests.
+
+In addition to the threat of invalid users, valid users have the ability to
+endlessly request information from the database without a limit on the request
+frequency or intensity, which is even worse than the invalid login attempts.
+
+We recommend not exposing your PATTS server over the Internet for these
+reasons.
