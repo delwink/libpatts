@@ -6,7 +6,7 @@ PATTS Ain't Time Tracking Software - Backend Library
 Installation
 ------------
 
-Build instructions are in [doc/build.md](doc/build.md).
+Build instructions are in [INSTALL](INSTALL).
 
 To install: `# make install`
 
